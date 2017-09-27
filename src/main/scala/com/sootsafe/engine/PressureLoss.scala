@@ -4,14 +4,19 @@ import com.sootsafe._
 import com.sootsafe.model.LinkedNode
 import com.sootsafe.valuetable.ValueResolver
 
+case class PressureLossEntry(id: Int, pressureLoss: Double)
+
 class PressureLoss(valueResolver: ValueResolver) {
 
-  def calculatePressureLoss(node: LinkedNode): Double = {
+  def calculatePressureLoss(node: LinkedNode): Seq[PressureLossEntry] = {
     val targetNode = node.locateTargetNode()
-    iterativePressureLoss(targetNode, node, node, 0d)
+    iterativePressureLoss(targetNode, node, node, Nil)
   }
 
-  private def iterativePressureLoss(node: Option[LinkedNode], originNode: LinkedNode, stopNode: LinkedNode, aggregator: Double): Double = {
+  private def iterativePressureLoss(node: Option[LinkedNode],
+                                    originNode: LinkedNode,
+                                    stopNode: LinkedNode,
+                                    aggregator: Seq[PressureLossEntry]): Seq[PressureLossEntry] = {
     node match {
       case Some(targetNode) if targetNode == stopNode =>
         aggregator
@@ -20,24 +25,25 @@ class PressureLoss(valueResolver: ValueResolver) {
         val pressureLoss = singleComponentPressureLoss(targetNode.nodeModule, originNode.nodeModule)
 
         targetNode.findRoots(Seq(originNode)) match {
-          case Nil => iterativePressureLoss(targetNode.parent, targetNode, stopNode, aggregator + pressureLoss)
+          case Nil => iterativePressureLoss(targetNode.parent, targetNode, stopNode, aggregator :+ pressureLoss)
           case roots =>
             // TODO: Not sure if this is how it works... don't think so
-            val rootsPressure = roots.foldLeft(0d) {
+            val rootsPressure = roots.foldLeft(Seq[PressureLossEntry]()) {
               case (agg, n) => iterativePressureLoss(Some(n), targetNode, targetNode, agg)
             }
-            iterativePressureLoss(targetNode.parent, targetNode, stopNode, aggregator + rootsPressure)
+            iterativePressureLoss(targetNode.parent, targetNode, stopNode, aggregator ++ rootsPressure)
         }
       case None => aggregator
     }
   }
 
-  private def singleComponentPressureLoss(node: NodeModule, originNode: NodeModule): Double = {
+  private def singleComponentPressureLoss(node: NodeModule, originNode: NodeModule): PressureLossEntry = {
     val rho = 1.2
 
     node.ssInfo.nodeType match {
       case "pipe" =>
-        node.ssInfo.dimension.length.getOrElse(0d) / 1000 * valueResolver.ductPressureLoss(node)
+        val pressureLoss = node.ssInfo.dimension.length.getOrElse(0d) / 1000 * valueResolver.ductPressureLoss(node)
+        PressureLossEntry(node.key, pressureLoss)
       case "areaIncrement" =>
         val v1 = VelocityCalculator.velocity(originNode.ssInfo)
         val v2 = VelocityCalculator.velocity(node.ssInfo)
@@ -45,7 +51,9 @@ class PressureLoss(valueResolver: ValueResolver) {
 
         val zeta = valueResolver.componentPressureLoss(velocityFactor)
 
-        rho * Math.pow(v2 * 1000, 2) / 2 * zeta
+        val pressureLoss = rho * Math.pow(v2 * 1000, 2) / 2 * zeta
+
+        PressureLossEntry(node.key, pressureLoss)
 
       case "t-pipe" =>
         val v2 = VelocityCalculator.velocity(originNode.ssInfo)
@@ -54,18 +62,22 @@ class PressureLoss(valueResolver: ValueResolver) {
 
         val zeta = valueResolver.componentPressureLoss(velocityFactor)
 
-        rho * Math.pow(v1 * 1000, 2) / 2 * zeta
+        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
+
+        PressureLossEntry(node.key, pressureLoss)
 
       case "bend" =>
         val v1 = VelocityCalculator.velocity(node.ssInfo)
 
         val zeta = valueResolver.componentPressureLoss(v1 * 1000)
 
-        rho * Math.pow(v1 * 1000, 2) / 2 * zeta
+        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
 
-      case "box" => 15d
+        PressureLossEntry(node.key, pressureLoss)
 
-      case _ => 0d
+      case "box" => PressureLossEntry(node.key, 15d)
+
+      case _ => PressureLossEntry(node.key, 0d)
     }
   }
 

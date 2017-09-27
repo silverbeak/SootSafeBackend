@@ -157,7 +157,9 @@ object Tryout {
     val model = read[Model](anotherJson)
     val linkedModel = new ModelBuilder(model).buildModel()
 
-    val pressure = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
-    println(s"Pressure found: $pressure")
+    val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
+    println(s"Pressure found: $pressureLossTable")
+    val pressureLoss = pressureLossTable.foldLeft(0d)((agg, pl) => pl.pressureLoss + agg)
+    println(s"Pressure loss total: $pressureLoss")
   }
 }
