@@ -1,30 +1,14 @@
 package com.sootsafe.engine
 
 import com.sootsafe._
+import com.sootsafe.model.LinkedNode
 import com.sootsafe.valuetable.ValueResolver
 
 class PressureLoss(valueResolver: ValueResolver) {
 
-  private def locateTargetNode(node: Option[LinkedNode]): Option[LinkedNode] = {
-    node.flatMap { n =>
-      if (n.nodeModule.ssInfo.targetCell) Some(n)
-      else n.children.flatMap(ln => locateTargetNode(Some(ln))).headOption
-    }
-  }
-
   def calculatePressureLoss(node: LinkedNode): Double = {
-    println(s"Capacity: ${node.nodeModule.ssInfo.capacity} and ${node.nodeModule.ssInfo.nodeType}")
-    val targetNode = locateTargetNode(Some(node))
+    val targetNode = node.locateTargetNode()
     iterativePressureLoss(targetNode, node, node, 0d)
-  }
-
-  private def findRoots(node: LinkedNode, exclude: Seq[LinkedNode]): Seq[LinkedNode] = {
-    node.children.filterNot(exclude.contains).flatMap { n =>
-      n.children match {
-        case Nil => Seq(n)
-        case _ => findRoots(n, Nil)
-      }
-    }
   }
 
   private def iterativePressureLoss(node: Option[LinkedNode], originNode: LinkedNode, stopNode: LinkedNode, aggregator: Double): Double = {
@@ -35,15 +19,14 @@ class PressureLoss(valueResolver: ValueResolver) {
       case Some(targetNode) =>
         val pressureLoss = singleComponentPressureLoss(targetNode.nodeModule, originNode.nodeModule)
 
-        findRoots(targetNode, Seq(originNode)) match {
+        targetNode.findRoots(Seq(originNode)) match {
           case Nil => iterativePressureLoss(targetNode.parent, targetNode, stopNode, aggregator + pressureLoss)
           case roots =>
+            // TODO: Not sure if this is how it works... don't think so
             val rootsPressure = roots.foldLeft(0d) {
               case (agg, n) => iterativePressureLoss(Some(n), targetNode, targetNode, agg)
             }
-            val it = iterativePressureLoss(targetNode.parent, targetNode, stopNode, aggregator + rootsPressure)
-            println(s"IT is ${it}")
-            it
+            iterativePressureLoss(targetNode.parent, targetNode, stopNode, aggregator + rootsPressure)
         }
       case None => aggregator
     }

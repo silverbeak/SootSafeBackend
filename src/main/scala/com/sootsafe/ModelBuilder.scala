@@ -1,14 +1,6 @@
 package com.sootsafe
 
-import com.sootsafe.ModelResolver.IM
-
-object ModelResolver {
-  type IM = Option[LinkedNode] => Seq[LinkedNode]
-}
-
-case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[LinkedNode]) {
-  lazy val children = childResolver(Some(this))
-}
+import com.sootsafe.model.LinkedNode
 
 class ModelBuilder(model: Model) {
 
