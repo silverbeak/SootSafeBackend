@@ -1,6 +1,6 @@
 package com.sootsafe.valuetable
 
-import com.sootsafe.NodeModule
+import com.sootsafe.model.NodeModule
 
 trait ValueResolver {
 

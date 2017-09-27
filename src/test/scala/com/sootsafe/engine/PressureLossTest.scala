@@ -1,39 +1,13 @@
-package com.sootsafe
+package com.sootsafe.engine
 
-
-import com.sootsafe.engine.PressureLoss
 import com.sootsafe.model.{Model, ModelBuilder}
+import com.sootsafe.serializers.NodeSerializer
 import com.sootsafe.valuetable.ValueResolver
-import org.json4s.{DefaultFormats, Formats}
 import org.json4s.native.Serialization.read
+import org.json4s.{DefaultFormats, Formats}
+import org.scalatest.{Matchers, WordSpecLike}
 
-trait NodeModule {
-  val key: Int
-  val ssInfo: SootSafeInfo
-  val loc: String
-  val angle: Option[String]
-  val ports: List[Port]
-}
-
-case class NodeModuleBase(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule
-
-case class Port(id: String, spot: String)
-
-case class Angle(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule
-
-case class Outlet(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule
-
-case class FireCell(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule
-
-case class Pipe(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule
-
-case class SootSafeInfo(nodeType: String, capacity: Option[Double], name: Option[String], comment: Option[String], pressureloss: Option[Double], dimension: Dimension, targetCell: Boolean = false)
-
-case class Dimension(length: Option[Double], diameter: Option[Double])
-
-case class Link(from: Int, to: Int, fid: String, tid: String)
-
-object Tryout {
+class PressureLossTest extends WordSpecLike with Matchers {
 
   implicit val formats: Formats = DefaultFormats + NodeSerializer
 
@@ -87,7 +61,7 @@ object Tryout {
       |  "linkKeyProperty": "key",
       |  "linkFromPortIdProperty": "fid",
       |  "linkToPortIdProperty": "tid",
-      |  "nodeDataArray": [ 
+      |  "nodeDataArray": [
       |{"key":-2, "geo":"F1 M0 0 L20 0 20 20 0 20z", "ports":[ {"id":"U6", "spot":"0.5 0 0 0.5"},{"id":"U2", "spot":"0.5 1 0 -0.5"} ], "fill":"rgba(128, 0, 128, 0.5)", "loc":"-75.33333333333354 -153.99999999999994", "ssInfo":{"nodeType":"pipe", "capacity":88.1}},
       |{"key":24, "angle":270, "geo":"F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z", "ports":[ {"id":"U0", "spot":"1 0.25 -0.5 0.25"},{"id":"U4", "spot":"0 0.25 0.5 0.25"},{"id":"U2", "spot":"0.5 1 0 -0.5"} ], "loc":"-65.33333333333354 -113.99999999999993", "ssInfo":{"nodeType":"base"}},
       |{"key":-4, "geo":"F1 M0 0 L20 0 20 20 0 20z", "ports":[ {"id":"U6", "spot":"0.5 0 0 0.5"},{"id":"U2", "spot":"0.5 1 0 -0.5"} ], "fill":"rgba(128, 0, 128, 0.5)", "loc":"-75.33333333333354 -73.99999999999991", "ssInfo":{"nodeType":"pipe", "capacity":"66.2"}},
@@ -117,7 +91,7 @@ object Tryout {
       |{"key":-28, "geo":"F1 M0 0 L20 0 20 20 0 20z", "ports":[ {"id":"U6", "spot":"0.5 0 0 0.5"},{"id":"U2", "spot":"0.5 1 0 -0.5"} ], "fill":"rgba(128, 0, 128, 0.5)", "loc":"-135.33333333333354 86.00000000000003", "ssInfo":{"nodeType":"pipe", "capacity":"17", "dimension":"125"}},
       |{"key":-29, "geo":"F1 M0 0 L20 0 20 20 0 20z", "ports":[ {"id":"U6", "spot":"0.5 0 0 0.5"},{"id":"U2", "spot":"0.5 1 0 -0.5"} ], "fill":"rgba(128, 0, 128, 0.5)", "loc":"-75.33333333333354 86.00000000000009", "ssInfo":{"capacity":"22", "nodeType":"pipe"}}
       | ],
-      |  "linkDataArray": [ 
+      |  "linkDataArray": [
       |{"from":24, "to":-2, "fid":"U0", "tid":"U2", "key":-2},
       |{"from":-4, "to":24, "fid":"U6", "tid":"U4", "key":-3},
       |{"from":-5, "to":-4, "fid":"U0", "tid":"U2", "key":-4},
@@ -149,16 +123,19 @@ object Tryout {
     """.stripMargin
 
 
-  def main(args: Array[String]): Unit = {
+  "PressureLossTest" must {
 
-    val valueResolver: ValueResolver = new ValueResolver {}
+    "calculatePressureLoss" in {
+      val valueResolver: ValueResolver = new ValueResolver {}
 
-    val model = read[Model](anotherJson)
-    val linkedModel = new ModelBuilder(model).buildModel()
+      val model = read[Model](anotherJson)
+      val linkedModel = new ModelBuilder(model).buildModel()
 
-    val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
-    println(s"Pressure found: $pressureLossTable")
-    val pressureLoss = pressureLossTable.foldLeft(0d)((agg, pl) => pl.pressureLoss + agg)
-    println(s"Pressure loss total: $pressureLoss")
+      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
+      val pressureLoss = pressureLossTable.foldLeft(0d)((agg, pl) => pl.pressureLoss + agg)
+      pressureLossTable.length should be (14)
+      pressureLoss should be (54.365969931577)
+    }
+
   }
 }

@@ -1,5 +1,6 @@
-package com.sootsafe
+package com.sootsafe.serializers
 
+import com.sootsafe.model._
 import org.json4s.CustomSerializer
 import org.json4s.JsonAST.JObject
 

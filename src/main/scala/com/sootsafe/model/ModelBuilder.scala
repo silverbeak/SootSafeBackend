@@ -1,7 +1,5 @@
 package com.sootsafe.model
 
-import com.sootsafe.{Link, NodeModule}
-
 class ModelBuilder(model: Model) {
 
   private def findOutlet(): Option[NodeModule] = model.nodeDataArray.find(_.ssInfo.nodeType == "outlet")

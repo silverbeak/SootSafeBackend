@@ -1,6 +1,5 @@
 package com.sootsafe.model
 
-import com.sootsafe.NodeModule
 import com.sootsafe.model.ModelResolver.IM
 
 object ModelResolver {

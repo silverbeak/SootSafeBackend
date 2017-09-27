@@ -1,7 +1,6 @@
 package com.sootsafe.engine
 
-import com.sootsafe._
-import com.sootsafe.model.LinkedNode
+import com.sootsafe.model.{LinkedNode, NodeModule, SootSafeInfo}
 import com.sootsafe.valuetable.ValueResolver
 
 case class PressureLossEntry(id: Int, pressureLoss: Double)
