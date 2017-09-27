@@ -2,6 +2,7 @@ package com.sootsafe
 
 
 import com.sootsafe.engine.PressureLoss
+import com.sootsafe.model.{Model, ModelBuilder}
 import com.sootsafe.valuetable.ValueResolver
 import org.json4s.{DefaultFormats, Formats}
 import org.json4s.native.Serialization.read
@@ -17,8 +18,6 @@ trait NodeModule {
 case class NodeModuleBase(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule
 
 case class Port(id: String, spot: String)
-
-case class Model(nodeDataArray: List[NodeModule], linkDataArray: List[Link])
 
 case class Angle(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule
 

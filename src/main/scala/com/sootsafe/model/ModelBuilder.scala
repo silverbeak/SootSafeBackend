@@ -1,20 +1,10 @@
-package com.sootsafe
+package com.sootsafe.model
 
-import com.sootsafe.model.LinkedNode
+import com.sootsafe.{Link, NodeModule}
 
 class ModelBuilder(model: Model) {
 
   private def findOutlet(): Option[NodeModule] = model.nodeDataArray.find(_.ssInfo.nodeType == "outlet")
-
-  private def findLinks(model: Model, node: NodeModule, alreadyBoundNodes: Seq[Int]): List[Link] =
-    model.linkDataArray
-      .filter(l => l.from == node.key || l.to == node.key)
-      .filterNot(l => alreadyBoundNodes.contains(l.to) || alreadyBoundNodes.contains(l.from))
-
-  private def findLinkedNodes(model: Model, node: NodeModule, alreadyBoundNodes: Seq[Int]): List[NodeModule] =
-    findLinks(model, node, alreadyBoundNodes)
-      .flatMap(link => model.nodeDataArray.filter(n => n.key == link.from || n.key == link.to))
-      .filter(_.key != node.key)
 
   def buildModel(): LinkedNode = {
     findOutlet() match {
@@ -25,7 +15,7 @@ class ModelBuilder(model: Model) {
   }
 
   private def linkNested(nodeModule: NodeModule, alreadyBoundNodes: Seq[Int])(parentLinkedNode: Option[LinkedNode]): LinkedNode = {
-    findLinkedNodes(model, nodeModule, alreadyBoundNodes) match {
+    ModelBuilder.findLinkedNodes(model, nodeModule, alreadyBoundNodes) match {
       case Nil =>
         LinkedNode((_) => Nil, nodeModule, parentLinkedNode)
       case links =>
@@ -41,4 +31,16 @@ class ModelBuilder(model: Model) {
     }
   }
 
+}
+
+object ModelBuilder {
+  private def findLinks(model: Model, node: NodeModule, alreadyBoundNodes: Seq[Int]): List[Link] =
+    model.linkDataArray
+      .filter(l => l.from == node.key || l.to == node.key)
+      .filterNot(l => alreadyBoundNodes.contains(l.to) || alreadyBoundNodes.contains(l.from))
+
+  private def findLinkedNodes(model: Model, node: NodeModule, alreadyBoundNodes: Seq[Int]): List[NodeModule] =
+    findLinks(model, node, alreadyBoundNodes)
+      .flatMap(link => model.nodeDataArray.filter(n => n.key == link.from || n.key == link.to))
+      .filter(_.key != node.key)
 }
