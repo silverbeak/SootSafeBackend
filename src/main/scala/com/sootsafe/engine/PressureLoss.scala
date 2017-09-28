@@ -1,6 +1,6 @@
 package com.sootsafe.engine
 
-import com.sootsafe.model.{LinkedNode, NodeModule, SootSafeInfo}
+import com.sootsafe.model.{LinkedNode, NodeModule, PressureLossTrait, SootSafeInfo}
 import com.sootsafe.valuetable.ValueResolver
 
 case class PressureLossEntry(id: Int, pressureLoss: Double)
@@ -36,48 +36,8 @@ class PressureLoss(valueResolver: ValueResolver) {
     }
   }
 
-  private def singleComponentPressureLoss(node: NodeModule, originNode: NodeModule): PressureLossEntry = {
-    val rho = 1.2
-
-    node.ssInfo.nodeType match {
-      case "pipe" =>
-        val pressureLoss = node.ssInfo.dimension.length.getOrElse(0d) / 1000 * valueResolver.ductPressureLoss(node)
-        PressureLossEntry(node.key, pressureLoss)
-      case "areaIncrement" =>
-        val v1 = VelocityCalculator.velocity(originNode.ssInfo)
-        val v2 = VelocityCalculator.velocity(node.ssInfo)
-        val velocityFactor = v2/v1
-
-        val zeta = valueResolver.componentPressureLoss(velocityFactor)
-
-        val pressureLoss = rho * Math.pow(v2 * 1000, 2) / 2 * zeta
-
-        PressureLossEntry(node.key, pressureLoss)
-
-      case "t-pipe" =>
-        val v2 = VelocityCalculator.velocity(originNode.ssInfo)
-        val v1 = VelocityCalculator.velocity(node.ssInfo)
-        val velocityFactor = v2/v1
-
-        val zeta = valueResolver.componentPressureLoss(velocityFactor)
-
-        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
-
-        PressureLossEntry(node.key, pressureLoss)
-
-      case "bend" =>
-        val v1 = VelocityCalculator.velocity(node.ssInfo)
-
-        val zeta = valueResolver.componentPressureLoss(v1 * 1000)
-
-        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
-
-        PressureLossEntry(node.key, pressureLoss)
-
-      case "box" => PressureLossEntry(node.key, 15d)
-
-      case _ => PressureLossEntry(node.key, 0d)
-    }
+  private def singleComponentPressureLoss(node: PressureLossTrait, originNode: NodeModule): PressureLossEntry = {
+    node.pressureLoss(valueResolver, Option(originNode))
   }
 
 }

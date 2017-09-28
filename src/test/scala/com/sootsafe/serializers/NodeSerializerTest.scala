@@ -20,7 +20,6 @@ class NodeSerializerTest extends WordSpecLike with Matchers {
 
       model.nodeDataArray.size should be(1)
       model.nodeDataArray.head.isInstanceOf[Pipe] should be(true)
-
     }
   }
 
