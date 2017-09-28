@@ -1,7 +1,9 @@
 package com.sootsafe.model
 
-import com.sootsafe.engine.{PressureLossEntry, VelocityCalculator}
+import com.sootsafe.calcutils.VelocityCalculator
 import com.sootsafe.valuetable.ValueResolver
+
+case class PressureLossEntry(id: Int, pressureLoss: Double)
 
 trait PressureLossTrait {
   val rho: Double = 1.2

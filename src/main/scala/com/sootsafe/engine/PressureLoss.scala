@@ -1,9 +1,7 @@
 package com.sootsafe.engine
 
-import com.sootsafe.model.{LinkedNode, NodeModule, PressureLossTrait, SootSafeInfo}
+import com.sootsafe.model._
 import com.sootsafe.valuetable.ValueResolver
-
-case class PressureLossEntry(id: Int, pressureLoss: Double)
 
 class PressureLoss(valueResolver: ValueResolver) {
 
@@ -40,16 +38,4 @@ class PressureLoss(valueResolver: ValueResolver) {
     node.pressureLoss(valueResolver, Option(originNode))
   }
 
-}
-
-object VelocityCalculator {
-  def velocity(ssInfo: SootSafeInfo): Double = {
-    val area = AreaCalculator.area(ssInfo.dimension.diameter.getOrElse(0d))
-    val flow = ssInfo.capacity.getOrElse(0d)
-    flow/area
-  }
-}
-
-object AreaCalculator {
-  def area(diameter: Double): Double = Math.pow(diameter, 2) * Math.PI / 4
 }
