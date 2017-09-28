@@ -17,6 +17,7 @@ trait NodeModule extends PressureLossTrait {
   val loc: String
   val angle: Option[String]
   val ports: List[Port]
+  val isJunction: Boolean = false
 }
 
 case class NodeModuleBase(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule {
@@ -67,6 +68,8 @@ case class AreaIncrement(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Opt
 }
 
 case class TPipe(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule {
+  override val isJunction: Boolean = true
+
   def pressureLoss(valueResolver: ValueResolver, originNode: Option[NodeModule]): PressureLossEntry = {
     val v2 = VelocityCalculator.velocity(originNode.get.ssInfo)
     val v1 = VelocityCalculator.velocity(ssInfo)
