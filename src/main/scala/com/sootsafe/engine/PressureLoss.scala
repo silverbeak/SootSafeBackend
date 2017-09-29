@@ -5,9 +5,8 @@ import com.sootsafe.valuetable.ValueResolver
 
 class PressureLoss(valueResolver: ValueResolver) {
 
-  def calculatePressureLoss(node: LinkedNode): Seq[PressureLossEntry] = {
-    val targetNode = node.locateTargetNode()
-    iterativePressureLoss(targetNode, node, node, Nil)
+  def calculatePressureLoss(startNode: LinkedNode, finalNode: LinkedNode): Seq[PressureLossEntry] = {
+    iterativePressureLoss(startNode.parent, startNode, finalNode, Nil)
   }
 
   private def iterativePressureLoss(node: Option[LinkedNode],

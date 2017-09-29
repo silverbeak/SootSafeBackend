@@ -25,40 +25,52 @@ class StepCalculationTest extends WordSpecLike with Matchers {
     "properly calculate the pressure from target node to the next junction" in {
       val linkedModel = createLinkedModel("/defaultTestData.json")
       val valueResolver: ValueResolver = new ValueResolver {}
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
 
-      val pressure = StepCalculation.calculateFlowFromNodeToNextJunction(linkedModel.locateTargetNode(), pressureLossTable)
+      val outletNode = linkedModel.locateOutletNode()
+      val fireNode = linkedModel.locateTargetNode()
+      val firstJunction = fireNode.get.findNextJunction().thisNode.get
+      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
 
-      pressure should be(2.400202446689589)
-    }
+      val secondJunction = firstJunction.findNextJunction().thisNode
 
-    "properly calculate the pressure from one (random) node to the next junction" in {
-      val linkedModel = createLinkedModel("/defaultTestData.json")
-      val valueResolver: ValueResolver = new ValueResolver {}
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
-
-      val startNode = linkedModel.findNextJunction(linkedModel.locateTargetNode())
-
-      val pressure = StepCalculation.calculateFlowFromNodeToNextJunction(startNode, pressureLossTable)
+      val pressure = StepCalculation.calculateFlowFromNodeToNextJunction(secondJunction, pressureLossTable)
 
       pressure should be(3.164158585861644)
     }
 
-    "properly calculate the pressure from a random node to the next junction" in {
+    "properly calculate the pressure from first junction to the next" in {
       val linkedModel = createLinkedModel("/defaultTestData.json")
       val valueResolver: ValueResolver = new ValueResolver {}
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
 
-      val targetNode = linkedModel.locateTargetNode()
-      val firstJunction = linkedModel.findNextJunction(targetNode)
-      val secondJunction = linkedModel.findNextJunction(firstJunction)
+      val outletNode = linkedModel.locateOutletNode()
+      val fireNode = linkedModel.locateTargetNode().get
+      val firstJunction = fireNode.findNextJunction().thisNode.get
 
-      firstJunction should not be secondJunction
+      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
 
-      val pressure = StepCalculation.calculateFlowFromNodeToNextJunction(secondJunction, pressureLossTable)
+      val pressure = StepCalculation.calculateFlowFromNodeToNextJunction(firstJunction.parent, pressureLossTable)
 
-      pressure should be(11.486546343378132)
+      pressure should be(2.400202446689589)
     }
 
+    "properly traverse through a chain" in {
+      val linkedModel = createLinkedModel("/defaultTestData.json")
+      val valueResolver: ValueResolver = new ValueResolver {}
+
+      val outletNode = linkedModel.locateOutletNode()
+      val fireNode = linkedModel.locateTargetNode().get
+      val firstJunction = fireNode.findNextJunction().thisNode
+
+      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction.get, outletNode.get)
+
+      var pressure: Double = 0
+      var junction: Option[LinkedNode] = firstJunction.get.parent
+      while(junction.nonEmpty) {
+        pressure += StepCalculation.calculateFlowFromNodeToNextJunction(junction, pressureLossTable)
+        junction = junction.get.findNextJunction().thisNode
+      }
+
+      pressure should be(54.36596993157699)
+    }
   }
 }

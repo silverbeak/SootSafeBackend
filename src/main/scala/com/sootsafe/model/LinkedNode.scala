@@ -6,19 +6,19 @@ object ModelResolver {
   type IM = Option[LinkedNode] => Seq[LinkedNode]
 }
 
+case class AscendingNodePair(thisNode: Option[LinkedNode], previousNode: Option[LinkedNode])
 
 case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[LinkedNode]) {
   lazy val children = childResolver(Some(this))
 
-  def findNextJunction(startNode: Option[LinkedNode]): Option[LinkedNode] = startNode match {
-    case Some(x) => innerFindNextJunction(x.parent)
-    case None => None
+  def findNextJunction(): AscendingNodePair = {
+    innerFindNextJunction(AscendingNodePair(parent, Some(this)))
   }
 
-  private def innerFindNextJunction(startNode: Option[LinkedNode]): Option[LinkedNode] = startNode match {
-    case Some(x) if x.nodeModule.isJunction => Some(x)
-    case Some(x) => innerFindNextJunction(x.parent)
-    case None => None
+  private def innerFindNextJunction(ascendingNodePair: AscendingNodePair): AscendingNodePair = ascendingNodePair.thisNode match {
+    case Some(x) if x.nodeModule.isJunction => ascendingNodePair
+    case Some(x) => innerFindNextJunction(AscendingNodePair(x.parent, ascendingNodePair.thisNode))
+    case None => AscendingNodePair(None, None)
   }
 
 
@@ -26,6 +26,14 @@ case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[
   def locateTargetNode(): Option[LinkedNode] = {
     if (nodeModule.ssInfo.targetCell) Some(this)
     else children.flatMap(ln => ln.locateTargetNode()).headOption
+  }
+
+  def locateOutletNode(): Option[LinkedNode] = {
+    nodeModule.ssInfo.nodeType match {
+      case "outlet" => Some(this)
+      case _ if parent.nonEmpty => parent.get.locateOutletNode()
+      case _ => None
+    }
   }
 
   def findRoots(exclude: Seq[LinkedNode]): Seq[LinkedNode] = {

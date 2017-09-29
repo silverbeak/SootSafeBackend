@@ -24,10 +24,14 @@ class PressureLossTest extends WordSpecLike with Matchers {
       val model = read[Model](defaultJson)
       val linkedModel = new ModelBuilder(model).buildModel()
 
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(linkedModel)
+      val fireNode = linkedModel.locateTargetNode().get
+      val outletNode = linkedModel.locateOutletNode()
+      val firstJunction = fireNode.findNextJunction().thisNode.get
+
+      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
       val pressureLoss = pressureLossTable.foldLeft(0d)((agg, pl) => pl.pressureLoss + agg)
-      pressureLossTable.length should be(14)
       pressureLoss should be(54.365969931577)
+      pressureLossTable.length should be(13)
     }
 
   }
