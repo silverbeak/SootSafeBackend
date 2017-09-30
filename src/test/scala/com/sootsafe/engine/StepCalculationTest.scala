@@ -84,5 +84,19 @@ class StepCalculationTest extends WordSpecLike with Matchers {
 
       fireFlow should be (114.61397661875115)
     }
+
+    "calculate pressure on fire" in {
+      val valueResolver: ValueResolver = new ValueResolver {}
+
+      val outletNode = linkedModel.locateOutletNode()
+      val fireNode = linkedModel.locateTargetNode()
+      val firstJunction = fireNode.get.findNextJunction().thisNode.get
+
+      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
+
+      val result = StepCalculation.calculateDeltaPressureOnFire(fireNode, pressureLossTable, 1000, 22)
+
+      result should be(27.275027803290786)
+    }
   }
 }
