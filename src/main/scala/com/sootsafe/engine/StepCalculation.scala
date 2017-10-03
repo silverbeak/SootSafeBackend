@@ -64,34 +64,36 @@ object StepCalculation {
   /**
     * Boverket 1994:13 Appendix B, steg 6
     *
-    * @param startNode       The node to start this calculation from
-    * @param firePressure    The pressure (in Pascal) during fire (boverket schablon: 1000 Pa)
-    * @param regularPressure The pressure (in Pascal) during regular circumstances
+    * @param startNode              The node to start this calculation from
+    * @param firePressure           The pressure (in Pascal) during fire (boverket schablon: 1000 Pa)
+    * @param regularPressure        The pressure (in Pascal) during regular circumstances
+    * @param aggregatedIncomingFlow The incoming flow (in l/s) to this node
     * @return The flow (in l/s) through this point
     */
-  def calculateFlowAtPressureDifference(startNode: Option[LinkedNode], firePressure: Double, regularPressure: Double): Double = {
-    val originalFlow = calculateFlowFromNodeToNextJunction(startNode)
-    originalFlow * Math.sqrt(firePressure / regularPressure)
+  def calculateFlowAtPressureDifference(startNode: Option[LinkedNode],
+                                        firePressure: Double,
+                                        regularPressure: Double,
+                                        aggregatedIncomingFlow: Double = 0): Double = {
+    val flowToNextJunction = calculateFlowFromNodeToNextJunction(startNode)
+    val flowDifference_q = aggregatedIncomingFlow - flowToNextJunction
+    Math.abs(flowDifference_q) * Math.sqrt(firePressure / regularPressure)
   }
 
   /**
     * Boverket 1994:13 Appendix B steg 7
     *
     * @param startNode         The node to start this calculation from
-    * @param pressureLossTable The pressure "table" for the entire model
-    * @param firePressure      The pressure in this point during fire
-    * @param regularPressure   The regular pressure in this point
-    * @return The pressure delta (in Pascal) in this point between regular circumstances and during a fire
+    * @param pressureLossTable The pressure loss data for this model
+    * @param fireFlow          The incoming flow (in l/s) from the previous node (leading to the fire cell)
+    * @param regularFlow       The regular flow (in l/s) from the previous node (leading to the fire cell)
+    * @return The delta pressure (in Pascal) from this node, during a fire
     */
-  def calculateDeltaPressureOnFire(startNode: Option[LinkedNode], pressureLossTable: Seq[PressureLossEntry], firePressure: Double, regularPressure: Double): Double = startNode match {
-    case Some(x) =>
-      val firstJunction = x.findNextJunction().thisNode
-      val pressureDifference = calculateResistanceFromNodeToNextJunction(firstJunction, pressureLossTable)
-      val incomingFlow = calculateFlowAtPressureDifference(startNode, firePressure, regularPressure)
-      val outgoingFlow = calculateFlowFromNodeToNextJunction(firstJunction)
-
-      pressureDifference * Math.pow(incomingFlow / outgoingFlow, 2)
-
-    case None => ???
+  def calculateAggregatedPressure(startNode: Option[LinkedNode],
+                                  pressureLossTable: Seq[PressureLossEntry],
+                                  fireFlow: Double,
+                                  regularFlow: Double): Double = {
+    val pressureDifference = calculateResistanceFromNodeToNextJunction(startNode, pressureLossTable)
+    val aggregatedRegularFlow_q = regularFlow
+    pressureDifference * Math.pow(fireFlow / aggregatedRegularFlow_q, 2)
   }
 }

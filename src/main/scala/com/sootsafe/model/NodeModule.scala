@@ -84,6 +84,7 @@ case class TPipe(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[Stri
 }
 
 case class Box(key: Int, ssInfo: SootSafeInfo, loc: String, angle: Option[String], ports: List[Port]) extends NodeModule {
+  override val isJunction: Boolean = true
   override def pressureLoss(valueResolver: ValueResolver, originNode: Option[NodeModule]) = PressureLossEntry(key, 15d)
 }
 
