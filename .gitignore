@@ -1,1 +1,9 @@
 .idea/
+gradle/
+gradlew*
+.gradle/
+build/
+.DS_Store
+out/
+target/
+src/*/resources/keys/
