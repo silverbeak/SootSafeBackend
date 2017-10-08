@@ -1,9 +1,14 @@
 package com.sootsafe.engine
 
+import com.sootsafe.calcutils.VelocityCalculator
 import com.sootsafe.model._
 import com.sootsafe.valuetable.ValueResolver
 
-class PressureLoss(valueResolver: ValueResolver) {
+trait PressureLossConstants {
+  val rho: Double = 1.2
+}
+
+class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
 
   def calculatePressureLoss(startNode: LinkedNode, finalNode: LinkedNode): Seq[PressureLossEntry] = {
     iterativePressureLoss(startNode.parent, startNode, finalNode, Nil)
@@ -33,8 +38,47 @@ class PressureLoss(valueResolver: ValueResolver) {
     }
   }
 
-  private def singleComponentPressureLoss(node: PressureLossTrait, originNode: NodeModule): PressureLossEntry = {
-    node.pressureLoss(valueResolver, Option(originNode))
-  }
+  private def singleComponentPressureLoss(node: NodeModule, originNode: NodeModule): PressureLossEntry = {
 
+    node match {
+      case pipe: Pipe =>
+        val pressureLoss = node.ssInfo.dimension.length.getOrElse(0d) / 1000 * valueResolver.ductPressureLoss(node)
+        PressureLossEntry(node.key, pressureLoss)
+
+      case ai: AreaIncrement =>
+        val v1 = VelocityCalculator.velocity(originNode.ssInfo)
+        val v2 = VelocityCalculator.velocity(node.ssInfo)
+        val velocityFactor = v2/v1
+
+        val zeta = valueResolver.componentPressureLoss(velocityFactor)
+
+        val pressureLoss = rho * Math.pow(v2 * 1000, 2) / 2 * zeta
+
+        PressureLossEntry(node.key, pressureLoss)
+
+      case tpipe: TPipe =>
+        val v2 = VelocityCalculator.velocity(originNode.ssInfo)
+        val v1 = VelocityCalculator.velocity(node.ssInfo)
+        val velocityFactor = v2/v1
+
+        val zeta = valueResolver.componentPressureLoss(velocityFactor)
+
+        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
+
+        PressureLossEntry(node.key, pressureLoss)
+
+      case bend: Bend =>
+        val v1 = VelocityCalculator.velocity(node.ssInfo)
+
+        val zeta = valueResolver.componentPressureLoss(v1 * 1000)
+
+        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
+
+        PressureLossEntry(node.key, pressureLoss)
+
+      case box: Box => PressureLossEntry(node.key, 15d)
+
+      case _ => PressureLossEntry(node.key, 0d)
+    }
+  }
 }
