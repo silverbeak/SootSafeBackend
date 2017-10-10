@@ -7,25 +7,46 @@
  */
 import com.github.maiflai.ScalaTestAction
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // ASSUMES GRADLE 2.12 OR HIGHER. Use plugin version 0.7.5 with earlier
+        // gradle versions
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.1'
+    }
+}
+
 plugins {
-  id "com.github.maiflai.scalatest" version "0.16"
+    id "com.github.maiflai.scalatest" version "0.16"
 }
 
 // Apply the scala plugin to add support for Scala
 apply plugin: 'scala'
+apply plugin: 'com.google.protobuf'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
 }
+
+def grpcVersion = '1.6.1' // CURRENT_GRPC_VERSION
 
 dependencies {
     // Use Scala 2.11 in our library project
     compile 'org.scala-lang:scala-library:2.11.8'
 
-    compile 'com.google.cloud:google-cloud-firestore:0.25.0-beta'
+    compile "com.google.api.grpc:proto-google-common-protos:0.1.9"
+    compile "io.grpc:grpc-netty:${grpcVersion}"
+    compile "io.grpc:grpc-protobuf:${grpcVersion}"
+    compile "io.grpc:grpc-stub:${grpcVersion}"
+
+    testCompile "io.grpc:grpc-testing:${grpcVersion}"
+    testCompile "org.mockito:mockito-core:1.9.5"
 
     compile 'org.json4s:json4s-native_2.11:3.5.3'
 
@@ -56,5 +77,34 @@ task scalaTest(type: Test) {
         html {
             destination = file("$project.buildDir/reports/scalatest")
         }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.3.0'
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+// Inform IntelliJ projects about the generated code.
+apply plugin: 'idea'
+
+idea {
+    module {
+        // Not using generatedSourceDirs because of
+        // https://discuss.gradle.org/t/support-for-intellij-2016/15294/8
+        sourceDirs += file("${projectDir}/build/generated/source/proto/main/java")
+        sourceDirs += file("${projectDir}/build/generated/source/proto/main/grpc")
+        // generatedSourcesDir += file("${scalabuff.outputDir}/generated-sources") // read-only
     }
 }

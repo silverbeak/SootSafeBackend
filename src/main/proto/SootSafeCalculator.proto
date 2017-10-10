@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option java_package = "com.sootsafe.server.calculator";
+
+package calculator;
+
+message Dimension {
+    double length = 1;
+    double height = 2;
+    double width = 3;
+    double diameter = 4;
+}
+
+message SootSafeInfo {
+    string nodeType = 1;
+    double capacity = 2;
+    string name = 3;
+    string comment = 4;
+    double pressureLoss = 5;
+    Dimension dimension = 6;
+    bool targetCell = 7;
+}
+
+message Link {
+    int32 from = 1;
+    int32 to = 2;
+    string fid = 3;
+    string tid = 4;
+}
+
+message Node {
+    int32 key = 1;
+    SootSafeInfo ssInfo = 2;
+}
+
+message SootSafeModel {
+    repeated Node nodes = 1;
+    repeated Link links = 3;
+}
+
+message FirePressure {
+    double pressure = 1;
+}
+
+service SootSafeCalculator {
+    // Get FirePressure for the given model
+    rpc GetFirePressure(SootSafeModel) returns (FirePressure) {}
+}
