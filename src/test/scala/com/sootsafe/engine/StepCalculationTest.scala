@@ -1,26 +1,11 @@
 package com.sootsafe.engine
 
-import java.io.InputStream
-
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
-import com.sootsafe.model.{LinkedNode, Model, ModelBuilder}
-import com.sootsafe.serializers.NodeSerializer
+import com.sootsafe.model.LinkedNode
 import com.sootsafe.valuetable.ValueResolver
-import org.json4s.native.Serialization.read
-import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.{Matchers, WordSpecLike}
 
-class StepCalculationTest extends WordSpecLike with Matchers {
-
-  implicit val formats: Formats = DefaultFormats + NodeSerializer
-  private val linkedModel = createLinkedModel("/defaultTestData.json")
-
-  private def createLinkedModel(fileName: String): LinkedNode = {
-    val stream: InputStream = getClass.getResourceAsStream(fileName)
-    val defaultJson = scala.io.Source.fromInputStream(stream).mkString
-    val model = read[Model](defaultJson)
-    new ModelBuilder(model).buildModel()
-  }
+class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
   "Step Calculation" must {
 

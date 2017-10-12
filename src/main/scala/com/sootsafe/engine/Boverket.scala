@@ -5,11 +5,18 @@ import com.sootsafe.model.LinkedNode
 import com.sootsafe.valuetable.ValueResolver
 
 trait PressureLossEngine {
-  def calculatePressureLoss(linkedModel: LinkedNode): Double
+  def calculatePressureLoss(
+                             linkedModel: LinkedNode,
+                             initialRegularPressure: Double,
+                             initialFirePressure: Double): Double
 }
 
 object Boverket extends PressureLossEngine {
-  def calculatePressureLoss(linkedModel: LinkedNode): Double = {
+  def calculatePressureLoss(
+                             linkedModel: LinkedNode,
+                             initialRegularPressure: Double = 22,
+                             initialFirePressure: Double = 1000): Double = {
+
     val valueResolver = new ValueResolver {}
     val outletNode = linkedModel.locateOutletNode()
 
@@ -18,10 +25,10 @@ object Boverket extends PressureLossEngine {
 
     val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction.get, outletNode.get)
 
-    var firePressure_delta_p: Double = 1000
+    var firePressure_delta_p: Double = initialFirePressure
     var aggregatedFireFlow_Q: Double = 0
     var junction: Option[LinkedNode] = fireNode
-    var aggregatedRegularPressure_p: Double = 22
+    var aggregatedRegularPressure_p: Double = initialRegularPressure
 
     // First calculation, where there is no difference between fire cell and next junction
     aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p)

@@ -26,8 +26,8 @@ object GRPCSerializer {
         info.getNodeType,
         Option(info.getCapacity),
         Option(info.getName),
-          Option(info.getComment),
-        Option(0d),
+        Option(info.getComment),
+        Option(info.getPressureLoss),
         dimension(info.getDimension),
         info.getTargetCell
       )
