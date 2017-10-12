@@ -19,7 +19,7 @@ class CalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculatorImplBase {
     val links = request.getLinksList.map(GRPCSerializer.deserialize)
     val model = Model(nodes.toList, links.toList)
     val linkedNode = new ModelBuilder(model).buildModel()
-    val result = Boverket.calculatePressureLoss(linkedNode)
+    val result = Boverket.calculatePressureLoss(linkedNode, 22)
     val reply: FirePressure = FirePressure.newBuilder().setPressure(result).build()
     responseObserver.onNext(reply)
     responseObserver.onCompleted()

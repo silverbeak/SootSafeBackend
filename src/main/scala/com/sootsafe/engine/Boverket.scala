@@ -14,7 +14,7 @@ trait PressureLossEngine {
 object Boverket extends PressureLossEngine {
   def calculatePressureLoss(
                              linkedModel: LinkedNode,
-                             initialRegularPressure: Double = 22,
+                             initialRegularPressure: Double,
                              initialFirePressure: Double = 1000): Double = {
 
     val valueResolver = new ValueResolver {}

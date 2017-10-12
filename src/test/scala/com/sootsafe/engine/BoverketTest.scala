@@ -6,7 +6,7 @@ class BoverketTest extends WordSpecLike with Matchers with TestFixture {
 
   "Boverket engine" should {
     "calculate proper values from example" in {
-      val result = Boverket.calculatePressureLoss(linkedModel)
+      val result = Boverket.calculatePressureLoss(linkedModel, 22)
       result should be (241.18325024548193)
     }
 
