@@ -15,4 +15,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'SootSafeBackend'
+rootProject.name = 'sootsafe-backend'

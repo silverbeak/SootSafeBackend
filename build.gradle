@@ -15,6 +15,7 @@ buildscript {
         // ASSUMES GRADLE 2.12 OR HIGHER. Use plugin version 0.7.5 with earlier
         // gradle versions
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.1'
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
 }
 
@@ -25,6 +26,10 @@ plugins {
 // Apply the scala plugin to add support for Scala
 apply plugin: 'scala'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'application'
+apply plugin: 'docker'
+
+mainClassName = 'com.sootsafe.server.Runner'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -44,6 +49,8 @@ dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "io.grpc:grpc-protobuf:${grpcVersion}"
     compile "io.grpc:grpc-stub:${grpcVersion}"
+
+    compile 'se.transmode.gradle:gradle-docker:1.2'
 
     testCompile "io.grpc:grpc-testing:${grpcVersion}"
     testCompile "org.mockito:mockito-core:1.9.5"
