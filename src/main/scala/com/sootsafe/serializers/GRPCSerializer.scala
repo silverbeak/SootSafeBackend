@@ -1,45 +1,64 @@
 package com.sootsafe.serializers
 
-import com.sootsafe.model._
-import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.Node
-import com.sootsafe.model.{SootSafeInfo => SSInfo}
+import com.sootsafe.model.{SootSafeInfo => SSInfo, _}
+import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.{Field, Node}
 
-import scala.util.{Failure, Success, Try}
+import scala.reflect.ClassTag
 
 object GRPCSerializer {
 
+  private def findFieldValue[T: ClassTag](fields: Seq[Field], name: String)(implicit ct: ClassTag[T]): Option[T] = {
+    import scala.collection.JavaConversions._
+
+    def findField(fields: Seq[Field]): Option[Field] = fields.find(_.getName == name) match {
+      case Some(field) => Some(field)
+      case None if fields.exists(_.getChildrenCount > 0) =>
+        val fs = for {
+          f <- fields.filter(_.getChildrenCount > 0)
+          found <- findField(f.getChildrenList)
+        } yield found
+        fs.headOption
+      case None => None
+    }
+
+    val found = findField(fields)
+
+    (ct.runtimeClass, found) match {
+      case (x, Some(field)) if x == classOf[Double] => Option(field.getNumberValue.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[String] => Option(field.getStringValue.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[Boolean] => Option(field.getBoolValue.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[Dimension] =>
+        val length = findFieldValue[Double](field.getChildrenList, "length")
+        val diameter = findFieldValue[Double](field.getChildrenList, "diameter")
+        Option(Dimension(length, diameter).asInstanceOf[T])
+      case _ => None
+    }
+  }
+
   def deserialize(node: Node): NodeModule = {
-    val nodeType: String = Try(node.getSsInfo.getNodeType) match {
-      case Success(t) => t
-      case Failure(e) => throw new Exception(s"Model $node has invalid SootSafeInfo or NodeType value", e)
-    }
+    val nodeType = node.getType.getName
 
-    val dimension: com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.Dimension => Dimension = { dim =>
-      Dimension(
-        Option(dim.getLength),
-        Option(dim.getDiameter)
-      )
-    }
-
-    val ssInfo: com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.SootSafeInfo => SSInfo = { info =>
+    val ssInfo: java.util.List[com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.Field] => SSInfo = { fields =>
+      import scala.collection.JavaConversions._
       SSInfo(
-        info.getNodeType,
-        Option(info.getCapacity),
-        Option(info.getName),
-        Option(info.getComment),
-        Option(info.getPressureLoss),
-        dimension(info.getDimension),
-        info.getTargetCell
+        nodeType,
+        findFieldValue[Double](fields, "capacity"),
+        findFieldValue[String](fields, "name"),
+        findFieldValue[String](fields, "comment"),
+        findFieldValue[Double](fields, "pressureLoss"),
+        findFieldValue[Dimension](fields, "dimension").getOrElse(Dimension(None, None)),
+        findFieldValue[Boolean](fields, "targetCell").getOrElse(false)
       )
     }
-    val convertedInfo = ssInfo(node.getSsInfo)
+
+    val convertedInfo = ssInfo(node.getFieldsList)
 
     nodeType match {
       case "bend" => Bend(node.getKey, convertedInfo)
       case "outlet" => Outlet(node.getKey, convertedInfo)
       case "fireCell" => FireCell(node.getKey, convertedInfo)
       case "pipe" => Pipe(node.getKey, convertedInfo)
-      case "t-pipe" => TPipe(node.getKey, convertedInfo)
+      case "tpipe" => TPipe(node.getKey, convertedInfo)
       case "areaIncrement" => AreaIncrement(node.getKey, convertedInfo)
       case "box" => Box(node.getKey, convertedInfo)
       case _ => NodeModuleBase(node.getKey, convertedInfo)

@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/wrappers.proto";
+
 option java_package = "com.sootsafe.server.calculator";
 
 package calculator;
@@ -28,9 +30,32 @@ message Link {
     string tid = 4;
 }
 
+message Field {
+    repeated Field children = 1;
+    string type = 2;
+    string name = 3;
+    string stringValue = 4;
+    double numberValue = 5;
+    bool boolValue = 6;
+    bool value = 7;
+    double angle = 8;
+    double min = 9;
+    double max = 10;
+    string path = 11;
+    string unit = 12;
+}
+
+message Type {
+    string name = 1;
+    string label = 2;
+}
+
 message Node {
     int32 key = 1;
     SootSafeInfo ssInfo = 2;
+    Type type = 3;
+    repeated Field fields = 4;
+    int32 angle = 5;
 }
 
 message SootSafeModel {
