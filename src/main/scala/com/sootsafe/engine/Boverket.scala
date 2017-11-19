@@ -31,21 +31,21 @@ object Boverket extends PressureLossEngine {
     var aggregatedRegularPressure_p: Double = initialRegularPressure
 
     // First calculation, where there is no difference between fire cell and next junction
-    aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p)
+    aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p).calculate()
 
     //aggregatedRegularFlow_q += regularFlow_q
     val regularFlowFromNextJunction_p = StepCalculation.calculateFlowFromNodeToNextJunction(junction)
-    firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p)
+    firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p).calculate()
 
     junction = junction.get.findNextJunction().thisNode
 
     var regularFlow_q: Double = regularFlowFromNextJunction_p
     // Traverse to the box (the node just before the fan/outlet)
     while (junction.nonEmpty && junction != outletNode) {
-      aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p, regularFlow_q)
+      aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p, regularFlow_q).calculate()
 
       val regularFlowFromNextJunction_p = StepCalculation.calculateFlowFromNodeToNextJunction(junction)
-      firePressure_delta_p += StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p)
+      firePressure_delta_p += StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p).calculate()
 
       regularFlow_q = StepCalculation.calculateFlowFromNodeToNextJunction(junction)
 

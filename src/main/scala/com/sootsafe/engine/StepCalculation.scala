@@ -1,5 +1,6 @@
 package com.sootsafe.engine
 
+import com.sootsafe._
 import com.sootsafe.model.{LinkedNode, PressureLossEntry}
 
 object StepCalculation {
@@ -73,10 +74,13 @@ object StepCalculation {
   def calculateFlowAtPressureDifference(startNode: Option[LinkedNode],
                                         firePressure: Double,
                                         regularPressure: Double,
-                                        aggregatedIncomingFlow: Double = 0): Double = {
+                                        aggregatedIncomingFlow: Double = 0): Expression = {
     val flowToNextJunction = calculateFlowFromNodeToNextJunction(startNode)
-    val flowDifference_q = aggregatedIncomingFlow - flowToNextJunction
-    Math.abs(flowDifference_q) * Math.sqrt(firePressure / regularPressure)
+//    val flowDifference_q = aggregatedIncomingFlow - flowToNextJunction
+//    Math.abs(flowDifference_q) * Math.sqrt(firePressure / regularPressure)
+
+    val flowDifference_q = Subtraction(Value(aggregatedIncomingFlow), Value(flowToNextJunction))
+    Multiplication(Absolute(flowDifference_q), Sqrt(Division(Value(firePressure), Value(regularPressure))))
   }
 
   /**
@@ -91,9 +95,10 @@ object StepCalculation {
   def calculateAggregatedPressure(startNode: Option[LinkedNode],
                                   pressureLossTable: Seq[PressureLossEntry],
                                   fireFlow: Double,
-                                  regularFlow: Double): Double = {
+                                  regularFlow: Double): Expression = {
     val pressureDifference = calculateResistanceFromNodeToNextJunction(startNode, pressureLossTable)
     val aggregatedRegularFlow_q = regularFlow
-    pressureDifference * Math.pow(fireFlow / aggregatedRegularFlow_q, 2)
+    //    pressureDifference * Math.pow(fireFlow / aggregatedRegularFlow_q, 2)
+    Multiplication(Value(pressureDifference), Power(Division(Value(fireFlow), Value(aggregatedRegularFlow_q)), Value(2)))
   }
 }
