@@ -44,4 +44,19 @@ case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[
       }
     }
   }
+
+  def iterateJunctions(): Iterator[LinkedNode] = {
+    var currentNode: Option[LinkedNode] = locateTargetNode()
+    def takeWhileFunc(): Option[LinkedNode] = {
+      if (currentNode.isEmpty) {
+        None
+      } else {
+        val res = currentNode.get.findNextJunction().thisNode
+        currentNode = res
+        res
+      }
+    }
+
+    Iterator.continually(takeWhileFunc()).takeWhile(_.nonEmpty).flatten
+  }
 }

@@ -71,11 +71,11 @@ object StepCalculation {
     * @param aggregatedIncomingFlow The incoming flow (in l/s) to this node
     * @return The flow (in l/s) through this point
     */
-  def calculateFlowAtPressureDifference(startNode: Option[LinkedNode],
+  def calculateFlowAtPressureDifference(startNode: LinkedNode,
                                         firePressure: Double,
                                         regularPressure: Double,
                                         aggregatedIncomingFlow: Double = 0): Expression = {
-    val flowToNextJunction = calculateFlowFromNodeToNextJunction(startNode)
+    val flowToNextJunction = calculateFlowFromNodeToNextJunction(Some(startNode))
 //    val flowDifference_q = aggregatedIncomingFlow - flowToNextJunction
 //    Math.abs(flowDifference_q) * Math.sqrt(firePressure / regularPressure)
 
@@ -92,11 +92,11 @@ object StepCalculation {
     * @param regularFlow       The regular flow (in l/s) from the previous node (leading to the fire cell)
     * @return The delta pressure (in Pascal) from this node, during a fire
     */
-  def calculateAggregatedPressure(startNode: Option[LinkedNode],
+  def calculateAggregatedPressure(startNode: LinkedNode,
                                   pressureLossTable: Seq[PressureLossEntry],
                                   fireFlow: Double,
                                   regularFlow: Double): Expression = {
-    val pressureDifference = calculateResistanceFromNodeToNextJunction(startNode, pressureLossTable)
+    val pressureDifference = calculateResistanceFromNodeToNextJunction(Some(startNode), pressureLossTable)
     val aggregatedRegularFlow_q = regularFlow
     //    pressureDifference * Math.pow(fireFlow / aggregatedRegularFlow_q, 2)
     Multiplication(Value(pressureDifference), Power(Division(Value(fireFlow), Value(aggregatedRegularFlow_q)), Value(2)))

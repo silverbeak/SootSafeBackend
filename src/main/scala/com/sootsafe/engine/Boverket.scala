@@ -1,7 +1,7 @@
 package com.sootsafe.engine
 
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
-import com.sootsafe.model.LinkedNode
+import com.sootsafe.model.{LinkedNode, PressureLossEntry}
 import com.sootsafe.valuetable.ValueResolver
 
 trait PressureLossEngine {
@@ -12,46 +12,46 @@ trait PressureLossEngine {
 }
 
 object Boverket extends PressureLossEngine {
+
+  private def getPressureLossTable(linkedModel: LinkedNode): Seq[PressureLossEntry] = {
+    val valueResolver = new ValueResolver {}
+    val outletNode = linkedModel.locateOutletNode()
+
+    val firstJunction = linkedModel.iterateJunctions().next()
+    new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
+  }
+
   def calculatePressureLoss(
                              linkedModel: LinkedNode,
                              initialRegularPressure: Double,
                              initialFirePressure: Double = 1000): Double = {
 
-    val valueResolver = new ValueResolver {}
-    val outletNode = linkedModel.locateOutletNode()
-
     val fireNode = linkedModel.locateTargetNode()
-    val firstJunction = fireNode.get.findNextJunction().thisNode
 
-    val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction.get, outletNode.get)
+    val pressureLossTable = getPressureLossTable(linkedModel)
 
     var firePressure_delta_p: Double = initialFirePressure
     var aggregatedFireFlow_Q: Double = 0
-    var junction: Option[LinkedNode] = fireNode
+    val junction: Option[LinkedNode] = fireNode
     var aggregatedRegularPressure_p: Double = initialRegularPressure
 
     // First calculation, where there is no difference between fire cell and next junction
-    aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p).calculate()
+    aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction.get, firePressure_delta_p, aggregatedRegularPressure_p).calculate()
 
     //aggregatedRegularFlow_q += regularFlow_q
-    val regularFlowFromNextJunction_p = StepCalculation.calculateFlowFromNodeToNextJunction(junction)
-    firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p).calculate()
+    var regularFlowFromNextJunction_q: Double = StepCalculation.calculateFlowFromNodeToNextJunction(junction)
+    firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction.get, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_q).calculate()
 
-    junction = junction.get.findNextJunction().thisNode
-
-    var regularFlow_q: Double = regularFlowFromNextJunction_p
     // Traverse to the box (the node just before the fan/outlet)
-    while (junction.nonEmpty && junction != outletNode) {
-      aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p, regularFlow_q).calculate()
+    for {
+      junction <- linkedModel.iterateJunctions()
+    } {
+      aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p, regularFlowFromNextJunction_q).calculate()
 
-      val regularFlowFromNextJunction_p = StepCalculation.calculateFlowFromNodeToNextJunction(junction)
-      firePressure_delta_p += StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p).calculate()
+      regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
+      firePressure_delta_p += StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_q).calculate()
 
-      regularFlow_q = StepCalculation.calculateFlowFromNodeToNextJunction(junction)
-
-      aggregatedRegularPressure_p += calculateResistanceFromNodeToNextJunction(junction, pressureLossTable)
-
-      junction = junction.get.findNextJunction().thisNode
+      aggregatedRegularPressure_p += calculateResistanceFromNodeToNextJunction(Some(junction), pressureLossTable)
     }
     firePressure_delta_p
   }
