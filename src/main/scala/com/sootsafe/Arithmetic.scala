@@ -34,7 +34,28 @@ object Arithmetic {
 
 trait Expression {
   def texify(): String
+
   def calculate(): Double
+
+  def +(that: Expression): Expression = Addition(this, that)
+
+  def -(that: Expression): Expression = Subtraction(this, that)
+
+  def *(that: Expression): Expression = Multiplication(this, that)
+
+  def /(that: Expression): Expression = Division(this, that)
+
+  def ^(that: Expression): Expression = Power(this, that)
+}
+
+object Expression {
+  val empty: Expression = Value(0)
+}
+
+case class Empty() extends Expression {
+  override def texify(): String = ""
+
+  override def calculate(): Double = 0
 }
 
 case class Value(value: Double) extends Expression {
@@ -74,7 +95,7 @@ case class Division(dividend: Expression, divisor: Expression) extends Expressio
 }
 
 case class Power(term: Expression, power: Expression) extends Expression {
-  override def texify(): String = s"\\left(\\pow{${term.texify()}}\\right){${power.texify()}}"
+  override def texify(): String = s"{\\left({${term.texify()}}\\right)}^{${power.texify()}}"
 
   override def calculate(): Double = Math.pow(term.calculate(), power.calculate())
 }
