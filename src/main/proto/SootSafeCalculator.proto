@@ -63,11 +63,23 @@ message SootSafeModel {
     repeated Link links = 3;
 }
 
-message FirePressure {
-    double pressure = 1;
+message FirePressureResultEntry {
+    int32 key = 1;
+    double flow = 2;
+    double pressure = 3;
+}
+
+message ErrorMessage {
+    int32 errorCode = 1;
+    string errorMessage = 2;
+}
+
+message FirePressureCalculationResult {
+    repeated FirePressureResultEntry entries = 1;
+    ErrorMessage errorMessage = 2;
 }
 
 service SootSafeCalculator {
     // Get FirePressure for the given model
-    rpc GetFirePressure(SootSafeModel) returns (FirePressure) {}
+    rpc GetFirePressure(SootSafeModel) returns (FirePressureCalculationResult) {}
 }

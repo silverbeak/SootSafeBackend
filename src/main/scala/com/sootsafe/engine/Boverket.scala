@@ -8,7 +8,7 @@ import com.sootsafe.valuetable.ValueResolver
 trait PressureLossEngine {
   def calculatePressureLoss(linkedModel: LinkedNode,
                             initialRegularPressure: Double,
-                            initialFirePressure: Double): Double
+                            initialFirePressure: Double): Seq[FlowAndPressure]
 }
 
 object Boverket extends PressureLossEngine {
@@ -30,7 +30,7 @@ object Boverket extends PressureLossEngine {
 
   def calculatePressureLoss(linkedModel: LinkedNode,
                             initialRegularPressure: Double,
-                            initialFirePressure: Double = 1000): Double = {
+                            initialFirePressure: Double = 1000): Seq[FlowAndPressure] = {
 
     val fireNode = linkedModel.locateTargetNode().get
     val pressureLossTable = getPressureLossTable(linkedModel)
@@ -53,7 +53,7 @@ object Boverket extends PressureLossEngine {
     val modelAndPressureIterator: Iterator[(LinkedNode, Double)] = linkedModel.iterateJunctions().zip(aggregatedRegularPressures.iterator)
 
     // Traverse to the box (the node just before the fan/outlet)
-    val result = modelAndPressureIterator.foldLeft(flowAndPressureResult) {
+    modelAndPressureIterator.foldLeft(flowAndPressureResult) {
       case (aggregator, (junction, aggregatedRegularPressure_p)) =>
         val aggregatedFirePressure_delta_p = FlowAndPressureSequence.aggregatePressure(aggregator)
 
@@ -65,17 +65,5 @@ object Boverket extends PressureLossEngine {
 
         aggregator :+ FlowAndPressure(junction, thisFireFlow_Q, firePressure_delta_p)
     }
-
-    FlowAndPressureSequence.aggregatePressure(result)
   }
 }
-
-object FlowAndPressureSequence {
-
-  def aggregateFlow(seq: Seq[FlowAndPressure]): Double = seq.map(_.flow.calculate()).sum
-
-  def aggregatePressure(seq: Seq[FlowAndPressure]): Double = seq.map(_.pressure.calculate()).sum
-
-}
-
-case class FlowAndPressure(junction: LinkedNode, flow: Expression, pressure: Expression)
