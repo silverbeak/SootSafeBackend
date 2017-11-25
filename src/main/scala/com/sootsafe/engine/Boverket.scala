@@ -6,10 +6,9 @@ import com.sootsafe.model.{LinkedNode, PressureLossEntry}
 import com.sootsafe.valuetable.ValueResolver
 
 trait PressureLossEngine {
-  def calculatePressureLoss(
-                             linkedModel: LinkedNode,
-                             initialRegularPressure: Double,
-                             initialFirePressure: Double): Double
+  def calculatePressureLoss(linkedModel: LinkedNode,
+                            initialRegularPressure: Double,
+                            initialFirePressure: Double): Double
 }
 
 object Boverket extends PressureLossEngine {
@@ -29,10 +28,9 @@ object Boverket extends PressureLossEngine {
     }
   }
 
-  def calculatePressureLoss(
-                             linkedModel: LinkedNode,
-                             initialRegularPressure: Double,
-                             initialFirePressure: Double = 1000): Double = {
+  def calculatePressureLoss(linkedModel: LinkedNode,
+                            initialRegularPressure: Double,
+                            initialFirePressure: Double = 1000): Double = {
 
     val fireNode = linkedModel.locateTargetNode().get
     val pressureLossTable = getPressureLossTable(linkedModel)
@@ -40,12 +38,11 @@ object Boverket extends PressureLossEngine {
     val aggregatedRegularPressures = aggregatedRegularPressureList(linkedModel, initialRegularPressure, pressureLossTable)
 
     var firePressure_delta_p: Expression = Value(initialFirePressure)
-    var aggregatedFireFlow_Q: Expression = Expression.empty
 
     var regularFlowFromNextJunction_q: Double = 0
 
     ////// First calculation, where there is no difference between fire cell and next junction
-    aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(fireNode, firePressure_delta_p.calculate(), initialRegularPressure, regularFlowFromNextJunction_q)
+    val aggregatedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(fireNode, firePressure_delta_p.calculate(), initialRegularPressure, regularFlowFromNextJunction_q)
 
     regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(fireNode))
     firePressure_delta_p = StepCalculation.calculateAggregatedPressure(fireNode, pressureLossTable, aggregatedFireFlow_Q.calculate(), regularFlowFromNextJunction_q)
@@ -58,16 +55,27 @@ object Boverket extends PressureLossEngine {
     // Traverse to the box (the node just before the fan/outlet)
     val result = modelAndPressureIterator.foldLeft(flowAndPressureResult) {
       case (aggregator, (junction, aggregatedRegularPressure_p)) =>
-        aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p.calculate(), aggregatedRegularPressure_p, regularFlowFromNextJunction_q)
+        val aggregatedFirePressure_delta_p = FlowAndPressureSequence.aggregatePressure(aggregator)
+
+        val thisFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(junction, aggregatedFirePressure_delta_p, aggregatedRegularPressure_p, regularFlowFromNextJunction_q)
 
         regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
-        firePressure_delta_p += StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q.calculate(), regularFlowFromNextJunction_q)
+        val aggregatedFireFlow_Q = FlowAndPressureSequence.aggregateFlow(aggregator) + thisFireFlow_Q.calculate()
+        val firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_q)
 
-        aggregator :+ FlowAndPressure(junction, aggregatedFireFlow_Q, firePressure_delta_p)
+        aggregator :+ FlowAndPressure(junction, thisFireFlow_Q, firePressure_delta_p)
     }
 
-    result.last.pressure.calculate()
+    FlowAndPressureSequence.aggregatePressure(result)
   }
+}
+
+object FlowAndPressureSequence {
+
+  def aggregateFlow(seq: Seq[FlowAndPressure]): Double = seq.map(_.flow.calculate()).sum
+
+  def aggregatePressure(seq: Seq[FlowAndPressure]): Double = seq.map(_.pressure.calculate()).sum
+
 }
 
 case class FlowAndPressure(junction: LinkedNode, flow: Expression, pressure: Expression)

@@ -37,6 +37,8 @@ trait Expression {
 
   def calculate(): Double
 
+  def toValue: Expression = Value(this.calculate())
+
   def +(that: Expression): Expression = Addition(this, that)
 
   def -(that: Expression): Expression = Subtraction(this, that)
