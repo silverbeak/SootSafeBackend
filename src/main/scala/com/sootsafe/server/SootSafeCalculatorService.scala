@@ -5,7 +5,7 @@ import java.util.Date
 import com.sootsafe.engine.{Boverket, FlowAndPressureSequence}
 import com.sootsafe.model.{Model, ModelBuilder}
 import com.sootsafe.serializers.GRPCSerializer
-import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.FirePressureCalculationResult
+import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.{ErrorMessage, FirePressureCalculationResult}
 import com.sootsafe.server.calculator.{SootSafeCalculatorGrpc, SootSafeCalculatorOuterClass}
 import io.grpc.stub.StreamObserver
 import io.grpc.{Server, ServerBuilder}
@@ -18,9 +18,22 @@ class CalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculatorImplBase {
     val nodes = request.getNodesList.map (GRPCSerializer.deserialize)
     val links = request.getLinksList.map(GRPCSerializer.deserialize)
     val model = Model(nodes.toList, links.toList)
-    val linkedNode = new ModelBuilder(model).buildModel()
-    val result = Boverket.calculatePressureLoss(linkedNode, 22)
-    val reply: FirePressureCalculationResult = FirePressureCalculationResult.newBuilder().addAllEntries(FlowAndPressureSequence.toEntries(result.seq)).build()
+
+    val reply = new ModelBuilder(model).buildModel() match {
+      case Right(errorMessage) =>
+        val errorResponse = ErrorMessage.newBuilder().setErrorCode(404).setErrorMessage(errorMessage)
+        FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
+
+      case Left(linkedNode) =>
+        Boverket.calculatePressureLoss(linkedNode, 22) match {
+          case Right(errorMessage) =>
+            val errorResponse = ErrorMessage.newBuilder().setErrorCode(404).setErrorMessage(errorMessage)
+            FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
+          case Left(result) =>
+            FirePressureCalculationResult.newBuilder().addAllEntries(FlowAndPressureSequence.toEntries(result.seq)).build()
+        }
+    }
+
     responseObserver.onNext(reply)
     responseObserver.onCompleted()
     println(s"Time passed: ${new Date().getTime - now}")

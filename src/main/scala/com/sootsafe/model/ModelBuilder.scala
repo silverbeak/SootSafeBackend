@@ -2,13 +2,16 @@ package com.sootsafe.model
 
 class ModelBuilder(model: Model) {
 
+  type ErrorMessage = String
+
   private def findOutlet(): Option[NodeModule] = model.nodeDataArray.find(_.ssInfo.nodeType == "outlet")
 
-  def buildModel(): LinkedNode = {
+  def buildModel(): Either[LinkedNode, ErrorMessage] = {
     findOutlet() match {
-      case None => ???
+      case None =>
+        Right("Model does not contain outlet")
       case Some(outlet) =>
-        linkNested(outlet, Nil)(Some(LinkedNode((_) => Nil, outlet, None)))
+        Left(linkNested(outlet, Nil)(Some(LinkedNode((_) => Nil, outlet, None))))
     }
   }
 

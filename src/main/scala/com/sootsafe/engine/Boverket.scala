@@ -8,7 +8,7 @@ import com.sootsafe.valuetable.ValueResolver
 trait PressureLossEngine {
   def calculatePressureLoss(linkedModel: LinkedNode,
                             initialRegularPressure: Double,
-                            initialFirePressure: Double): Seq[FlowAndPressure]
+                            initialFirePressure: Double): Either[Seq[FlowAndPressure], String]
 }
 
 object Boverket extends PressureLossEngine {
@@ -30,40 +30,45 @@ object Boverket extends PressureLossEngine {
 
   def calculatePressureLoss(linkedModel: LinkedNode,
                             initialRegularPressure: Double,
-                            initialFirePressure: Double = 1000): Seq[FlowAndPressure] = {
+                            initialFirePressure: Double = 1000): Either[Seq[FlowAndPressure], String] = {
 
-    val fireNode = linkedModel.locateTargetNode().get
-    val pressureLossTable = getPressureLossTable(linkedModel)
+    linkedModel.locateTargetNode() match {
+      case None =>
+        Right("Model must contain at least one fire cell")
+      case Some(fireNode) =>
+        val pressureLossTable = getPressureLossTable(linkedModel)
 
-    val aggregatedRegularPressures = aggregatedRegularPressureList(linkedModel, initialRegularPressure, pressureLossTable)
+        val aggregatedRegularPressures = aggregatedRegularPressureList(linkedModel, initialRegularPressure, pressureLossTable)
 
-    var firePressure_delta_p: Expression = Value(initialFirePressure)
+        var firePressure_delta_p: Expression = Value(initialFirePressure)
 
-    var regularFlowFromNextJunction_q: Double = 0
+        var regularFlowFromNextJunction_q: Double = 0
 
-    ////// First calculation, where there is no difference between fire cell and next junction
-    val aggregatedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(fireNode, firePressure_delta_p.calculate(), initialRegularPressure, regularFlowFromNextJunction_q)
+        ////// First calculation, where there is no difference between fire cell and next junction
+        val aggregatedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(fireNode, firePressure_delta_p.calculate(), initialRegularPressure, regularFlowFromNextJunction_q)
 
-    regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(fireNode))
-    firePressure_delta_p = StepCalculation.calculateAggregatedPressure(fireNode, pressureLossTable, aggregatedFireFlow_Q.calculate(), regularFlowFromNextJunction_q)
+        regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(fireNode))
+        firePressure_delta_p = StepCalculation.calculateAggregatedPressure(fireNode, pressureLossTable, aggregatedFireFlow_Q.calculate(), regularFlowFromNextJunction_q)
 
-    val flowAndPressureResult = Seq[FlowAndPressure](FlowAndPressure(fireNode, aggregatedFireFlow_Q, firePressure_delta_p))
-    ////// Fire cell calculation done
+        val flowAndPressureResult = Seq[FlowAndPressure](FlowAndPressure(fireNode, aggregatedFireFlow_Q, firePressure_delta_p))
+        ////// Fire cell calculation done
 
-    val modelAndPressureIterator: Iterator[(LinkedNode, Double)] = linkedModel.iterateJunctions().zip(aggregatedRegularPressures.iterator)
+        val modelAndPressureIterator: Iterator[(LinkedNode, Double)] = linkedModel.iterateJunctions().zip(aggregatedRegularPressures.iterator)
 
-    // Traverse to the box (the node just before the fan/outlet)
-    modelAndPressureIterator.foldLeft(flowAndPressureResult) {
-      case (aggregator, (junction, aggregatedRegularPressure_p)) =>
-        val aggregatedFirePressure_delta_p = FlowAndPressureSequence.aggregatePressure(aggregator)
+        // Traverse to the box (the node just before the fan/outlet)
+        val result = modelAndPressureIterator.foldLeft(flowAndPressureResult) {
+          case (aggregator, (junction, aggregatedRegularPressure_p)) =>
+            val aggregatedFirePressure_delta_p = FlowAndPressureSequence.aggregatePressure(aggregator)
 
-        val thisFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(junction, aggregatedFirePressure_delta_p, aggregatedRegularPressure_p, regularFlowFromNextJunction_q)
+            val thisFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(junction, aggregatedFirePressure_delta_p, aggregatedRegularPressure_p, regularFlowFromNextJunction_q)
 
-        regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
-        val aggregatedFireFlow_Q = FlowAndPressureSequence.aggregateFlow(aggregator) + thisFireFlow_Q.calculate()
-        val firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_q)
+            regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
+            val aggregatedFireFlow_Q = FlowAndPressureSequence.aggregateFlow(aggregator) + thisFireFlow_Q.calculate()
+            val firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_q)
 
-        aggregator :+ FlowAndPressure(junction, thisFireFlow_Q, firePressure_delta_p)
+            aggregator :+ FlowAndPressure(junction, thisFireFlow_Q, firePressure_delta_p)
+        }
+        Left(result)
     }
   }
 }
