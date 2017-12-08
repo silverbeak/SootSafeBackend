@@ -72,15 +72,15 @@ object StepCalculation {
     * @return The flow (in l/s) through this point
     */
   def calculateFlowAtPressureDifference(startNode: LinkedNode,
-                                        firePressure: Double,
-                                        regularPressure: Double,
-                                        aggregatedIncomingFlow: Double = 0): Expression = {
+                                        firePressure: Value,
+                                        regularPressure: Value,
+                                        aggregatedIncomingFlow: Value = Value(0)): Expression = {
     val flowToNextJunction = calculateFlowFromNodeToNextJunction(Some(startNode))
-//    val flowDifference_q = aggregatedIncomingFlow - flowToNextJunction
-//    Math.abs(flowDifference_q) * Math.sqrt(firePressure / regularPressure)
+    val flowDifference_q = aggregatedIncomingFlow - Value(flowToNextJunction)
+    Absolute(flowDifference_q) * Sqrt(firePressure / regularPressure)
 
-    val flowDifference_q = Subtraction(Value(aggregatedIncomingFlow), Value(flowToNextJunction))
-    Multiplication(Absolute(flowDifference_q), Sqrt(Division(Value(firePressure), Value(regularPressure))))
+    //val flowDifference_q = Subtraction(Value(aggregatedIncomingFlow), Value(flowToNextJunction))
+    //Multiplication(Absolute(flowDifference_q), Sqrt(Division(Value(firePressure), Value(regularPressure))))
   }
 
   /**
@@ -94,11 +94,10 @@ object StepCalculation {
     */
   def calculateAggregatedPressure(startNode: LinkedNode,
                                   pressureLossTable: Seq[PressureLossEntry],
-                                  fireFlow: Double,
-                                  regularFlow: Double): Expression = {
+                                  fireFlow: Value,
+                                  regularFlow: Value): Expression = {
     val pressureDifference = calculateResistanceFromNodeToNextJunction(Some(startNode), pressureLossTable)
     val aggregatedRegularFlow_q = regularFlow
-    //    pressureDifference * Math.pow(fireFlow / aggregatedRegularFlow_q, 2)
-    Multiplication(Value(pressureDifference), Power(Division(Value(fireFlow), Value(aggregatedRegularFlow_q)), Value(2)))
+    Value(pressureDifference) * ((fireFlow / aggregatedRegularFlow_q) ^ Value(2))
   }
 }

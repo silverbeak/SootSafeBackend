@@ -45,10 +45,10 @@ object Boverket extends PressureLossEngine {
         var regularFlowFromNextJunction_q: Double = 0
 
         ////// First calculation, where there is no difference between fire cell and next junction
-        val aggregatedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(fireNode, firePressure_delta_p.calculate(), initialRegularPressure, regularFlowFromNextJunction_q)
+        val aggregatedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(fireNode, firePressure_delta_p.toValue, Value(initialRegularPressure), Value(regularFlowFromNextJunction_q))
 
         regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(fireNode))
-        firePressure_delta_p = StepCalculation.calculateAggregatedPressure(fireNode, pressureLossTable, aggregatedFireFlow_Q.calculate(), regularFlowFromNextJunction_q)
+        firePressure_delta_p = StepCalculation.calculateAggregatedPressure(fireNode, pressureLossTable, aggregatedFireFlow_Q.toValue, Value(regularFlowFromNextJunction_q))
 
         val flowAndPressureResult = Seq[FlowAndPressure](FlowAndPressure(fireNode, aggregatedFireFlow_Q, firePressure_delta_p))
         ////// Fire cell calculation done
@@ -60,11 +60,11 @@ object Boverket extends PressureLossEngine {
           case (aggregator, (junction, aggregatedRegularPressure_p)) =>
             val aggregatedFirePressure_delta_p = FlowAndPressureSequence.aggregatePressure(aggregator)
 
-            val thisFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(junction, aggregatedFirePressure_delta_p, aggregatedRegularPressure_p, regularFlowFromNextJunction_q)
+            val thisFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(junction, Value(aggregatedFirePressure_delta_p), Value(aggregatedRegularPressure_p), Value(regularFlowFromNextJunction_q))
 
             regularFlowFromNextJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
             val aggregatedFireFlow_Q = FlowAndPressureSequence.aggregateFlow(aggregator) + thisFireFlow_Q.calculate()
-            val firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_q)
+            val firePressure_delta_p = StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, Value(aggregatedFireFlow_Q), Value(regularFlowFromNextJunction_q))
 
             aggregator :+ FlowAndPressure(junction, thisFireFlow_Q, firePressure_delta_p)
         }

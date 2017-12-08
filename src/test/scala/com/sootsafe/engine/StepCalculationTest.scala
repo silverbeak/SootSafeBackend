@@ -1,5 +1,6 @@
 package com.sootsafe.engine
 
+import com.sootsafe.Value
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
 import com.sootsafe.model.LinkedNode
 import com.sootsafe.valuetable.ValueResolver
@@ -66,7 +67,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
     "calculate flow at pressure difference" in {
       val fireNode = linkedModel.locateTargetNode()
-      val fireFlow = StepCalculation.calculateFlowAtPressureDifference(fireNode.get, 1000, 22)
+      val fireFlow = StepCalculation.calculateFlowAtPressureDifference(fireNode.get, Value(1000), Value(22))
 
       fireFlow.calculate() should be(114.61397661875115)
     }
@@ -74,7 +75,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     "indicate no added flow from first junction after fire cell" in {
       val fireNode = linkedModel.locateTargetNode()
       val firstJunction = fireNode.get.findNextJunction().thisNode
-      val fireFlow = StepCalculation.calculateFlowAtPressureDifference(firstJunction.get, 0, 24.4, 17)
+      val fireFlow = StepCalculation.calculateFlowAtPressureDifference(firstJunction.get, Value(0), Value(24.4), Value(17))
 
       fireFlow.calculate() should be(0)
     }
@@ -88,7 +89,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
       val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
 
-      val result = StepCalculation.calculateAggregatedPressure(fireNode.get, pressureLossTable, 114.61397661875115, 34)
+      val result = StepCalculation.calculateAggregatedPressure(fireNode.get, pressureLossTable, Value(114.61397661875115), Value(34))
 
       result.calculate() should be(0d) // No pressure difference in first junction
     }
@@ -102,7 +103,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
       val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction.get, outletNode)
 
-      val result = StepCalculation.calculateAggregatedPressure(firstJunction.get, pressureLossTable, 114.61397661875115, 34)
+      val result = StepCalculation.calculateAggregatedPressure(firstJunction.get, pressureLossTable, Value(114.61397661875115), Value(34))
 
       result.calculate() should be(27.275027803290786)
     }
@@ -124,21 +125,21 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
       var aggregatedRegularPressure_p: Double = 22
 
       // First calculation, where there is no difference between fire cell and next junction
-      aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(fireNode.get, firePressure_delta_p, aggregatedRegularPressure_p).calculate()
+      aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(fireNode.get, Value(firePressure_delta_p), Value(aggregatedRegularPressure_p)).calculate()
 
       //aggregatedRegularFlow_q += regularFlow_q
       val regularFlowFromNextJunction_p = StepCalculation.calculateFlowFromNodeToNextJunction(fireNode)
-      firePressure_delta_p = StepCalculation.calculateAggregatedPressure(fireNode.get, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p).calculate()
+      firePressure_delta_p = StepCalculation.calculateAggregatedPressure(fireNode.get, pressureLossTable, Value(aggregatedFireFlow_Q), Value(regularFlowFromNextJunction_p)).calculate()
 
       var regularFlow_q: Double = regularFlowFromNextJunction_p
       // Traverse to the box (the node just before the fan/outlet)
       for {
         junction <- linkedModel.iterateJunctions()
       } {
-        aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, firePressure_delta_p, aggregatedRegularPressure_p, regularFlow_q).calculate()
+        aggregatedFireFlow_Q += StepCalculation.calculateFlowAtPressureDifference(junction, Value(firePressure_delta_p), Value(aggregatedRegularPressure_p), Value(regularFlow_q)).calculate()
 
         val regularFlowFromNextJunction_p = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
-        firePressure_delta_p += StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, aggregatedFireFlow_Q, regularFlowFromNextJunction_p).calculate()
+        firePressure_delta_p += StepCalculation.calculateAggregatedPressure(junction, pressureLossTable, Value(aggregatedFireFlow_Q), Value(regularFlowFromNextJunction_p)).calculate()
 
         regularFlow_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
 
