@@ -1,12 +1,12 @@
 package com.sootsafe.engine
 
-import com.sootsafe.Expression
+import com.sootsafe.{Expression, Value}
 import com.sootsafe.model.LinkedNode
 import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.FirePressureResultEntry
 
 object FlowAndPressureSequence {
 
-  def aggregateFlow(seq: Seq[FlowAndPressure]): Double = seq.map(_.flow.calculate()).sum
+  def aggregateFlow(seq: Seq[FlowAndPressure]): Value = Value(seq.map(_.flow.calculate()).sum)
 
   def aggregatePressure(seq: Seq[FlowAndPressure]): Double = seq.map(_.pressure.calculate()).sum
 

@@ -51,14 +51,14 @@ object StepCalculation {
     * @param startNode The node to start the calculation from
     * @return The flow (in l/s) between the given node and the next junction
     */
-  def calculateFlowFromNodeToNextJunction(startNode: Option[LinkedNode]): Double = startNode match {
-    case Some(x) => calculateFlowFromNodeToNextJunction(x.parent, x.nodeModule.ssInfo.capacity.getOrElse(0d))
-    case None => 0d
+  def calculateFlowFromNodeToNextJunction(startNode: Option[LinkedNode]): Expression = startNode match {
+    case Some(x) => calculateFlowFromNodeToNextJunction(x.parent, Value(x.nodeModule.ssInfo.capacity.getOrElse(0d)))
+    case None => Value(0)
   }
 
-  private def calculateFlowFromNodeToNextJunction(startNode: Option[LinkedNode], max: Double = 0d): Double = startNode match {
+  private def calculateFlowFromNodeToNextJunction(startNode: Option[LinkedNode], max: Value = Value(0)): Expression = startNode match {
     case Some(x) if x.nodeModule.isJunction => max
-    case Some(x) => calculateFlowFromNodeToNextJunction(x.parent, Math.max(max, x.nodeModule.ssInfo.capacity.getOrElse(0d)))
+    case Some(x) => calculateFlowFromNodeToNextJunction(x.parent, Value(Math.max(max.calculate(), x.nodeModule.ssInfo.capacity.getOrElse(0d))))
     case None => max
   }
 
@@ -72,12 +72,12 @@ object StepCalculation {
     * @return The flow (in l/s) through this point
     */
   def calculateFlowAtPressureDifference(startNode: LinkedNode,
-                                        firePressure: Value,
-                                        regularPressure: Value,
-                                        aggregatedIncomingFlow: Value = Value(0)): Expression = {
+                                        firePressure: Expression,
+                                        regularPressure: Expression,
+                                        aggregatedIncomingFlow: Expression = Value(0)): Expression = {
     val flowToNextJunction = calculateFlowFromNodeToNextJunction(Some(startNode))
-    val flowDifference_q = aggregatedIncomingFlow - Value(flowToNextJunction)
-    Absolute(flowDifference_q) * Sqrt(firePressure / regularPressure)
+    val flowDifference_q = aggregatedIncomingFlow.toValue - flowToNextJunction.toValue
+    Absolute(flowDifference_q) * Sqrt(firePressure.toValue / regularPressure.toValue)
 
     //val flowDifference_q = Subtraction(Value(aggregatedIncomingFlow), Value(flowToNextJunction))
     //Multiplication(Absolute(flowDifference_q), Sqrt(Division(Value(firePressure), Value(regularPressure))))
@@ -94,10 +94,10 @@ object StepCalculation {
     */
   def calculateAggregatedPressure(startNode: LinkedNode,
                                   pressureLossTable: Seq[PressureLossEntry],
-                                  fireFlow: Value,
-                                  regularFlow: Value): Expression = {
+                                  fireFlow: Expression,
+                                  regularFlow: Expression): Expression = {
     val pressureDifference = calculateResistanceFromNodeToNextJunction(Some(startNode), pressureLossTable)
-    val aggregatedRegularFlow_q = regularFlow
-    Value(pressureDifference) * ((fireFlow / aggregatedRegularFlow_q) ^ Value(2))
+    val aggregatedRegularFlow_q = regularFlow.toValue
+    Value(pressureDifference) * ((fireFlow.toValue / aggregatedRegularFlow_q) ^ Value(2))
   }
 }
