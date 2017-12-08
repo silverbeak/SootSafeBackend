@@ -51,7 +51,7 @@ trait Expression {
 }
 
 object Expression {
-  val empty: Expression = Value(0)
+  val Zero: Expression = Value(0)
 }
 
 case class Empty() extends Expression {

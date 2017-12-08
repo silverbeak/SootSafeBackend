@@ -121,7 +121,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
       val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
 
       var firePressure_delta_p: Expression = Value(1000)
-      var aggregatedFireFlow_Q: Expression = Value(0)
+      var aggregatedFireFlow_Q: Expression = Expression.Zero
       var aggregatedRegularPressure_p: Double = 22
 
       // First calculation, where there is no difference between fire cell and next junction
