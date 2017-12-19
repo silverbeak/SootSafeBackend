@@ -4,7 +4,7 @@ import java.io.InputStream
 
 import com.sootsafe.model.{Model, ModelBuilder}
 import com.sootsafe.serializers.NodeSerializer
-import com.sootsafe.valuetable.ValueResolver
+import com.sootsafe.valuetable.{FakeValueResolver, ValueResolver}
 import org.json4s.native.Serialization.read
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -19,7 +19,7 @@ class PressureLossTest extends WordSpecLike with Matchers {
       val stream: InputStream = getClass.getResourceAsStream("/defaultTestData.json")
       val defaultJson = scala.io.Source.fromInputStream(stream).mkString
 
-      val valueResolver: ValueResolver = new ValueResolver {}
+      val valueResolver: ValueResolver = FakeValueResolver
 
       val model = read[Model](defaultJson)
       new ModelBuilder(model).buildModel() match {

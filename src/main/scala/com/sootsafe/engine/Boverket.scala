@@ -1,9 +1,9 @@
 package com.sootsafe.engine
 
-import com.sootsafe.{Expression, Value}
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
 import com.sootsafe.model.{LinkedNode, PressureLossEntry}
-import com.sootsafe.valuetable.ValueResolver
+import com.sootsafe.valuetable.FakeValueResolver
+import com.sootsafe.{Expression, Value}
 
 trait PressureLossEngine {
   def calculatePressureLoss(linkedModel: LinkedNode,
@@ -14,7 +14,7 @@ trait PressureLossEngine {
 object Boverket extends PressureLossEngine {
 
   private def getPressureLossTable(linkedModel: LinkedNode): Seq[PressureLossEntry] = {
-    val valueResolver = new ValueResolver {}
+    val valueResolver = FakeValueResolver
     val outletNode = linkedModel.locateOutletNode()
 
     val firstJunction = linkedModel.iterateJunctions().next()

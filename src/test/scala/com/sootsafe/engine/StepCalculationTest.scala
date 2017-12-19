@@ -3,16 +3,16 @@ package com.sootsafe.engine
 import com.sootsafe.{Expression, Value}
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
 import com.sootsafe.model.LinkedNode
-import com.sootsafe.valuetable.ValueResolver
+import com.sootsafe.valuetable.{FakeValueResolver, ValueResolver}
 import org.scalatest.{Matchers, WordSpecLike}
 
 class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
+  val valueResolver: ValueResolver = FakeValueResolver
+
   "Step Calculation" must {
 
     "properly calculate the resistance from target node to the next junction" in {
-      val valueResolver: ValueResolver = new ValueResolver {}
-
       val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode()
       val firstJunction = fireNode.get.findNextJunction().thisNode.get
@@ -26,8 +26,6 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "properly calculate the resistance from first junction to the next" in {
-      val valueResolver: ValueResolver = new ValueResolver {}
-
       val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode().get
       val firstJunction = fireNode.findNextJunction().thisNode.get
@@ -40,8 +38,6 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "properly traverse to calculate resistance through a chain" in {
-      val valueResolver: ValueResolver = new ValueResolver {}
-
       val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode().get
       val firstJunction = fireNode.findNextJunction().thisNode
@@ -81,8 +77,6 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "indicate no pressure difference between fire cell and first junction" in {
-      val valueResolver: ValueResolver = new ValueResolver {}
-
       val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode()
       val firstJunction = fireNode.get.findNextJunction().thisNode.get
@@ -95,8 +89,6 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "calculate pressure on fire from first junction" in {
-      val valueResolver: ValueResolver = new ValueResolver {}
-
       val outletNode = linkedModel.locateOutletNode().get
       val fireNode = linkedModel.locateTargetNode()
       val firstJunction = fireNode.get.findNextJunction().thisNode
@@ -109,8 +101,6 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "traverse a model and determine flow during fire" in {
-      val valueResolver: ValueResolver = new ValueResolver {}
-
       val outletNode = linkedModel.locateOutletNode()
 
       val fireNode = linkedModel.locateTargetNode()
