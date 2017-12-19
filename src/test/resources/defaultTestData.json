@@ -190,7 +190,8 @@
       "loc": "-137.3333333333332 62.000000000000014",
       "ssInfo": {
         "nodeType": "fireCell",
-        "targetCell": true
+        "targetCell": true,
+        "pressureloss": 22
       }
     },
     {

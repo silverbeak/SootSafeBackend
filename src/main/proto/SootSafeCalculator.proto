@@ -60,7 +60,8 @@ message Node {
 
 message SootSafeModel {
     repeated Node nodes = 1;
-    repeated Link links = 3;
+    repeated Link links = 2;
+    double targetFirePressure = 3;
 }
 
 message FirePressureResultEntry {
