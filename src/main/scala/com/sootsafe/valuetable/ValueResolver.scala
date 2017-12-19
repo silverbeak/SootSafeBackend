@@ -4,6 +4,7 @@ import com.sootsafe.model.NodeModule
 
 trait PressureLossConstants {
   val rho: Double = 1.2
+  val lambda: Double = 0.0216
 }
 
 trait ValueResolver {
@@ -43,10 +44,14 @@ object RealValueResolver extends ValueResolver with PressureLossConstants {
    * Taken from http://www.hvac.lth.se/fileadmin/hvac/TVIT-5031MMweb.pdf
    * Fix references and such later
    */
+  private def dynamicPressure(nodeModule: NodeModule): Double = {
+    val nominator = 8 * rho * Math.pow(nodeModule.ssInfo.capacity.get / 1000, 2)
+    val denominator = Math.pow(Math.PI, 2) * Math.pow(nodeModule.ssInfo.dimension.diameter.get / 1000, 4)
+    nominator / denominator
+  }
+
   override def ductPressureLoss(nodeModule: NodeModule): Double = {
-    val nominator = 8 * 0.0216 * rho * nodeModule.ssInfo.dimension.length.get / 1000
-    val denominator = Math.pow(Math.PI, 2) * Math.pow(nodeModule.ssInfo.dimension.diameter.get / 1000, 5)
-    Math.pow(nodeModule.ssInfo.capacity.get / 1000, 2) * nominator / denominator
+    dynamicPressure(nodeModule) * (nodeModule.ssInfo.dimension.length.get / 1000) * lambda / (nodeModule.ssInfo.dimension.diameter.get / 1000)
   }
 
   // TODO: Fix this... duh!
