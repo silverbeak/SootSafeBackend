@@ -65,8 +65,14 @@ message SootSafeModel {
 
 message FirePressureResultEntry {
     int32 key = 1;
-    double flow = 2;
-    double pressure = 3;
+    double addedFireFlow = 2;
+    double firePressureDifference = 3;
+    double pointRegularPressure = 4;
+    double aggregatedRegularFlow = 5;
+    double addedRegularFlow = 6;
+    double aggregatedFireFlow = 7;
+    double pointFirePressure = 8;
+    double regularPressureDifference = 9;
 }
 
 message ErrorMessage {

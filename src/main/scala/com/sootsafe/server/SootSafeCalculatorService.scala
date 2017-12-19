@@ -21,13 +21,13 @@ class CalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculatorImplBase {
 
     val reply = new ModelBuilder(model).buildModel() match {
       case Right(errorMessage) =>
-        val errorResponse = ErrorMessage.newBuilder().setErrorCode(404).setErrorMessage(errorMessage)
+        val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
         FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
 
       case Left(linkedNode) =>
         Boverket.calculatePressureLoss(linkedNode, 22) match {
           case Right(errorMessage) =>
-            val errorResponse = ErrorMessage.newBuilder().setErrorCode(404).setErrorMessage(errorMessage)
+            val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
             FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
           case Left(result) =>
             FirePressureCalculationResult.newBuilder().addAllEntries(FlowAndPressureSequence.toEntries(result.seq)).build()
