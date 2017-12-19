@@ -2,19 +2,19 @@ package com.sootsafe.engine
 
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
 import com.sootsafe.model.{LinkedNode, PressureLossEntry}
-import com.sootsafe.valuetable.FakeValueResolver
+import com.sootsafe.valuetable.ValueResolver
 import com.sootsafe.{Expression, Value}
 
 trait PressureLossEngine {
   def calculatePressureLoss(linkedModel: LinkedNode,
                             initialRegularPressure: Option[Double],
-                            initialFirePressure: Double): Either[Seq[FlowAndPressure], String]
+                            initialFirePressure: Double,
+                            valueResolver: ValueResolver): Either[Seq[FlowAndPressure], String]
 }
 
 object Boverket extends PressureLossEngine {
 
-  private def getPressureLossTable(linkedModel: LinkedNode): Seq[PressureLossEntry] = {
-    val valueResolver = FakeValueResolver
+  private def getPressureLossTable(linkedModel: LinkedNode, valueResolver: ValueResolver): Seq[PressureLossEntry] = {
     val outletNode = linkedModel.locateOutletNode()
 
     val firstJunction = linkedModel.iterateJunctions().next()
@@ -37,14 +37,15 @@ object Boverket extends PressureLossEngine {
     */
   def calculatePressureLoss(linkedModel: LinkedNode,
                             initialRegularPressureOption: Option[Double] = None,
-                            initialFirePressure: Double): Either[Seq[FlowAndPressure], String] = {
+                            initialFirePressure: Double,
+                            valueResolver: ValueResolver): Either[Seq[FlowAndPressure], String] = {
 
     linkedModel.locateTargetNode() match {
       case None =>
         Right("Model must contain at least one fire cell")
       case Some(fireNode) =>
         val initialRegularPressure = initialRegularPressureOption.getOrElse(fireNode.nodeModule.ssInfo.pressureloss.getOrElse(0d))
-        val pressureLossTable = getPressureLossTable(linkedModel)
+        val pressureLossTable = getPressureLossTable(linkedModel, valueResolver)
 
         val aggregatedRegularPressures = aggregatedRegularPressureList(linkedModel, initialRegularPressure, pressureLossTable)
 

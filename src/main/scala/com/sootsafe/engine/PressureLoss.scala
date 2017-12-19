@@ -2,11 +2,7 @@ package com.sootsafe.engine
 
 import com.sootsafe.calcutils.VelocityCalculator
 import com.sootsafe.model._
-import com.sootsafe.valuetable.ValueResolver
-
-trait PressureLossConstants {
-  val rho: Double = 1.2
-}
+import com.sootsafe.valuetable.{PressureLossConstants, ValueResolver}
 
 class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
 
@@ -42,7 +38,7 @@ class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
 
     node match {
       case pipe: Pipe =>
-        val pressureLoss = node.ssInfo.dimension.length.getOrElse(0d) / 1000 * valueResolver.ductPressureLoss(node)
+        val pressureLoss = valueResolver.ductPressureLoss(node)
         PressureLossEntry(node.key, pressureLoss)
 
       case ai: AreaIncrement =>

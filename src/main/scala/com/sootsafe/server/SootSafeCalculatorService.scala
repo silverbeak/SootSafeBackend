@@ -7,6 +7,7 @@ import com.sootsafe.model.{Model, ModelBuilder}
 import com.sootsafe.serializers.GRPCSerializer
 import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.{ErrorMessage, FirePressureCalculationResult}
 import com.sootsafe.server.calculator.{SootSafeCalculatorGrpc, SootSafeCalculatorOuterClass}
+import com.sootsafe.valuetable.RealValueResolver
 import io.grpc.stub.StreamObserver
 import io.grpc.{Server, ServerBuilder}
 
@@ -25,7 +26,7 @@ class CalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculatorImplBase {
         FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
 
       case Left(linkedNode) =>
-        Boverket.calculatePressureLoss(linkedNode, initialFirePressure = request.getTargetFirePressure) match {
+        Boverket.calculatePressureLoss(linkedNode, initialFirePressure = request.getTargetFirePressure, valueResolver = RealValueResolver) match {
           case Right(errorMessage) =>
             val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
             FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
