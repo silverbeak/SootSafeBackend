@@ -64,12 +64,7 @@ class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
         PressureLossEntry(node.key, pressureLoss)
 
       case bend: Bend =>
-        val v1 = VelocityCalculator.velocity(node.ssInfo)
-
-        val zeta = valueResolver.componentPressureLoss(v1 * 1000)
-
-        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
-
+        val pressureLoss = valueResolver.bendPressureLoss(bend)
         PressureLossEntry(node.key, pressureLoss)
 
       case box: Box => PressureLossEntry(node.key, 15d)
