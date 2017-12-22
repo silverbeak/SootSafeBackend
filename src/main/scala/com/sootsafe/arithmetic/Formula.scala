@@ -29,7 +29,7 @@ class DynamicPressure(nodeModule: NodeModule) extends Formula with Symbols {
   override def calculate(): Double = getExpression.calculate()
 }
 
-class Vaporisation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: Symbol) extends Formula with Symbols with Units {
+class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: Symbol) extends Formula with Symbols with Units {
 
   private val we = Symbol(Expression.Zero, "W_e")
 
@@ -43,5 +43,26 @@ class Vaporisation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: 
     val numerator = Value(6.55) * (uw.expression ^ Value(0.78)) * ap.expression * pv.expression * (M.expression ^ Value(0.667))
     val denominator = R.expression * T.expression
     numerator / denominator
+  }
+}
+
+class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Symbol, Ta: Symbol) extends Formula with Symbols with Units {
+
+  private val Qg = Symbol(Expression.Zero, "Q_g")
+
+  override def texifyFormula(): String = s"""${Qg.sign} \\approx \\dfrac{6,5\\ ${uw.sign}^{0,78}\\ ${ap.sign}\\ ${pv.sign}}{10^5\\ ${M.sign}^{0,333}} \\times \\dfrac {${Ta.sign}}{${T.sign}} ($cubic_meter_per_second)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = {
+    val numerator1 = Value(6.5) * (uw.expression ^ Value(0.78)) * ap.expression * pv.expression
+    val denominator1 = (Value(10) ^ Value(5)) * (M.expression ^ Value(0.333))
+
+    val numerator2 = Ta.expression
+    val denominator2 = T.expression
+
+    (numerator1/denominator1) * (numerator2/denominator2)
   }
 }

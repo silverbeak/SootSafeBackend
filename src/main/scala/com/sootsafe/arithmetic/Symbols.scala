@@ -8,6 +8,8 @@ trait Units {
   val l_per_second: String = "l/s"
 
   val pascal: String = "Pa"
+
+  val cubic_meter_per_second: String = "m^3/s"
 }
 
 trait Symbols {
