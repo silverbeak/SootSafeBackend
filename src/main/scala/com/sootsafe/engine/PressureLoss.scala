@@ -1,6 +1,5 @@
 package com.sootsafe.engine
 
-import com.sootsafe.calcutils.VelocityCalculator
 import com.sootsafe.model._
 import com.sootsafe.valuetable.{PressureLossConstants, ValueResolver}
 
@@ -38,36 +37,24 @@ class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
 
     node match {
       case pipe: Pipe =>
-        val pressureLoss = valueResolver.ductPressureLoss(node)
-        PressureLossEntry(node.key, pressureLoss)
+        val pressureLoss = valueResolver.ductPressureLoss(pipe)
+        PressureLossEntry(pipe.key, pressureLoss)
 
-      case ai: AreaIncrement =>
-        val v1 = VelocityCalculator.velocity(originNode.ssInfo)
-        val v2 = VelocityCalculator.velocity(node.ssInfo)
-        val velocityFactor = v2/v1
+      case areaIncrement: AreaIncrement =>
+        val pressureLoss = valueResolver.areaIncrementPressureLoss(areaIncrement)
+        PressureLossEntry(areaIncrement.key, pressureLoss)
 
-        val zeta = valueResolver.componentPressureLoss(velocityFactor)
-
-        val pressureLoss = rho * Math.pow(v2 * 1000, 2) / 2 * zeta
-
-        PressureLossEntry(node.key, pressureLoss)
-
-      case tpipe: TPipe =>
-        val v2 = VelocityCalculator.velocity(originNode.ssInfo)
-        val v1 = VelocityCalculator.velocity(node.ssInfo)
-        val velocityFactor = v2/v1
-
-        val zeta = valueResolver.componentPressureLoss(velocityFactor)
-
-        val pressureLoss = rho * Math.pow(v1 * 1000, 2) / 2 * zeta
-
+      case tPipe: TPipe =>
+        val pressureLoss = valueResolver.tPipePressureLoss(tPipe)
         PressureLossEntry(node.key, pressureLoss)
 
       case bend: Bend =>
         val pressureLoss = valueResolver.bendPressureLoss(bend)
         PressureLossEntry(node.key, pressureLoss)
 
-      case box: Box => PressureLossEntry(node.key, 15d)
+      case box: Box =>
+        val pressureLoss = box.ssInfo.pressureloss.getOrElse(15d)
+        PressureLossEntry(node.key, pressureLoss)
 
       case _ => PressureLossEntry(node.key, 0d)
     }
