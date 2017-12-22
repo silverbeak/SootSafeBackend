@@ -97,7 +97,10 @@ case class Division(dividend: Expression, divisor: Expression) extends Expressio
 }
 
 case class Power(term: Expression, power: Expression) extends Expression {
-  override def texify(): String = s"{\\left({${term.texify()}}\\right)}^{${power.texify()}}"
+  override def texify(): String = term match {
+    case _: Value => s"{${term.texify()}}^{${power.texify()}}"
+    case _ => s"{\\left({${term.texify()}}\\right)}^{${power.texify()}}"
+  }
 
   override def calculate(): Double = Math.pow(term.calculate(), power.calculate())
 }
