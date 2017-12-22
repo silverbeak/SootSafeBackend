@@ -30,7 +30,7 @@ class DynamicPressureTest extends WordSpecLike with Matchers {
     val vaporisation = new Evaporation(uw, ap, pv, M, R, T)
 
     "texify formula" in {
-      vaporisation.texifyFormula() should be("""W_e = \dfrac{6,55\ u_w^{0,78}\ A_p\ p_V\ M^{0,667}}{R\ T} (kg/s)""")
+      vaporisation.texifyFormula() should be("""W_e = \dfrac{6,55\ u_w^{0,78}\ A_p\ p_V\ M^{0,667}}{R\ T}\ (kg/s)""")
     }
 
     "texify calculation" in {
@@ -49,11 +49,28 @@ class DynamicPressureTest extends WordSpecLike with Matchers {
     val vmVaporisation = new VolumetricEvaporation(uw, ap, pv, M, T, Ta)
 
     "texify formula" in {
-      vmVaporisation.texifyFormula() should be("""Q_g \approx \dfrac{6,5\ u_w^{0,78}\ A_p\ p_V}{10^5\ M^{0,333}} \times \dfrac {T_a}{T} (m^3/s)""")
+      vmVaporisation.texifyFormula() should be("""Q_g \approx \dfrac{6,5\ u_w^{0,78}\ A_p\ p_V}{10^5\ M^{0,333}} \times \dfrac {T_a}{T}\ (m^3/s)""")
     }
 
     "texify calculation" in {
       vmVaporisation.texify() should be("""\dfrac{6.5 \times {1.0}^{0.78} \times 2.0 \times 1.15}{{10.0}^{5.0} \times {88.0}^{0.333}} \times \dfrac{992233.0}{9.09}""")
+    }
+  }
+
+  "Release rate of liquids" must {
+
+    val cd = Symbol(Value(33), "C_d")
+    val s = Symbol(Division(Value(3), Value(4)), "S")
+    val deltaP = Symbol(Value(55), """\Delta p""")
+
+    val releaseRateOfLiquid = new ReleaseRateOfLiquid(cd, s, deltaP)
+
+    "texify formula" in {
+      releaseRateOfLiquid.texifyFormula() should be("""W = C_d\ S\ \sqrt{2\ \rho\ \Delta p}\ (kg/s)""")
+    }
+
+    "texify calculation" in {
+      releaseRateOfLiquid.texify() should be("""33.0 \times \dfrac{3.0}{4.0} \times \sqrt{2.0 \times 1.2 \times 55.0}""")
     }
   }
 

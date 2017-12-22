@@ -33,7 +33,7 @@ class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: S
 
   private val we = Symbol(Expression.Zero, "W_e")
 
-  override def texifyFormula(): String = s"""${we.sign} = \\dfrac{6,55\\ ${uw.sign}^{0,78}\\ ${ap.sign}\\ ${pv.sign}\\ ${M.sign}^{0,667}}{${R.sign}\\ ${T.sign}} ($kg_per_second)"""
+  override def texifyFormula(): String = s"""${we.sign} = \\dfrac{6,55\\ ${uw.sign}^{0,78}\\ ${ap.sign}\\ ${pv.sign}\\ ${M.sign}^{0,667}}{${R.sign}\\ ${T.sign}}\\ ($kg_per_second)"""
 
   override def texify(): String = getExpression.texify()
 
@@ -50,7 +50,7 @@ class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Sy
 
   private val Qg = Symbol(Expression.Zero, "Q_g")
 
-  override def texifyFormula(): String = s"""${Qg.sign} \\approx \\dfrac{6,5\\ ${uw.sign}^{0,78}\\ ${ap.sign}\\ ${pv.sign}}{10^5\\ ${M.sign}^{0,333}} \\times \\dfrac {${Ta.sign}}{${T.sign}} ($cubic_meter_per_second)"""
+  override def texifyFormula(): String = s"""${Qg.sign} \\approx \\dfrac{6,5\\ ${uw.sign}^{0,78}\\ ${ap.sign}\\ ${pv.sign}}{10^5\\ ${M.sign}^{0,333}} \\times \\dfrac {${Ta.sign}}{${T.sign}}\\ ($cubic_meter_per_second)"""
 
   override def texify(): String = getExpression.texify()
 
@@ -64,5 +64,20 @@ class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Sy
     val denominator2 = T.expression
 
     (numerator1/denominator1) * (numerator2/denominator2)
+  }
+}
+
+class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula with Symbols with Units {
+
+  private val W = Symbol(Expression.Zero, "W")
+
+  override def texifyFormula(): String = s"""${W.sign} = ${cd.sign}\\ ${s.sign}\\ \\sqrt{2\\ \\rho\\ ${deltaP.sign}}\\ ($kg_per_second)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = {
+    cd.expression * s.expression * Sqrt(Value(2) * rho.expression * deltaP.expression)
   }
 }
