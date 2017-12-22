@@ -1,6 +1,6 @@
 package com.sootsafe.engine
 
-import com.sootsafe.{Expression, Value}
+import com.sootsafe.arithmetic.{Expression, Value}
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
 import com.sootsafe.model.LinkedNode
 import com.sootsafe.valuetable.{FakeValueResolver, ValueResolver}

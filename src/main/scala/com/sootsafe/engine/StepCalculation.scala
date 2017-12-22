@@ -1,6 +1,7 @@
 package com.sootsafe.engine
 
 import com.sootsafe._
+import com.sootsafe.arithmetic.{Absolute, Expression, Sqrt, Value}
 import com.sootsafe.model.{LinkedNode, PressureLossEntry}
 
 object StepCalculation {

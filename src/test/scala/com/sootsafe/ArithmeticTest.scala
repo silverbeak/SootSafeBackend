@@ -1,5 +1,6 @@
 package com.sootsafe
 
+import com.sootsafe.arithmetic._
 import org.scalatest.{Matchers, WordSpecLike}
 
 class ArithmeticTest extends WordSpecLike with Matchers {

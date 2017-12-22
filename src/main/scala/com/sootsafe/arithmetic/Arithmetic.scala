@@ -1,4 +1,4 @@
-package com.sootsafe
+package com.sootsafe.arithmetic
 
 object Arithmetic {
 

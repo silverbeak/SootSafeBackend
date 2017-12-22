@@ -1,9 +1,9 @@
 package com.sootsafe.engine
 
+import com.sootsafe.arithmetic.{Expression, Value}
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
 import com.sootsafe.model.{LinkedNode, PressureLossEntry}
 import com.sootsafe.valuetable.ValueResolver
-import com.sootsafe.{Expression, Value}
 
 trait PressureLossEngine {
   def calculatePressureLoss(linkedModel: LinkedNode,
