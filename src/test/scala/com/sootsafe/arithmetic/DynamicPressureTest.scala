@@ -4,7 +4,7 @@ import com.sootsafe.model
 import com.sootsafe.model.{Dimension, Pipe}
 import org.scalatest.{Matchers, WordSpecLike}
 
-class DynamicPressureTest extends WordSpecLike with Matchers {
+class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
 
   val node = Pipe(0, model.SootSafeInfo("pipe", Some(33), None, None, None, Dimension(Some(2200), Some(125))))
   val dp = new DynamicPressure(node)
@@ -71,6 +71,22 @@ class DynamicPressureTest extends WordSpecLike with Matchers {
 
     "texify calculation" in {
       releaseRateOfLiquid.texify() should be("""33.0 \times \dfrac{3.0}{4.0} \times \sqrt{2.0 \times 1.2 \times 55.0}""")
+    }
+  }
+
+  "Critical gas pressure" must {
+
+    val pa = Symbol(Value(45), "p_a")
+    val g = gamma.copy(expression = Value(33))
+
+    val criticalGasPressure = new CriticalGasPressure(pa, g)
+
+    "texify formula" in {
+      criticalGasPressure.texifyFormula() should be("""p_C = p_a\ \left(\dfrac{  \gamma  + 1 }{2}\right)^{ \dfrac{  \gamma  }{  \gamma  - 1 }}\ (Pa)""")
+    }
+
+    "texify calculation" in {
+      println(criticalGasPressure.texify())
     }
   }
 

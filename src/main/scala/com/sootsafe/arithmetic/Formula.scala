@@ -63,7 +63,7 @@ class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Sy
     val numerator2 = Ta.expression
     val denominator2 = T.expression
 
-    (numerator1/denominator1) * (numerator2/denominator2)
+    (numerator1 / denominator1) * (numerator2 / denominator2)
   }
 }
 
@@ -79,5 +79,20 @@ class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula
 
   private def getExpression: Expression = {
     cd.expression * s.expression * Sqrt(Value(2) * rho.expression * deltaP.expression)
+  }
+}
+
+class CriticalGasPressure(pa: Symbol, g: Symbol) extends Formula with Symbols with Units {
+
+  private val pc = Symbol(Expression.Zero, "p_C")
+
+  override def texifyFormula(): String = s"""${pc.sign} = ${pa.sign}\\ \\left(\\dfrac{ ${g.sign} + 1 }{2}\\right)^{ \\dfrac{ ${g.sign} }{ ${g.sign} - 1 }}\\ ($pascal)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = {
+    pa.expression * (((g.expression + Value(1)) / Value(2)) ^ (g.expression / (g.expression - Value(1))))
   }
 }

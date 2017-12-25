@@ -18,4 +18,6 @@ trait Symbols {
   val pi = Symbol(Value(Math.PI), """ \pi """)
 
   val delta = Symbol(Expression.Zero, """ \Delta """)
+
+  val gamma = Symbol(Expression.Zero, """ \gamma """)
 }
