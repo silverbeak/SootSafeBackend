@@ -25,23 +25,43 @@ class CalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculatorImplBase {
     val reply = new ModelBuilder(model).buildModel() match {
       case Right(errorMessage) =>
         val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
-        FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
+        FirePressureCalculationResult
+          .newBuilder()
+          .setErrorMessage(errorResponse)
+          .build()
 
       case Left(linkedNode) =>
         EngineProxy.getEngine("") match {
           case Left(engine) =>
             engine.calculatePressureLoss(linkedNode, initialFirePressure = request.getTargetFirePressure, valueResolver = RealValueResolver) match {
               case Right(errorMessage) =>
-                val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
-                FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
+                val errorResponse = ErrorMessage
+                  .newBuilder()
+                  .setErrorCode(400)
+                  .setErrorMessage(errorMessage)
+
+                FirePressureCalculationResult
+                  .newBuilder()
+                  .setErrorMessage(errorResponse)
+                  .build()
+
               case Left(result) =>
-                FirePressureCalculationResult.newBuilder().addAllEntries(FlowAndPressureSequence.toEntries(result.seq)).build()
+                FirePressureCalculationResult
+                  .newBuilder()
+                  .addAllEntries(FlowAndPressureSequence.toEntries(result.seq))
+                  .build()
             }
 
           case Right(errorMessage) =>
-            val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
-            FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
+            val errorResponse = ErrorMessage
+              .newBuilder()
+              .setErrorCode(400)
+              .setErrorMessage(errorMessage)
 
+            FirePressureCalculationResult
+              .newBuilder()
+              .setErrorMessage(errorResponse)
+              .build()
         }
     }
 
