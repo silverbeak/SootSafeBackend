@@ -2,7 +2,7 @@ package com.sootsafe.server
 
 import java.util.Date
 
-import com.sootsafe.engine.{Boverket, FlowAndPressureSequence}
+import com.sootsafe.engine.{EngineProxy, FlowAndPressureSequence}
 import com.sootsafe.model.{Model, ModelBuilder}
 import com.sootsafe.serializers.GRPCSerializer
 import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.{ErrorMessage, FirePressureCalculationResult}
@@ -14,9 +14,11 @@ import io.grpc.{Server, ServerBuilder}
 import scala.collection.JavaConversions._
 
 class CalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculatorImplBase {
-  override def getFirePressure(request: SootSafeCalculatorOuterClass.SootSafeModel, responseObserver: StreamObserver[SootSafeCalculatorOuterClass.FirePressureCalculationResult]): Unit = {
+  override def getFirePressure(request: SootSafeCalculatorOuterClass.SootSafeModel,
+                               responseObserver: StreamObserver[SootSafeCalculatorOuterClass.FirePressureCalculationResult]): Unit = {
+
     val now = new Date().getTime
-    val nodes = request.getNodesList.map (GRPCSerializer.deserialize)
+    val nodes = request.getNodesList.map(GRPCSerializer.deserialize)
     val links = request.getLinksList.map(GRPCSerializer.deserialize)
     val model = Model(nodes.toList, links.toList)
 
@@ -26,12 +28,20 @@ class CalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculatorImplBase {
         FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
 
       case Left(linkedNode) =>
-        Boverket.calculatePressureLoss(linkedNode, initialFirePressure = request.getTargetFirePressure, valueResolver = RealValueResolver) match {
+        EngineProxy.getEngine("") match {
+          case Left(engine) =>
+            engine.calculatePressureLoss(linkedNode, initialFirePressure = request.getTargetFirePressure, valueResolver = RealValueResolver) match {
+              case Right(errorMessage) =>
+                val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
+                FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
+              case Left(result) =>
+                FirePressureCalculationResult.newBuilder().addAllEntries(FlowAndPressureSequence.toEntries(result.seq)).build()
+            }
+
           case Right(errorMessage) =>
             val errorResponse = ErrorMessage.newBuilder().setErrorCode(400).setErrorMessage(errorMessage)
             FirePressureCalculationResult.newBuilder().setErrorMessage(errorResponse).build()
-          case Left(result) =>
-            FirePressureCalculationResult.newBuilder().addAllEntries(FlowAndPressureSequence.toEntries(result.seq)).build()
+
         }
     }
 

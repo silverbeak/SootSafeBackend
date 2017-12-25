@@ -86,7 +86,7 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     }
 
     "texify calculation" in {
-      println(criticalGasPressure.texify())
+      criticalGasPressure.texify() should be("""45.0 \times {\left({\dfrac{33.0 + 1.0}{2.0}}\right)}^{\dfrac{33.0}{33.0 - 1.0}}""")
     }
   }
 

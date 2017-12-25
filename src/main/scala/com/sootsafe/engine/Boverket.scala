@@ -7,7 +7,7 @@ import com.sootsafe.valuetable.ValueResolver
 
 trait PressureLossEngine {
   def calculatePressureLoss(linkedModel: LinkedNode,
-                            initialRegularPressure: Option[Double],
+                            initialRegularPressure: Option[Double] = None,
                             initialFirePressure: Double,
                             valueResolver: ValueResolver): Either[Seq[FlowAndPressure], String]
 }
@@ -30,9 +30,9 @@ object Boverket extends PressureLossEngine {
 
   /**
     *
-    * @param linkedModel The linked model to perform the pressure loss calculation for
+    * @param linkedModel                  The linked model to perform the pressure loss calculation for
     * @param initialRegularPressureOption If set, this will override the initial regular pressure found in the fire cell in the model
-    * @param initialFirePressure The initial fire pressure from the fire cell
+    * @param initialFirePressure          The initial fire pressure from the fire cell
     * @return
     */
   def calculatePressureLoss(linkedModel: LinkedNode,
