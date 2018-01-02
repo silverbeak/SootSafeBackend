@@ -45,11 +45,11 @@ trait Expression {
 
   def *(that: Expression): Expression = Multiplication(this, that)
 
-  def *?!(that: Expression): Expression = Multiplication(this, that, (false, true))
+  def *!(that: Expression): Expression = Multiplication(this, that, (false, true))
 
-  def *!!(that: Expression): Expression = Multiplication(this, that, (true, true))
+  def !*!(that: Expression): Expression = Multiplication(this, that, (true, true))
 
-  def *!?(that: Expression): Expression = Multiplication(this, that, (true, false))
+  def !*(that: Expression): Expression = Multiplication(this, that, (true, false))
 
   def /(that: Expression): Expression = Division(this, that)
 

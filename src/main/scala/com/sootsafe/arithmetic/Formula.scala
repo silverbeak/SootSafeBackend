@@ -96,3 +96,34 @@ class CriticalGasPressure(pa: Symbol, g: Symbol) extends Formula with Symbols wi
     pa.expression * (((g.expression + Value(1)) / Value(2)) ^ (g.expression / (g.expression - Value(1))))
   }
 }
+
+class NonLimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, Z: Symbol, gma: Symbol, pa: Symbol, p: Symbol) extends Formula with Symbols with Units {
+  private val Wg = Symbol(Expression.Zero, "W_g")
+
+  private val texFactor1 = s"""${cd.sign} ${s.sign} ${p.sign}"""
+
+  private val texFactor3 = s"""\\left( { \\dfrac{${pa.sign}}{${p.sign}} } \\right) ^ { \\dfrac{1}{${gma.sign}} }"""
+
+  private val texInnerFactor1 = s"""\\dfrac{${M.sign}}{${Z.sign}${R.sign}${T.sign}}"""
+
+  private val texInnerFactor2 = s"""\\dfrac{2 ${gamma.sign}}{${gamma.sign} - 1}"""
+
+  private val texInnerFactor3 = s"""\\left[1 - \\left( { \\dfrac{${pa.sign}}{${p.sign}} } \\right) ^ { \\dfrac{${gamma.sign} - 1}{${gamma.sign}} } \\right]"""
+
+  override def texifyFormula(): String = s"""${Wg.sign} = $texFactor1 \\sqrt{ $texInnerFactor1 $texInnerFactor2 $texInnerFactor3 } $texFactor3\\ ($kg_per_second)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = {
+    val factor1 = cd.expression * s.expression * p.expression
+    val factor3 = (pa.expression / p.expression) ^ (Value(1d) / gma.expression)
+
+    val innerFactor1 = M.expression / (Z.expression * R.expression * T.expression)
+    val innerFactor2 = gma.expression / (gma.expression - Value(1))
+    val innerFactor3 = Value(1d) - ((pa.expression / p.expression) ^ ((gma.expression - Value(1d)) / gma.expression))
+
+    factor1 * Sqrt(innerFactor1 * innerFactor2 *! innerFactor3) * factor3
+  }
+}
