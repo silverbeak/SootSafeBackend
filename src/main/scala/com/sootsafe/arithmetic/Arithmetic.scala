@@ -45,6 +45,12 @@ trait Expression {
 
   def *(that: Expression): Expression = Multiplication(this, that)
 
+  def *?!(that: Expression): Expression = Multiplication(this, that, (false, true))
+
+  def *!!(that: Expression): Expression = Multiplication(this, that, (true, true))
+
+  def *!?(that: Expression): Expression = Multiplication(this, that, (true, false))
+
   def /(that: Expression): Expression = Division(this, that)
 
   def ^(that: Expression): Expression = Power(this, that)
@@ -66,8 +72,13 @@ case class Value(value: Double) extends Expression {
   override def calculate(): Double = value
 }
 
-case class Multiplication(factor1: Expression, factor2: Expression) extends Expression {
-  override def texify(): String = s"${factor1.texify()} \\times ${factor2.texify()}"
+case class Multiplication(factor1: Expression, factor2: Expression, forceParenthesis: (Boolean, Boolean) = (false, false)) extends Expression {
+  override def texify(): String = forceParenthesis match {
+    case (true, true) => s"\\left(${factor1.texify()}\\right) \\times \\left(${factor2.texify()}\\right)"
+    case (true, false) => s"\\left(${factor1.texify()}\\right) \\times ${factor2.texify()}"
+    case (false, true) => s"${factor1.texify()} \\times \\left(${factor2.texify()}\\right)"
+    case _ => s"${factor1.texify()} \\times ${factor2.texify()}"
+  }
 
   override def calculate(): Double = factor1.calculate() * factor2.calculate()
 }
