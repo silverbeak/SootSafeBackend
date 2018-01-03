@@ -6,6 +6,8 @@ trait FormulaParameter
 
 trait Formula extends Expression {
 
+  val reference: Option[String]
+
   def texifyFormula(): String
 
 }
@@ -27,6 +29,8 @@ class DynamicPressure(nodeModule: NodeModule) extends Formula with Symbols {
   }
 
   override def calculate(): Double = getExpression.calculate()
+
+  override val reference: Option[String] = None
 }
 
 class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: Symbol) extends Formula with Symbols with Units {
@@ -44,6 +48,8 @@ class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: S
     val denominator = R.expression * T.expression
     numerator / denominator
   }
+
+  override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
 }
 
 class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Symbol, Ta: Symbol) extends Formula with Symbols with Units {
@@ -65,6 +71,8 @@ class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Sy
 
     (numerator1 / denominator1) * (numerator2 / denominator2)
   }
+
+  override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
 }
 
 class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula with Symbols with Units {
@@ -80,6 +88,8 @@ class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula
   private def getExpression: Expression = {
     cd.expression * s.expression * Sqrt(Value(2) * rho.expression * deltaP.expression)
   }
+
+  override val reference: Option[String] = Some("B.1: Områden med explosiv gasatmosfär")
 }
 
 class CriticalGasPressure(pa: Symbol, g: Symbol) extends Formula with Symbols with Units {
@@ -95,6 +105,8 @@ class CriticalGasPressure(pa: Symbol, g: Symbol) extends Formula with Symbols wi
   private def getExpression: Expression = {
     pa.expression * (((g.expression + Value(1)) / Value(2)) ^ (g.expression / (g.expression - Value(1))))
   }
+
+  override val reference: Option[String] = Some("B.2: Områden med explosiv gasatmosfär")
 }
 
 class NonLimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, Z: Symbol, gma: Symbol, pa: Symbol, p: Symbol) extends Formula with Symbols with Units {
@@ -126,4 +138,6 @@ class NonLimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, 
 
     factor1 * Sqrt(innerFactor1 * innerFactor2 *! innerFactor3) * factor3
   }
+
+  override val reference: Option[String] = Some("B.3: Områden med explosiv gasatmosfär")
 }
