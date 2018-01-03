@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.sootsafe.server.calculator";
+
+package calculator;
+
+message ErrorMessage {
+    int32 errorCode = 1;
+    string errorMessage = 2;
+}

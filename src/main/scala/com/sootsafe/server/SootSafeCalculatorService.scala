@@ -5,7 +5,8 @@ import java.util.Date
 import com.sootsafe.engine.{EngineProxy, FlowAndPressureSequence}
 import com.sootsafe.model.{Model, ModelBuilder}
 import com.sootsafe.serializers.GRPCSerializer
-import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.{ErrorMessage, FirePressureCalculationResult}
+import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.FirePressureCalculationResult
+import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
 import com.sootsafe.server.calculator.{SootSafeCalculatorGrpc, SootSafeCalculatorOuterClass}
 import com.sootsafe.valuetable.RealValueResolver
 import io.grpc.stub.StreamObserver

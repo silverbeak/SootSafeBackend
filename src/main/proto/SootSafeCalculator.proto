@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
+import "SootSafeCommon.proto";
 
 option java_package = "com.sootsafe.server.calculator";
 
@@ -74,11 +75,6 @@ message FirePressureResultEntry {
     double aggregatedFireFlow = 7;
     double pointFirePressure = 8;
     double regularPressureDifference = 9;
-}
-
-message ErrorMessage {
-    int32 errorCode = 1;
-    string errorMessage = 2;
 }
 
 message FirePressureCalculationResult {
