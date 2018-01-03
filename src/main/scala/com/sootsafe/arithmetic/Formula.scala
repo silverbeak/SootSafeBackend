@@ -49,7 +49,7 @@ class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: S
     numerator / denominator
   }
 
-  override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = Some("B.6: Områden med explosiv gasatmosfär")
 }
 
 class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Symbol, Ta: Symbol) extends Formula with Symbols with Units {
@@ -72,7 +72,7 @@ class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Sy
     (numerator1 / denominator1) * (numerator2 / denominator2)
   }
 
-  override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = Some("B.7: Områden med explosiv gasatmosfär")
 }
 
 class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula with Symbols with Units {
@@ -140,4 +140,37 @@ class NonLimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, 
   }
 
   override val reference: Option[String] = Some("B.3: Områden med explosiv gasatmosfär")
+}
+
+class ReleaseCharacter(k: Symbol, lfl: Symbol, qg: Symbol) extends Formula with Symbols with Units {
+  override val reference: Option[String] = None
+
+  val result = Symbol(Expression.Zero, "Q_{gk}")
+
+  override def texifyFormula(): String = s"""${result.sign} = \\dfrac{${qg.sign}}{${k.sign}\\ ${lfl.sign}} ($cubic_meter_per_second)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = {
+    val numerator = qg.expression
+    val denominator = k.expression * lfl.expression
+
+    numerator / denominator
+  }
+}
+
+class VolumetricGasFlow(wg: Symbol, rhoG: Symbol) extends Formula with Symbols with Units {
+  private val qg = Symbol(Expression.Zero, "Q_g")
+
+  override def texifyFormula(): String = s"""${qg.sign} = \\dfrac{${wg.sign}}{${rhoG.sign}} ($cubic_meter_per_second)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = wg.expression / rhoG.expression
+
+  override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
 }

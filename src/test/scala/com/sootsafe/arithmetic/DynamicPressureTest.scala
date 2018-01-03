@@ -113,4 +113,37 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     }
   }
 
+  "Release character" must {
+
+    val k = Symbol(Value(0.25), "k")
+    val lfl = Symbol(Value(10), "LFL")
+    val qg = Symbol(Value(33.4), "Q_g")
+
+    val releaseCharacter = new ReleaseCharacter(k, lfl, qg)
+
+    "texify formula" in {
+      releaseCharacter.texifyFormula() should be("""Q_{gk} = \dfrac{Q_g}{k\ LFL} (m^3/s)""")
+    }
+
+    "texify calculation" in {
+      releaseCharacter.texify() should be("""\dfrac{33.4}{0.25 \times 10.0}""")
+    }
+  }
+
+  "Volumetric gas flow" must {
+
+    val wg = Symbol(Value(4.5), "W_g")
+    val rhoG = Symbol(Value(0.88), "\\rho_g")
+
+    val volumetricGasFlow = new VolumetricGasFlow(wg, rhoG)
+
+    "texify formula" in {
+      volumetricGasFlow.texifyFormula() should be("""Q_g = \dfrac{W_g}{\rho_g} (m^3/s)""")
+    }
+
+    "texify calculation" in {
+      println(volumetricGasFlow.texify())
+    }
+  }
+
 }
