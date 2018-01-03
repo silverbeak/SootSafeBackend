@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "SootSafeCommon.proto";
+
+option java_package = "com.sootsafe.server.calculator";
+
+package calculator;
+
+message ReleaseRateResultEntry {
+    int32 key = 1;
+}
+
+message ReleaseRateCalculationResult {
+    repeated ReleaseRateResultEntry entries = 1;
+    ErrorMessage errorMessage = 2;
+}
+
+message ReleaseRateRequest {
+    int32 key = 1;
+    bool isGasCalculation = 2;
+    bool performReleaseCalculation = 3;
+    bool hasReleaseRateInKgPerSecond = 4;
+    bool isEvaporationFromPool = 5;
+}
+
+service ReleaseRateCalculator {
+    rpc GetReleaseRate(ReleaseRateRequest) returns (ReleaseRateCalculationResult) {}
+}

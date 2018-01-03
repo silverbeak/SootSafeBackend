@@ -7,6 +7,7 @@ class SootSafeCalculatorService(port: Int) {
   private val server: Server = ServerBuilder
     .forPort(port)
     .addService(new SootSafeCalculatorImpl())
+    .addService(new ReleaseRateCalculatorImpl())
     .build()
 
   def start(): Unit = {
