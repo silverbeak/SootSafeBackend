@@ -29,7 +29,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers {
       result.texify() should be("""\dfrac{0.44}{33.4 \times 0.1}""")
     }
 
-    "return an expression [!performRelease, hasReleaseRate, isGas, !isEvaporation]" in {
+    "return an expression [!performRelease, hasReleaseRate, isGas, !isEvaporation] (rho is given)" in {
       val result = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
         hasReleaseRateInKgPerSecond = true,
         isGasCalculation = true,
@@ -38,6 +38,17 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers {
 
       result.calculate() should be (0.08091924259588931)
       result.texify() should be("""\dfrac{0.2702702702702703}{33.4 \times 0.1}""")
+    }
+
+    "return an expression [!performRelease, hasReleaseRate, isGas, !isEvaporation] (molar mass is given)" in {
+      val result = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
+        hasReleaseRateInKgPerSecond = true,
+        isGasCalculation = true,
+        isEvaporationFromPool = false,
+        .44, 33.4, 0.1, 9, Some(33.3), None)
+
+      result.calculate() should be (2.609382631100853)
+      result.texify() should be("""\dfrac{8.715337987876849}{33.4 \times 0.1}""")
     }
   }
 
