@@ -84,18 +84,12 @@ object ReleaseRateCalculator extends Symbols {
         // För vätska: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
         (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(qg), "Q_g"))
 
-      case (false, true, true, _) =>
+      case (false, _, true, _) =>
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
         val b5formula = calculateB5(wg, M, rhoG)
         val qgSymbol = Symbol(Value(b5formula.calculate()), "Q_g")
         (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), qgSymbol)
-
-      case (false, false, true, _) =>
-        // För vätska: Beräkna Qg(ekv B.5)
-        // För vätska: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        // TODO: Perform all calcs
-        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(qg), "Q_g"))
 
       case (true, false, _, false) =>
         // För gas: Beräkna Wg(ekv B.1)

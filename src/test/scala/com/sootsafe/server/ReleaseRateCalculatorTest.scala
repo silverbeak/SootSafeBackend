@@ -29,26 +29,44 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers {
       result.texify() should be("""\dfrac{0.44}{33.4 \times 0.1}""")
     }
 
-    "return an expression [!performRelease, hasReleaseRate, isGas, !isEvaporation] (rho is given)" in {
-      val result = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
+    "return an expression [!performRelease, hasReleaseRate, _, _] (rho is given)" in {
+      val resultForGas = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
         hasReleaseRateInKgPerSecond = true,
         isGasCalculation = true,
         isEvaporationFromPool = false,
         .44, 33.4, 0.1, 9, None, Some(33.3))
 
-      result.calculate() should be (0.08091924259588931)
-      result.texify() should be("""\dfrac{0.2702702702702703}{33.4 \times 0.1}""")
+      val resultForLiquid = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
+        hasReleaseRateInKgPerSecond = true,
+        isGasCalculation = true,
+        isEvaporationFromPool = false,
+        .44, 33.4, 0.1, 9, None, Some(33.3))
+
+      resultForGas.calculate() should be (0.08091924259588931)
+      resultForGas.texify() should be("""\dfrac{0.2702702702702703}{33.4 \times 0.1}""")
+
+      resultForLiquid.calculate() should be (0.08091924259588931)
+      resultForLiquid.texify() should be("""\dfrac{0.2702702702702703}{33.4 \times 0.1}""")
     }
 
-    "return an expression [!performRelease, hasReleaseRate, isGas, !isEvaporation] (molar mass is given)" in {
-      val result = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
+    "return an expression [!performRelease, hasReleaseRate, _, _] (molar mass is given)" in {
+      val resultForGas = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
         hasReleaseRateInKgPerSecond = true,
         isGasCalculation = true,
         isEvaporationFromPool = false,
         .44, 33.4, 0.1, 9, Some(33.3), None)
 
-      result.calculate() should be (2.609382631100853)
-      result.texify() should be("""\dfrac{8.715337987876849}{33.4 \times 0.1}""")
+      val resultForLiquid = ReleaseRateCalculator.performCalculation(performReleaseCalculation = false,
+        hasReleaseRateInKgPerSecond = true,
+        isGasCalculation = true,
+        isEvaporationFromPool = false,
+        .44, 33.4, 0.1, 9, Some(33.3), None)
+
+      resultForGas.calculate() should be (2.609382631100853)
+      resultForGas.texify() should be("""\dfrac{8.715337987876849}{33.4 \times 0.1}""")
+
+      resultForLiquid.calculate() should be (2.609382631100853)
+      resultForLiquid.texify() should be("""\dfrac{8.715337987876849}{33.4 \times 0.1}""")
     }
   }
 
