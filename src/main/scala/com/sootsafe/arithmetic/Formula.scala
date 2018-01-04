@@ -174,3 +174,19 @@ class VolumetricGasFlow(wg: Symbol, rhoG: Symbol) extends Formula with Symbols w
 
   override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
 }
+
+class MolarMassToRho(M: Symbol, pa: Symbol, R: Symbol, Ta: Symbol) extends Formula with Symbols with Units {
+  private val rhoG = Symbol(Expression.Zero, """\rho_g""")
+
+  override val reference: Option[String] = Some("Områden med explosiv gasatmosfär")
+
+  override def texifyFormula(): String = s"""${rhoG.sign} = \\dfrac{${pa.sign}${M.sign}}{${R.sign}${Ta.sign}} ($kg_per_cubic_meter)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = {
+    (pa.expression * M.expression) / (R.expression * Ta.expression)
+  }
+}

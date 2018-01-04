@@ -146,4 +146,22 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     }
   }
 
+  "Molar mass to rho" must {
+
+    val M = Symbol(Value(43), "M")
+    val pa = Symbol(Value(.98), "p_a")
+    val R = Symbol(Value(0.1), "R")
+    val Ta = Symbol(Value(5), "T_a")
+
+    val molarMassToRho = new MolarMassToRho(M, pa, R, Ta)
+
+    "texify formula" in {
+      molarMassToRho.texifyFormula() should be("""\rho_g = \dfrac{p_aM}{RT_a} (kg/m^3)""")
+    }
+
+    "texify calculation" in {
+      molarMassToRho.texify() should be("""\dfrac{0.98 \times 43.0}{0.1 \times 5.0}""")
+    }
+  }
+
 }
