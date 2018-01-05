@@ -55,12 +55,17 @@ object ReleaseRateCalculator extends Symbols {
                                          rhoG: Option[Double],
                                          cd: Double,
                                          S: Double,
-                                         deltaP: Double): Expression = {
+                                         deltaP: Double,
+                                         Ap: Double,
+                                         uw: Double,
+                                         pv: Double,
+                                         T: Double,
+                                         R: Double): Expression = {
     val (kSymbol, lflSymbol, qgSymbol) = prepareSymbols(performReleaseCalculation,
       hasReleaseRateInKgPerSecond,
       isGasCalculation,
       isEvaporationFromPool,
-      qg, k, lfl, wg, M, rhoG, cd, S, deltaP)
+      qg, k, lfl, wg, M, rhoG, cd, S, deltaP, Ap, uw, pv, T, R)
 
     val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
 
@@ -79,7 +84,12 @@ object ReleaseRateCalculator extends Symbols {
                                      rhoG: Option[Double],
                                      cd: Double,
                                      S: Double,
-                                     deltaP: Double): (Symbol, Symbol, Symbol) = {
+                                     deltaP: Double,
+                                     Ap: Double,
+                                     uw: Double,
+                                     pv: Double,
+                                     T: Double,
+                                     R: Double): (Symbol, Symbol, Symbol) = {
 
     (performReleaseCalculation, isGasCalculation, hasReleaseRateInKgPerSecond, isEvaporationFromPool) match {
       case (false, true, false, _) =>
@@ -116,8 +126,19 @@ object ReleaseRateCalculator extends Symbols {
         // För gas: Beräkna Wg(ekv B.6)
         // För gas: Beräkna Qg(ekv B.7)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        // TODO: Perform all calcs
-        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(qg), "Q_g"))
+
+        val uwSymbol = Symbol(Value(uw), "u_w")
+        val apSymbol = Symbol(Value(Ap), "A_p")
+        val pvSymbol = Symbol(Value(pv), "p_v")
+        val mSymbol = Symbol(Value(M.getOrElse(???)), "M")
+        val rSymbol = Symbol(Value(R), "R")
+        val tSymbol = Symbol(Value(T), "T")
+
+        val we = new Evaporation(uwSymbol, apSymbol, pvSymbol, mSymbol, rSymbol, tSymbol).calculate()
+
+        val b5formula = calculateB5(we, M, rhoG)
+        val qgSymbol = Symbol(Value(b5formula.calculate()), "Q_g")
+        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), qgSymbol)
 
       case (true, true, _, _) =>
         // För vätska: Beräkna kritiskt tryck  (ekv B.2)
