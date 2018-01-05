@@ -52,12 +52,15 @@ object ReleaseRateCalculator extends Symbols {
                                          lfl: Double,
                                          wg: Double,
                                          M: Option[Double],
-                                         rhoG: Option[Double]): Expression = {
+                                         rhoG: Option[Double],
+                                         cd: Double,
+                                         S: Double,
+                                         deltaP: Double): Expression = {
     val (kSymbol, lflSymbol, qgSymbol) = prepareSymbols(performReleaseCalculation,
       hasReleaseRateInKgPerSecond,
       isGasCalculation,
       isEvaporationFromPool,
-      qg, k, lfl, wg, M, rhoG)
+      qg, k, lfl, wg, M, rhoG, cd, S, deltaP)
 
     val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
 
@@ -73,7 +76,10 @@ object ReleaseRateCalculator extends Symbols {
                                      lfl: Double,
                                      wg: Double,
                                      M: Option[Double],
-                                     rhoG: Option[Double]): (Symbol, Symbol, Symbol) = {
+                                     rhoG: Option[Double],
+                                     cd: Double,
+                                     S: Double,
+                                     deltaP: Double): (Symbol, Symbol, Symbol) = {
 
     (performReleaseCalculation, isGasCalculation, hasReleaseRateInKgPerSecond, isEvaporationFromPool) match {
       case (false, true, false, _) =>
@@ -95,8 +101,16 @@ object ReleaseRateCalculator extends Symbols {
         // För gas: Beräkna Wg(ekv B.1)
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        // TODO: Perform all calcs
-        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(qg), "Q_g"))
+
+        val cdSymbol = Symbol(Value(cd), "C_d")
+        val sSymbol = Symbol(Value(S), "S")
+        val deltaPSymbol = Symbol(Value(deltaP), s"${delta.sign}p")
+
+        val wg = new ReleaseRateOfLiquid(cdSymbol, sSymbol, deltaPSymbol).calculate()
+
+        val b5formula = calculateB5(wg, M, rhoG)
+        val qgSymbol = Symbol(Value(b5formula.calculate()), "Q_g")
+        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), qgSymbol)
 
       case (true, false, _, true) =>
         // För gas: Beräkna Wg(ekv B.6)
