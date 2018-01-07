@@ -60,12 +60,20 @@ object ReleaseRateCalculator extends Symbols {
                                          uw: Double,
                                          pv: Double,
                                          T: Double,
-                                         R: Double): Expression = {
+                                         R: Double,
+                                         gma: Double,
+                                         pa: Double,
+                                         p: Double,
+                                         criticalGasPressure: Double,
+                                         gasCompressionFactor: Double): Expression = {
+
     val (kSymbol, lflSymbol, qgSymbol) = prepareSymbols(performReleaseCalculation,
       hasReleaseRateInKgPerSecond,
       isGasCalculation,
       isEvaporationFromPool,
-      qg, k, lfl, wg, M, rhoG, cd, S, deltaP, Ap, uw, pv, T, R)
+      qg, k, lfl, wg, M, rhoG, cd, S, deltaP, Ap, uw, pv, T, R, gma, pa, p,
+      criticalGasPressure,
+      gasCompressionFactor)
 
     val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
 
@@ -89,7 +97,12 @@ object ReleaseRateCalculator extends Symbols {
                                      uw: Double,
                                      pv: Double,
                                      T: Double,
-                                     R: Double): (Symbol, Symbol, Symbol) = {
+                                     R: Double,
+                                     gma: Double,
+                                     pa: Double,
+                                     p: Double,
+                                     criticalPressure: Double,
+                                     gasCompressionFactor: Double): (Symbol, Symbol, Symbol) = {
 
     (performReleaseCalculation, isGasCalculation, hasReleaseRateInKgPerSecond, isEvaporationFromPool) match {
       case (false, true, false, _) =>
@@ -142,8 +155,29 @@ object ReleaseRateCalculator extends Symbols {
 
       case (true, true, _, _) =>
         // För vätska: Beräkna kritiskt tryck  (ekv B.2)
-        // TODO: Perform all calcs
-        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(qg), "Q_g"))
+
+        val gmaSymbol = gamma.copy(expression = Value(gma))
+        val paSymbol = Symbol(Value(pa), "p_a")
+        val mSymbol = Symbol(Value(M.getOrElse(???)), "M")
+        val rSymbol = Symbol(Value(R), "R")
+        val tSymbol = Symbol(Value(T), "T")
+        val cdSymbol = Symbol(Value(cd), "C_d")
+        val sSymbol = Symbol(Value(S), "S")
+        val zSymbol = Symbol(Value(gasCompressionFactor), "Z")
+        val pSymbol = Symbol(Value(p), "p")
+
+        val wg = new CriticalGasPressure(paSymbol, gmaSymbol).calculate() match {
+          case gasPressure if gasPressure > criticalPressure =>
+            // För vätska: Beräkna Wg genom B.3
+            new NonLimitedGasRate(cdSymbol, sSymbol, mSymbol, rSymbol, tSymbol, zSymbol, gmaSymbol, paSymbol, pSymbol)
+          case _ =>
+            // För vätska: Beräkna Wg genom B.4
+            new LimitedGasRate(cdSymbol, sSymbol, mSymbol, rSymbol, tSymbol, zSymbol, gmaSymbol, pSymbol)
+        }
+
+        val b5formula = calculateB5(wg.calculate(), M, rhoG)
+        val qgSymbol = Symbol(Value(b5formula.calculate()), "Q_g")
+        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), qgSymbol)
     }
   }
 
