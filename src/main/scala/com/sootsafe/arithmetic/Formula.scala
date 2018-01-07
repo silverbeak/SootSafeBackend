@@ -190,3 +190,31 @@ class MolarMassToRho(M: Symbol, pa: Symbol, R: Symbol, Ta: Symbol) extends Formu
     (pa.expression * M.expression) / (R.expression * Ta.expression)
   }
 }
+
+class LimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, Z: Symbol, gma: Symbol, p: Symbol) extends Formula with Symbols with Units {
+  private val Wg = Symbol(Expression.Zero, "W_g")
+
+  private val texFactor1 = s"""${cd.sign} ${s.sign} ${p.sign}"""
+
+  private val texInnerFactor1 = s"""${gma.sign} \\dfrac{${M.sign}}{${Z.sign}${R.sign}${T.sign}}"""
+
+  private val texInnerFactor2 = s"""\\left( { \\dfrac{2}{${gma.sign} + 1} } \\right) ^ { \\dfrac{${gamma.sign} + 1}{${gamma.sign} - 1} }"""
+
+  override def texifyFormula(): String = s"""${Wg.sign} = $texFactor1 \\sqrt{ $texInnerFactor1 $texInnerFactor2 }\\ ($kg_per_second)"""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  private def getExpression: Expression = {
+    val factor1 = cd.expression * s.expression * p.expression
+
+    val innerFactor1 = gma.expression * (M.expression / (Z.expression * R.expression * T.expression))
+    val innerFactor2 = (Value(2) / (gma.expression + Value(1))) ^ ((gma.expression + Value(1)) / (gma.expression - Value(1)))
+
+    factor1 * Sqrt(innerFactor1 * innerFactor2)
+  }
+
+  override val reference: Option[String] = Some("B.4: Områden med explosiv gasatmosfär")
+
+}

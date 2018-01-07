@@ -113,6 +113,28 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     }
   }
 
+  "Limited gas rate" must {
+
+    val cd: Symbol = Symbol(Value(34d), "C_d")
+    val sp: Symbol = Symbol(Value(45.5), "S")
+    val M: Symbol = Symbol(Value(23.999), "M")
+    val R: Symbol = Symbol(Value(0.44), "R")
+    val T: Symbol = Symbol(Value(0), "T")
+    val Z: Symbol = Symbol(Value(88.4), "Z")
+    val gma: Symbol = gamma.copy(expression = Value(.065))
+    val p: Symbol = Symbol(Value(0.005), "p")
+
+    val limitedGasRate = new LimitedGasRate(cd, sp, M, R, T, Z, gma, p)
+
+    "texify formula" in {
+      limitedGasRate.texifyFormula() should be("""W_g = C_d S p \sqrt{  \gamma  \dfrac{M}{ZRT} \left( { \dfrac{2}{ \gamma  + 1} } \right) ^ { \dfrac{ \gamma  + 1}{ \gamma  - 1} } }\ (kg/s)""")
+    }
+
+    "texify calculation" in {
+      limitedGasRate.texify() should be("""34.0 \times 45.5 \times 0.005 \times \sqrt{0.065 \times \dfrac{23.999}{88.4 \times 0.44 \times 0.0} \times {\left({\dfrac{2.0}{0.065 + 1.0}}\right)}^{\dfrac{0.065 + 1.0}{0.065 - 1.0}}}""")
+    }
+  }
+
   "Release character" must {
 
     val k = Symbol(Value(0.25), "k")
