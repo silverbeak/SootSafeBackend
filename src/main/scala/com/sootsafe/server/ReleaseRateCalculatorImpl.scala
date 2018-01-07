@@ -47,33 +47,31 @@ object ReleaseRateCalculator extends Symbols {
                                          hasReleaseRateInKgPerSecond: Boolean,
                                          isGasCalculation: Boolean,
                                          isEvaporationFromPool: Boolean,
-                                         qg: Double,
+                                         Qg: Double,
                                          k: Double = .25,
                                          lfl: Double,
-                                         wg: Double,
+                                         Wg: Double,
                                          M: Option[Double],
                                          rhoG: Option[Double],
-                                         cd: Double,
+                                         Cd: Double,
                                          S: Double,
                                          deltaP: Double,
                                          Ap: Double,
                                          uw: Double,
-                                         pv: Double,
                                          T: Double,
-                                         R: Double,
                                          gma: Double,
                                          pa: Double,
                                          p: Double,
                                          criticalGasPressure: Double,
-                                         gasCompressionFactor: Double): Expression = {
+                                         compressibilityFactor: Double): Expression = {
 
     val (kSymbol, lflSymbol, qgSymbol) = prepareSymbols(performReleaseCalculation,
       hasReleaseRateInKgPerSecond,
       isGasCalculation,
       isEvaporationFromPool,
-      qg, k, lfl, wg, M, rhoG, cd, S, deltaP, Ap, uw, pv, T, R, gma, pa, p,
+      Qg, k, lfl, Wg, M, rhoG, Cd, S, deltaP, Ap, uw, T, gma, pa, p,
       criticalGasPressure,
-      gasCompressionFactor)
+      compressibilityFactor)
 
     val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
 
@@ -84,39 +82,40 @@ object ReleaseRateCalculator extends Symbols {
                                      isGasCalculation: Boolean,
                                      hasReleaseRateInKgPerSecond: Boolean,
                                      isEvaporationFromPool: Boolean,
-                                     qg: Double,
+                                     Qg: Double,
                                      k: Double,
                                      lfl: Double,
-                                     wg: Double,
+                                     Wg: Double,
                                      M: Option[Double],
                                      rhoG: Option[Double],
-                                     cd: Double,
+                                     Cd: Double,
                                      S: Double,
                                      deltaP: Double,
                                      Ap: Double,
                                      uw: Double,
-                                     pv: Double,
                                      T: Double,
-                                     R: Double,
                                      gma: Double,
                                      pa: Double,
                                      p: Double,
                                      criticalPressure: Double,
-                                     gasCompressionFactor: Double): (Symbol, Symbol, Symbol) = {
+                                     compressibilityFactor: Double): (Symbol, Symbol, Symbol) = {
+
+    val R = 8324d
+    val rSymbol = Symbol(Value(R), "R")
 
     (performReleaseCalculation, isGasCalculation, hasReleaseRateInKgPerSecond, isEvaporationFromPool) match {
       case (false, true, false, _) =>
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(qg), "Q_g"))
+        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(Qg), "Q_g"))
 
       case (false, false, false, _) =>
         // För vätska: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(qg), "Q_g"))
+        (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), Symbol(Value(Qg), "Q_g"))
 
       case (false, _, true, _) =>
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        val b5formula = calculateB5(wg, M, rhoG)
+        val b5formula = calculateB5(Wg, M, rhoG)
         val qgSymbol = Symbol(Value(b5formula.calculate()), "Q_g")
         (Symbol(Value(k), "k"), Symbol(Value(lfl), "LFL"), qgSymbol)
 
@@ -125,7 +124,7 @@ object ReleaseRateCalculator extends Symbols {
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
 
-        val cdSymbol = Symbol(Value(cd), "C_d")
+        val cdSymbol = Symbol(Value(Cd), "C_d")
         val sSymbol = Symbol(Value(S), "S")
         val deltaPSymbol = Symbol(Value(deltaP), s"${delta.sign}p")
 
@@ -142,9 +141,8 @@ object ReleaseRateCalculator extends Symbols {
 
         val uwSymbol = Symbol(Value(uw), "u_w")
         val apSymbol = Symbol(Value(Ap), "A_p")
-        val pvSymbol = Symbol(Value(pv), "p_v")
+        val pvSymbol = Symbol(Value(p), "p")
         val mSymbol = Symbol(Value(M.getOrElse(???)), "M")
-        val rSymbol = Symbol(Value(R), "R")
         val tSymbol = Symbol(Value(T), "T")
 
         val we = new Evaporation(uwSymbol, apSymbol, pvSymbol, mSymbol, rSymbol, tSymbol).calculate()
@@ -159,11 +157,10 @@ object ReleaseRateCalculator extends Symbols {
         val gmaSymbol = gamma.copy(expression = Value(gma))
         val paSymbol = Symbol(Value(pa), "p_a")
         val mSymbol = Symbol(Value(M.getOrElse(???)), "M")
-        val rSymbol = Symbol(Value(R), "R")
         val tSymbol = Symbol(Value(T), "T")
-        val cdSymbol = Symbol(Value(cd), "C_d")
+        val cdSymbol = Symbol(Value(Cd), "C_d")
         val sSymbol = Symbol(Value(S), "S")
-        val zSymbol = Symbol(Value(gasCompressionFactor), "Z")
+        val zSymbol = Symbol(Value(compressibilityFactor), "Z")
         val pSymbol = Symbol(Value(p), "p")
 
         val wg = new CriticalGasPressure(paSymbol, gmaSymbol).calculate() match {
