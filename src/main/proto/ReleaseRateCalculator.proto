@@ -15,14 +15,37 @@ message ReleaseRateCalculationResult {
     ErrorMessage errorMessage = 2;
 }
 
+message ReleaseRateValues {
+    double volumetricGasFlowRate = 1;    // Q_g
+    double safetyFactor = 2;             // k
+    double lowerFlammableLimit = 3;      // LFL
+    double massReleaseRate = 4;          // W_g
+    double molarMass = 5;                // M
+    double gasDensity = 6;               // rho_g
+    double dischargeCoefficient = 7;     // C_d
+    double crossSectionArea = 8;         // S
+    double pressureDifference = 9;       // p
+    double poolSurfaceArea = 10;         // A_p
+    double windSpeed = 11;               // u_w
+    double absoluteTemperature = 12;     // T
+    double adiabaticExpansion = 13;      // \\gamma
+    double atmosphericPressure = 14;     // p_a
+    double containerPressure = 15;       // p
+    double criticalGasPressure = 16;     // p_c
+    double compressibilityFactor = 17;   // Z
+}
+
 message ReleaseRateRequest {
     int32 key = 1;
     bool isGasCalculation = 2;
     bool performReleaseCalculation = 3;
     bool hasReleaseRateInKgPerSecond = 4;
     bool isEvaporationFromPool = 5;
+
+    ReleaseRateValues values = 6;
 }
 
 service ReleaseRateCalculator {
-    rpc GetReleaseRate(ReleaseRateRequest) returns (ReleaseRateCalculationResult) {}
+    rpc GetReleaseRate (ReleaseRateRequest) returns (ReleaseRateCalculationResult) {
+    }
 }
