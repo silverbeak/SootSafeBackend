@@ -10,6 +10,7 @@ trait Formula extends Expression {
 
   def texifyFormula(): String
 
+  def getExpression: Expression
 }
 
 class DynamicPressure(nodeModule: NodeModule) extends Formula with Symbols {
@@ -22,7 +23,7 @@ class DynamicPressure(nodeModule: NodeModule) extends Formula with Symbols {
 
   override def texify(): String = getExpression.texify()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     val numerator = Value(8) * rho.expression * (capacity ^ Value(2))
     val denominator = (pi.expression ^ Value(2)) * (diameter ^ Value(4))
     numerator / denominator
@@ -43,7 +44,7 @@ class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: S
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     val numerator = Value(6.55) * (uw.expression ^ Value(0.78)) * ap.expression * pv.expression * (M.expression ^ Value(0.667))
     val denominator = R.expression * T.expression
     numerator / denominator
@@ -62,7 +63,7 @@ class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Sy
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     val numerator1 = Value(6.5) * (uw.expression ^ Value(0.78)) * ap.expression * pv.expression
     val denominator1 = (Value(10) ^ Value(5)) * (M.expression ^ Value(0.333))
 
@@ -85,7 +86,7 @@ class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     cd.expression * s.expression * Sqrt(Value(2) * rho.expression * deltaP.expression)
   }
 
@@ -102,7 +103,7 @@ class CriticalGasPressure(pa: Symbol, g: Symbol) extends Formula with Symbols wi
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     pa.expression * (((g.expression + Value(1)) / Value(2)) ^ (g.expression / (g.expression - Value(1))))
   }
 
@@ -128,7 +129,7 @@ class NonLimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, 
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     val factor1 = cd.expression * s.expression * p.expression
     val factor3 = (pa.expression / p.expression) ^ (Value(1d) / gma.expression)
 
@@ -153,7 +154,7 @@ class ReleaseCharacter(k: Symbol, lfl: Symbol, qg: Symbol) extends Formula with 
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     val numerator = qg.expression
     val denominator = k.expression * lfl.expression
 
@@ -170,7 +171,7 @@ class VolumetricGasFlow(wg: Symbol, rhoG: Symbol) extends Formula with Symbols w
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = wg.expression / rhoG.expression
+  def getExpression: Expression = wg.expression / rhoG.expression
 
   override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
 }
@@ -186,7 +187,7 @@ class MolarMassToRho(M: Symbol, pa: Symbol, R: Symbol, Ta: Symbol) extends Formu
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     (pa.expression * M.expression) / (R.expression * Ta.expression)
   }
 }
@@ -206,7 +207,7 @@ class LimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, Z: 
 
   override def calculate(): Double = getExpression.calculate()
 
-  private def getExpression: Expression = {
+  def getExpression: Expression = {
     val factor1 = cd.expression * s.expression * p.expression
 
     val innerFactor1 = gma.expression * (M.expression / (Z.expression * R.expression * T.expression))
