@@ -71,7 +71,7 @@ object ReleaseRateCalculator extends Symbols {
     val criticalGasPressure = getValue(values.getCriticalGasPressure)
     val compressibilityFactor = getValue(values.getCompressibilityFactor)
 
-    val qgSymbol = prepareSymbols(performReleaseCalculation,
+    val calculationSequence = prepareSymbols(performReleaseCalculation,
       isGasCalculation,
       hasReleaseRateInKgPerSecond,
       isEvaporationFromPool,
@@ -81,6 +81,8 @@ object ReleaseRateCalculator extends Symbols {
 
     val kSymbol = Symbol(k, "k")
     val lflSymbol = Symbol(lfl, "LFL")
+    val calculatedQq = calculationSequence.last
+    val qgSymbol = Symbol(Value(calculatedQq.calculate()), "Q_g")
 
     val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
 
@@ -104,24 +106,24 @@ object ReleaseRateCalculator extends Symbols {
                                      gma: Expression,
                                      pa: Expression,
                                      criticalPressure: Expression,
-                                     compressibilityFactor: Expression): Symbol = {
+                                     compressibilityFactor: Expression): Seq[Expression] = {
     val R = 8324d
     val rSymbol = Symbol(Value(R), "R")
 
     (performReleaseCalculation, isGasCalculation, hasReleaseRateInKgPerSecond, isEvaporationFromPool) match {
       case (false, true, false, _) =>
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        Symbol(Qg, "Q_g")
+        Seq(Qg)
 
       case (false, false, false, _) =>
         // För vätska: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        Symbol(Qg, "Q_g")
+        Seq(Qg)
 
       case (false, _, true, _) =>
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
         val b5formula = calculateB5(Wg, M, rhoG)
-        Symbol(Value(b5formula.calculate()), "Q_g")
+        Seq(b5formula.getExpression)
 
       case (true, false, _, false) =>
         // För gas: Beräkna Wg(ekv B.1)
@@ -135,7 +137,8 @@ object ReleaseRateCalculator extends Symbols {
         val wg = new ReleaseRateOfLiquid(cdSymbol, sSymbol, deltaPSymbol)
 
         val b5formula = calculateB5(wg, M, rhoG)
-        Symbol(Value(b5formula.calculate()), "Q_g")
+        Seq(wg.getExpression, b5formula.getExpression)
+
 
       case (true, false, _, true) =>
         // För gas: Beräkna Wg(ekv B.6)
@@ -151,7 +154,7 @@ object ReleaseRateCalculator extends Symbols {
         val we = new Evaporation(uwSymbol, apSymbol, pvSymbol, mSymbol, rSymbol, tSymbol)
 
         val b5formula = calculateB5(we, M, rhoG)
-        Symbol(Value(b5formula.calculate()), "Q_g")
+        Seq(we.getExpression, b5formula.getExpression)
 
       case (true, true, _, _) =>
         // För vätska: Beräkna kritiskt tryck  (ekv B.2)
@@ -176,7 +179,7 @@ object ReleaseRateCalculator extends Symbols {
         }
 
         val b5formula = calculateB5(wg, M, rhoG)
-        Symbol(Value(b5formula.calculate()), "Q_g")
+        Seq(wg.getExpression, b5formula.getExpression)
     }
   }
 
