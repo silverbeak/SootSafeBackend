@@ -54,6 +54,10 @@ trait Expression {
   def /(that: Expression): Expression = Division(this, that)
 
   def ^(that: Expression): Expression = Power(this, that)
+
+  def >(that: Expression): Boolean = this.calculate() > that.calculate()
+
+  def <(that: Expression): Boolean = this.calculate() < that.calculate()
 }
 
 object Expression {
