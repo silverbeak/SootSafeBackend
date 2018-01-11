@@ -2,6 +2,7 @@ package com.sootsafe.engine
 
 import java.text.DecimalFormat
 
+import com.sootsafe.reporting.SootSafeReportGenerator
 import com.sootsafe.valuetable.RealValueResolver
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -16,6 +17,8 @@ class BoverketTest extends WordSpecLike with Matchers with TestFixture {
           result.size should be(6)
           val pressureLoss = FlowAndPressureSequence.aggregatePressure(result)
           df.format(pressureLoss) should be ("241.2811") // With Boverket reference: 241.18325024548193
+
+          println(s"Latex:\n${SootSafeReportGenerator.generateLatex(result)}")
 
         case Right(error) =>
           fail(s"Expected successful calculation. Got: $error")

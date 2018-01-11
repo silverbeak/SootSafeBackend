@@ -3,6 +3,7 @@ package com.sootsafe.server
 import java.util.Date
 
 import com.sootsafe.arithmetic._
+import com.sootsafe.reporting.ReleaseRateReportGenerator
 import com.sootsafe.server.calculator.ReleaseRateCalculatorGrpc
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateCalculationResult, ReleaseRateRequest}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
@@ -82,12 +83,18 @@ object ReleaseRateCalculator extends Symbols {
     val kSymbol = Symbol(k, "k")
     val lflSymbol = Symbol(lfl, "LFL")
     val calculatedQq = calculationSequence.last
-    val qgSymbol = Symbol(Value(calculatedQq.calculate()), "Q_g")
+    val qgSymbol = Symbol(Value(calculatedQq.formula.calculate()), "Q_g")
 
     val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
 
+    val latex = ReleaseRateReportGenerator.generateLatex(calculationSequence :+ FormulaContainer(formula, Some("Release characteristics")))
+
+    println(s"Texified:\n$latex")
+
     formula
   }
+
+  case class FormulaContainer(formula: Formula, description: Option[String])
 
   private[server] def prepareSymbols(performReleaseCalculation: Boolean,
                                      isGasCalculation: Boolean,
@@ -106,24 +113,24 @@ object ReleaseRateCalculator extends Symbols {
                                      gma: Expression,
                                      pa: Expression,
                                      criticalPressure: Expression,
-                                     compressibilityFactor: Expression): Seq[Expression] = {
+                                     compressibilityFactor: Expression): Seq[FormulaContainer] = {
     val R = 8324d
     val rSymbol = Symbol(Value(R), "R")
 
     (performReleaseCalculation, isGasCalculation, hasReleaseRateInKgPerSecond, isEvaporationFromPool) match {
       case (false, true, false, _) =>
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        Seq(Qg)
+        Seq(FormulaContainer(new PlainFormula(Qg), None))
 
       case (false, false, false, _) =>
         // För vätska: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        Seq(Qg)
+        Seq(FormulaContainer(new PlainFormula(Qg), None))
 
       case (false, _, true, _) =>
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
         val b5formula = calculateB5(Wg, M, rhoG)
-        Seq(b5formula.getExpression)
+        Seq(FormulaContainer(b5formula, None))
 
       case (true, false, _, false) =>
         // För gas: Beräkna Wg(ekv B.1)
@@ -137,7 +144,7 @@ object ReleaseRateCalculator extends Symbols {
         val wg = new ReleaseRateOfLiquid(cdSymbol, sSymbol, deltaPSymbol)
 
         val b5formula = calculateB5(wg, M, rhoG)
-        Seq(wg.getExpression, b5formula.getExpression)
+        Seq(FormulaContainer(wg, None), FormulaContainer(b5formula, None))
 
 
       case (true, false, _, true) =>
@@ -154,7 +161,7 @@ object ReleaseRateCalculator extends Symbols {
         val we = new Evaporation(uwSymbol, apSymbol, pvSymbol, mSymbol, rSymbol, tSymbol)
 
         val b5formula = calculateB5(we, M, rhoG)
-        Seq(we.getExpression, b5formula.getExpression)
+        Seq(FormulaContainer(we, None), FormulaContainer(b5formula, None))
 
       case (true, true, _, _) =>
         // För vätska: Beräkna kritiskt tryck  (ekv B.2)
@@ -179,7 +186,7 @@ object ReleaseRateCalculator extends Symbols {
         }
 
         val b5formula = calculateB5(wg, M, rhoG)
-        Seq(wg.getExpression, b5formula.getExpression)
+        Seq(FormulaContainer(wg, Some("Mass release rate of gas")), FormulaContainer(b5formula, Some("Volumetric gas flow")))
     }
   }
 
@@ -202,7 +209,7 @@ object ReleaseRateCalculator extends Symbols {
       case _ => throw new Exception("Rho or M must be specified")
     }
 
-    val wgSymbol = Symbol(wg, "W_g")
+    val wgSymbol = Symbol(wg.toValue, "W_g")
     new VolumetricGasFlow(wgSymbol, rhoSymbol)
   }
 

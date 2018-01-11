@@ -1,5 +1,7 @@
 package com.sootsafe.arithmetic
 
+import java.util.UUID
+
 import com.sootsafe.model.NodeModule
 
 trait FormulaParameter
@@ -11,6 +13,14 @@ trait Formula extends Expression {
   def texifyFormula(): String
 
   def getExpression: Expression
+
+  def identifier: UUID
+}
+
+object DynamicPressure {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = None
 }
 
 class DynamicPressure(nodeModule: NodeModule) extends Formula with Symbols {
@@ -31,7 +41,15 @@ class DynamicPressure(nodeModule: NodeModule) extends Formula with Symbols {
 
   override def calculate(): Double = getExpression.calculate()
 
-  override val reference: Option[String] = None
+  override val reference: Option[String] = DynamicPressure.reference
+
+  override def identifier: UUID = DynamicPressure.identifier
+}
+
+object Evaporation {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("B.6: Områden med explosiv gasatmosfär")
 }
 
 class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: Symbol) extends Formula with Symbols with Units {
@@ -50,7 +68,15 @@ class Evaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, R: Symbol, T: S
     numerator / denominator
   }
 
-  override val reference: Option[String] = Some("B.6: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = Evaporation.reference
+
+  override def identifier: UUID = Evaporation.identifier
+}
+
+object VolumetricEvaporation {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("B.7: Områden med explosiv gasatmosfär")
 }
 
 class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Symbol, Ta: Symbol) extends Formula with Symbols with Units {
@@ -73,7 +99,15 @@ class VolumetricEvaporation(uw: Symbol, ap: Symbol, pv: Symbol, M: Symbol, T: Sy
     (numerator1 / denominator1) * (numerator2 / denominator2)
   }
 
-  override val reference: Option[String] = Some("B.7: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = VolumetricEvaporation.reference
+
+  override def identifier: UUID = VolumetricEvaporation.identifier
+}
+
+object ReleaseRateOfLiquid {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("B.1: Områden med explosiv gasatmosfär")
 }
 
 class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula with Symbols with Units {
@@ -90,7 +124,15 @@ class ReleaseRateOfLiquid(cd: Symbol, s: Symbol, deltaP: Symbol) extends Formula
     cd.expression * s.expression * Sqrt(Value(2) * rho.expression * deltaP.expression)
   }
 
-  override val reference: Option[String] = Some("B.1: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = ReleaseRateOfLiquid.reference
+
+  override def identifier: UUID = ReleaseRateOfLiquid.identifier
+}
+
+object CriticalGasPressure {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("B.2: Områden med explosiv gasatmosfär")
 }
 
 class CriticalGasPressure(pa: Symbol, g: Symbol) extends Formula with Symbols with Units {
@@ -107,7 +149,15 @@ class CriticalGasPressure(pa: Symbol, g: Symbol) extends Formula with Symbols wi
     pa.expression * (((g.expression + Value(1)) / Value(2)) ^ (g.expression / (g.expression - Value(1))))
   }
 
-  override val reference: Option[String] = Some("B.2: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = CriticalGasPressure.reference
+
+  override def identifier: UUID = CriticalGasPressure.identifier
+}
+
+object NonLimitedGasRate {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("B.3: Områden med explosiv gasatmosfär")
 }
 
 class NonLimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, Z: Symbol, gma: Symbol, pa: Symbol, p: Symbol) extends Formula with Symbols with Units {
@@ -140,11 +190,19 @@ class NonLimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, 
     factor1 * Sqrt(innerFactor1 * innerFactor2 *! innerFactor3) * factor3
   }
 
-  override val reference: Option[String] = Some("B.3: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = NonLimitedGasRate.reference
+
+  override def identifier: UUID = NonLimitedGasRate.identifier
+}
+
+object ReleaseCharacter {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = None
 }
 
 class ReleaseCharacter(k: Symbol, lfl: Symbol, qg: Symbol) extends Formula with Symbols with Units {
-  override val reference: Option[String] = None
+  override val reference: Option[String] = ReleaseCharacter.reference
 
   val result = Symbol(Expression.Zero, "Q_{gk}")
 
@@ -160,6 +218,14 @@ class ReleaseCharacter(k: Symbol, lfl: Symbol, qg: Symbol) extends Formula with 
 
     numerator / denominator
   }
+
+  override def identifier: UUID = ReleaseCharacter.identifier
+}
+
+object VolumetricGasFlow {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
 }
 
 class VolumetricGasFlow(wg: Symbol, rhoG: Symbol) extends Formula with Symbols with Units {
@@ -173,13 +239,21 @@ class VolumetricGasFlow(wg: Symbol, rhoG: Symbol) extends Formula with Symbols w
 
   def getExpression: Expression = wg.expression / rhoG.expression
 
-  override val reference: Option[String] = Some("B.5: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = VolumetricGasFlow.reference
+
+  override def identifier: UUID = VolumetricGasFlow.identifier
+}
+
+object MolarMassToRho {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("Områden med explosiv gasatmosfär")
 }
 
 class MolarMassToRho(M: Symbol, pa: Symbol, R: Symbol, Ta: Symbol) extends Formula with Symbols with Units {
   private val rhoG = Symbol(Expression.Zero, """\rho_g""")
 
-  override val reference: Option[String] = Some("Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = MolarMassToRho.reference
 
   override def texifyFormula(): String = s"""${rhoG.sign} = \\dfrac{${pa.sign}${M.sign}}{${R.sign}${Ta.sign}} ($kg_per_cubic_meter)"""
 
@@ -190,6 +264,14 @@ class MolarMassToRho(M: Symbol, pa: Symbol, R: Symbol, Ta: Symbol) extends Formu
   def getExpression: Expression = {
     (pa.expression * M.expression) / (R.expression * Ta.expression)
   }
+
+  override def identifier: UUID = MolarMassToRho.identifier
+}
+
+object LimitedGasRate {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("B.4: Områden med explosiv gasatmosfär")
 }
 
 class LimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, Z: Symbol, gma: Symbol, p: Symbol) extends Formula with Symbols with Units {
@@ -216,6 +298,28 @@ class LimitedGasRate(cd: Symbol, s: Symbol, M: Symbol, R: Symbol, T: Symbol, Z: 
     factor1 * Sqrt(innerFactor1 * innerFactor2)
   }
 
-  override val reference: Option[String] = Some("B.4: Områden med explosiv gasatmosfär")
+  override val reference: Option[String] = LimitedGasRate.reference
 
+  override def identifier: UUID = LimitedGasRate.identifier
+
+}
+
+object PlainFormula {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = None
+}
+
+class PlainFormula(expression: Expression) extends Formula {
+  override val reference: Option[String] = PlainFormula.reference
+
+  override def texifyFormula(): String = ""
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+
+  override def getExpression: Expression = expression
+
+  override def identifier: UUID = PlainFormula.identifier
 }
