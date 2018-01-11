@@ -1,0 +1,48 @@
+\documentclass[12pt, letterpaper]{article}
+    \usepackage{amsmath}
+    \usepackage{graphicx}
+    \usepackage[utf8]{inputenc}
+    \usepackage{mathtools}
+    \usepackage{physics}
+    \usepackage{siunitx}
+    \usepackage[margin=0.8in]{geometry}
+    % \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+    %
+    \sisetup{round-mode=places,round-precision=2}
+    %
+    \makeatletter
+    % \let\oldabs\abs
+    % \def\abs{\@ifstar{\oldabs}{\oldabs*}}
+    %
+    \title{Release rate report}
+    \author{Jane Doe}
+    \date{\today}
+    %
+    \begin{document}
+    %
+    \begin{titlepage}
+    \maketitle
+    \thispagestyle{empty}
+    \end{titlepage}
+    %
+    \section{Calculations}
+    %
+    \subsection{Mass release rate of gas}
+    (Formula \ref{0ccb5f40-da58-46e7-a794-aec958155f1c})
+    \hfill \break
+    \par
+    \begin{flushleft}
+    $ 7.0 \times 0.7 \times 44.0 \times \sqrt{55.0 \times \dfrac{33.3}{11.0 \times 8324.0 \times 3.0} \times {\left({\dfrac{2.0}{55.0 + 1.0}}\right)}^{\dfrac{55.0 + 1.0}{55.0 - 1.0}}} = 3.1278864148558023 $
+    \end{flushleft}
+    %
+    %
+    \pagebreak
+    \section{Formulas used}
+    %
+    \paragraph{}
+    \begin{equation} \label{0ccb5f40-da58-46e7-a794-aec958155f1c}
+    W_g = C_d S p \sqrt{  \gamma  \dfrac{M}{ZRT} \left( { \dfrac{2}{ \gamma  + 1} } \right) ^ { \dfrac{ \gamma  + 1}{ \gamma  - 1} } }\ (kg/s)
+    \end{equation}
+    \newline
+    %
+    \end{document}

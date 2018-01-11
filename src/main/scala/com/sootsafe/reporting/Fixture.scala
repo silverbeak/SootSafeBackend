@@ -13,6 +13,8 @@ object Fixture {
         |\\usepackage{physics}
         |\\usepackage{siunitx}
         |\\usepackage[margin=0.8in]{geometry}
+        |\\usepackage[printwatermark]{xwatermark}
+        |\\newwatermark*[allpages,color=red!50,angle=45,scale=3,xpos=0,ypos=0]{SOOTSAFE.COM}
         |
         |% \\DeclarePairedDelimiter\\abs{\\lvert}{\\rvert}%
         |%
