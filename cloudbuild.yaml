@@ -1,0 +1,38 @@
+# Java runtime builder pipeline.
+
+steps:
+
+# build the user's source and generate artifacts for docker
+- name: 'gcr.io/gcp-runtimes/java/runtime-builder:latest'
+  args:
+  # Mappings of server and JDK config names to runtime images.
+  - '--server-runtimes-map'
+  - '*|*=gcr.io/google-appengine/jetty:9'
+  - 'openjdk8|*=gcr.io/google-appengine/jetty:9'
+  - 'openjdk8|jetty9=gcr.io/google-appengine/jetty:9'
+  - 'openjdk8|jetty=gcr.io/google-appengine/jetty:9'
+  - 'openjdk8|tomcat8=gcr.io/google-appengine/tomcat:8'
+  - 'openjdk8|tomcat=gcr.io/google-appengine/tomcat:8'
+  - '*|jetty9=gcr.io/google-appengine/jetty:9'
+  - '*|jetty=gcr.io/google-appengine/jetty:latest'
+  - '*|tomcat8=gcr.io/google-appengine/tomcat:8'
+  - '*|tomcat=gcr.io/google-appengine/tomcat:latest'
+
+  # Mappings of JDK config names to images.
+  - '--jdk-runtimes-map'
+  - '*=gcr.io/google-appengine/openjdk:8'
+  - 'openjdk8=gcr.io/google-appengine/openjdk:8'
+  - 'openjdk9=gcr.io/google-appengine/openjdk:9'
+
+  # Image to use for gradle builds
+  - '--gradle-docker-image=gcr.io/cloud-builders/gradle:4.0-jdk-8'
+
+  # Disable building from source
+  # FIXME: https://github.com/GoogleCloudPlatform/runtime-builder-java/milestone/2
+  - '--no-source-build'
+
+# execute the docker build to produce the resulting image
+- name: 'gcr.io/cloud-builders/docker:latest'
+  args: ['build', '--tag=$_OUTPUT_IMAGE', '.']
+
+images: ['$_OUTPUT_IMAGE']

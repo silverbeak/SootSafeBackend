@@ -8,3 +8,7 @@ out/
 target/
 src/*/resources/keys/
 temp/
+bin/
+.classpath
+.project
+.settings/
