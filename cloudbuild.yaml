@@ -33,6 +33,6 @@ steps:
 
 # execute the docker build to produce the resulting image
 - name: 'gcr.io/cloud-builders/gradle'
-  args: ['build']
+  args: ['distDocker']
 
 images: ['$_OUTPUT_IMAGE']
