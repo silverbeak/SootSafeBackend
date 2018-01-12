@@ -32,7 +32,9 @@ steps:
   - '--no-source-build'
 
 # execute the docker build to produce the resulting image
-- name: 'gcr.io/cloud-builders/docker:latest'
-  args: ['build', '--tag=$_OUTPUT_IMAGE', '.']
+- name: 'spinnakerrelease/gradle_cache'
+  env: ["GRADLE_USER_HOME=/gradle_cache/.gradle"]
+  entrypoint: "bash"
+  args: [ "-c", "./gradlew dockerDist"]
 
 images: ['$_OUTPUT_IMAGE']
