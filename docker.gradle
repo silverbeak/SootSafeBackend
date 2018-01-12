@@ -1,6 +1,7 @@
 apply plugin: 'docker'
 apply plugin: 'application'
 
+project.group = 'gcr.io/sootsafe-app-test'
 mainClassName = 'com.sootsafe.server.Runner'
 
 dependencies {
