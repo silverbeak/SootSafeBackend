@@ -29,7 +29,7 @@ steps:
 
   # Disable building from source
   # FIXME: https://github.com/GoogleCloudPlatform/runtime-builder-java/milestone/2
-  - '--no-source-build'
+  #- '--no-source-build'
 
 # execute the docker build to produce the resulting image
 - name: 'spinnakerrelease/gradle_cache'
