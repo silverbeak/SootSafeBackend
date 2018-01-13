@@ -4,7 +4,7 @@ import "SootSafeCommon.proto";
 
 option java_package = "com.sootsafe.server.calculator";
 
-package calculator;
+package com.sootsafe.server.calculator;
 
 message ReleaseRateResultEntry {
     int32 key = 1;

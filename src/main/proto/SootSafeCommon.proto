@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option java_package = "com.sootsafe.server.calculator";
 
-package calculator;
+package com.sootsafe.server.calculator;
 
 message ErrorMessage {
     int32 errorCode = 1;
