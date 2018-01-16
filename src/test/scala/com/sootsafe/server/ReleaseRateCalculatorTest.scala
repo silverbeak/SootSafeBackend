@@ -5,6 +5,8 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpecLike}
 
 class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterEach {
 
+  import scala.collection.JavaConversions._
+
   private var baseRequestValues: ReleaseRateValues.Builder = _
 
   override def beforeEach(): Unit = {
@@ -50,9 +52,16 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
     "handle request" in {
       val request = ReleaseRateRequest
         .newBuilder()
+        .setValues(baseRequestValues)
         .build()
 
-      ReleaseRateCalculator.handleRequest(request) should be(Right("Not yet implemented"))
+
+      ReleaseRateCalculator.handleRequest(request) match {
+        case Right(errorString) => fail(errorString)
+        case Left(result) =>
+          result.getEntriesList.head.getKey should be(request.getKey)
+          result.getEntriesList.head.getReleaseCharacter should be(0.1317365269461078)
+      }
     }
 
     "return an expression [!performRelease, !isGas, hasReleaseRate, !isEvaporation]" in {

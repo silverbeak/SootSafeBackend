@@ -8,6 +8,7 @@ package com.sootsafe.server.calculator;
 
 message ReleaseRateResultEntry {
     int32 key = 1;
+    double releaseCharacter = 2;
 }
 
 message ReleaseRateCalculationResult {

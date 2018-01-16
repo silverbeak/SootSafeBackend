@@ -5,9 +5,11 @@ import java.util.Date
 import com.sootsafe.arithmetic._
 import com.sootsafe.reporting.ReleaseRateReportGenerator
 import com.sootsafe.server.calculator.ReleaseRateCalculatorGrpc
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateCalculationResult, ReleaseRateRequest}
+import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateCalculationResult, ReleaseRateRequest, ReleaseRateResultEntry}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
 import io.grpc.stub.StreamObserver
+
+import scala.util.{Failure, Success, Try}
 
 class ReleaseRateCalculatorImpl extends ReleaseRateCalculatorGrpc.ReleaseRateCalculatorImplBase {
 
@@ -40,8 +42,22 @@ class ReleaseRateCalculatorImpl extends ReleaseRateCalculatorGrpc.ReleaseRateCal
 object ReleaseRateCalculator extends Symbols {
   private[server] def handleRequest(request: ReleaseRateRequest): Either[ReleaseRateCalculationResult, String] = {
 
+    import scala.collection.JavaConversions._
 
-    Right("Not yet implemented")
+    Try(performCalculation(request)) match {
+      case Success(releaseRateExpression) =>
+        val entry = ReleaseRateResultEntry
+          .newBuilder()
+          .setKey(request.getKey)
+          .setReleaseCharacter(releaseRateExpression.calculate())
+          .build()
+
+        val result = ReleaseRateCalculationResult.newBuilder().addAllEntries(Seq(entry)).build()
+        Left(result)
+      case Failure(e) =>
+        Right(s"Could not calculate release rate character. Error: ${e.getMessage}")
+    }
+
   }
 
   private[server] def performCalculation(request: ReleaseRateRequest): Expression = {
@@ -89,7 +105,7 @@ object ReleaseRateCalculator extends Symbols {
 
     val latex = ReleaseRateReportGenerator.generateLatex(calculationSequence :+ FormulaContainer(formula, Some("Release characteristics")))
 
-    println(s"Texified:\n$latex")
+    //    println(s"Texified:\n$latex")
 
     formula
   }
