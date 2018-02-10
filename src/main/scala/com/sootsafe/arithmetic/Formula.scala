@@ -323,3 +323,25 @@ class PlainFormula(expression: Expression) extends Formula {
 
   override def identifier: UUID = PlainFormula.identifier
 }
+
+object BackgroundConcentrationFormula {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("C.1: Områden med explosiv gasatmosfär")
+}
+
+class BackgroundConcentrationFormula(f: Symbol, Qg: Symbol, Q2: Symbol) extends Formula with Units {
+  override val reference: Option[String] = BackgroundConcentrationFormula.reference
+
+  private val Xb = Symbol(Expression.Zero, "X_b")
+
+  override def texifyFormula(): String = s"""${Xb.sign} = \\dfrac{${f.sign}${Qg.sign}}{${Q2.sign}} ($vol_vol)"""
+
+  override def getExpression: Expression = (f.expression * Qg.expression) / Q2.expression
+
+  override def identifier: UUID = BackgroundConcentrationFormula.identifier
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+}
