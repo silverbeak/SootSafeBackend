@@ -36,6 +36,15 @@ message ReleaseRateValues {
     double compressibilityFactor = 17;   // Z
 }
 
+message BackgroundConcentrationValues {
+    double safetyFactor = 1;            // f
+    double volumetricFlowAir = 2;       // Q1
+    double volumetricFlowAirGas = 3;    // Q2
+    double airChangeFrequency = 4;      // C
+    double roomVolume = 5;              // V0
+    double crossSectionArea = 6;        // S
+}
+
 message ReleaseRateRequest {
     int32 key = 1;
     bool isGasCalculation = 2;
@@ -43,7 +52,11 @@ message ReleaseRateRequest {
     bool hasReleaseRateInKgPerSecond = 4;
     bool isEvaporationFromPool = 5;
 
-    ReleaseRateValues values = 6;
+    ReleaseRateValues releaseRateValues = 6;
+
+    bool isIndoors = 7;
+
+    BackgroundConcentrationValues bgConcentrationValues = 8;
 }
 
 service ReleaseRateCalculator {

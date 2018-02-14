@@ -52,7 +52,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
     "handle request" in {
       val request = ReleaseRateRequest
         .newBuilder()
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
 
@@ -72,7 +72,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(false)
         .setIsEvaporationFromPool(false)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(requestForGas)
@@ -91,7 +91,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)
@@ -102,7 +102,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)
@@ -122,7 +122,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)
@@ -133,7 +133,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)
@@ -153,7 +153,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(false)
         .setIsEvaporationFromPool(false)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)
@@ -170,7 +170,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(false)
         .setIsEvaporationFromPool(true)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)
@@ -189,7 +189,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(true)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)
@@ -205,7 +205,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(true)
-        .setValues(baseRequestValues)
+        .setReleaseRateValues(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)

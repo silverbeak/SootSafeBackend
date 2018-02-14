@@ -40,7 +40,7 @@ object ReleaseRateCalculator extends Symbols {
 
     val getValue: Double => Expression = value => Value(value)
 
-    val values = request.getValues
+    val values = request.getReleaseRateValues
 
     val Qg = getValue(values.getVolumetricGasFlowRate)
     val k = getValue(values.getSafetyFactor)
