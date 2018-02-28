@@ -2,7 +2,7 @@ package com.sootsafe.reporting
 
 import com.sootsafe.arithmetic.PlainFormula
 import com.sootsafe.reporting.Fixture.Latex
-import com.sootsafe.server.ReleaseRateCalculator.FormulaContainer
+import com.sootsafe.engine.zone.ReleaseRateCalculator.FormulaContainer
 
 object ReleaseRateReportGenerator {
 

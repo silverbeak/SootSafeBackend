@@ -2,6 +2,7 @@ package com.sootsafe.server
 
 import java.util.Date
 
+import com.sootsafe.engine.zone.ReleaseRateCalculator
 import com.sootsafe.server.calculator.ReleaseRateCalculatorGrpc
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateCalculationResult, ReleaseRateRequest}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
@@ -14,7 +15,8 @@ class ReleaseRateCalculatorImpl extends ReleaseRateCalculatorGrpc.ReleaseRateCal
     val now = new Date().getTime
 
     val response = ReleaseRateCalculator.handleRequest(request) match {
-      case Left(result) => result
+      case Left(result) =>
+        result
       case Right(error) =>
         val errorMessage = ErrorMessage
           .newBuilder()

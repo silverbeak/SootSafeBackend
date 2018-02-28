@@ -1,11 +1,10 @@
 package com.sootsafe.server
 
+import com.sootsafe.engine.zone.ReleaseRateCalculator
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateRequest, ReleaseRateValues}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpecLike}
 
 class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterEach {
-
-  import scala.collection.JavaConversions._
 
   private var baseRequestValues: ReleaseRateValues.Builder = _
 
@@ -53,14 +52,15 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
       val request = ReleaseRateRequest
         .newBuilder()
         .setReleaseRateValues(baseRequestValues)
+        .setCasNumber("74-86-2")
         .build()
 
 
       ReleaseRateCalculator.handleRequest(request) match {
         case Right(errorString) => fail(errorString)
         case Left(result) =>
-          result.getEntriesList.head.getKey should be(request.getKey)
-          result.getEntriesList.head.getReleaseCharacter should be(0.1317365269461078)
+          result.getReleaseRateResult.getKey should be(request.getKey)
+          result.getReleaseRateResult.getReleaseCharacter should be(0.1317365269461078)
       }
     }
 

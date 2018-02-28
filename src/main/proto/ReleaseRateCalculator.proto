@@ -12,8 +12,10 @@ message ReleaseRateResultEntry {
 }
 
 message ReleaseRateCalculationResult {
-    repeated ReleaseRateResultEntry entries = 1;
-    ErrorMessage errorMessage = 2;
+    ErrorMessage errorMessage = 1;
+    ReleaseRateResultEntry releaseRateResult = 2;
+    double zoneExtent = 3;
+    string zoneLabel = 4;
 }
 
 message ReleaseRateValues {
@@ -45,6 +47,11 @@ message BackgroundConcentrationValues {
     double crossSectionArea = 6;        // S
 }
 
+message VentilationVelocityValues {
+    double elevation = 1;
+    Obstruction obstructed = 2;
+}
+
 message ReleaseRateRequest {
     int32 key = 1;
     bool isGasCalculation = 2;
@@ -57,9 +64,40 @@ message ReleaseRateRequest {
     bool isIndoors = 7;
 
     BackgroundConcentrationValues bgConcentrationValues = 8;
+
+    GradeOfRelease gradeOfRelease = 9;
+    ReleaseType releaseType = 10;
+
+    VentilationVelocityValues ventilationVelocityValues = 11;
+    VentilationAvailability ventilationAvailability = 12;
+
+    string casNumber = 13;
 }
 
 service ReleaseRateCalculator {
     rpc GetReleaseRate (ReleaseRateRequest) returns (ReleaseRateCalculationResult) {
     }
+}
+
+enum VentilationAvailability {
+    Good = 0;
+    Fair = 1;
+    Poor = 2;
+}
+
+enum GradeOfRelease {
+    Continuous = 0;
+    Primary = 1;
+    Secondary = 2;
+}
+
+enum ReleaseType {
+    Jet = 0;
+    DiffusiveJet = 1;
+    HeavyGas = 2;
+}
+
+enum Obstruction {
+    Obstructed = 0;
+    Unobstructed = 1;
 }

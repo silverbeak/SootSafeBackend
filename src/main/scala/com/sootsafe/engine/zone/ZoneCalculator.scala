@@ -1,0 +1,147 @@
+package com.sootsafe.engine.zone
+
+import com.sootsafe.arithmetic.{BackgroundConcentrationFormula, Expression, Formula, Symbol, Value}
+import com.sootsafe.server.{Element, ElementTable}
+import ReleaseRateCalculator.getValue
+import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
+
+object ZoneCalculator {
+  def determineZone(gradeOfRelease: GradeOfRelease,
+                    dilutionLevel: DilutionLevel.Value,
+                    ventilationAvailability: VentilationAvailability): String = {
+    (gradeOfRelease, dilutionLevel, ventilationAvailability) match {
+      case (GradeOfRelease.Continuous, DilutionLevel.High, VentilationAvailability.Good) => "Non-hazardous (Zone 0 NE)"
+      case (GradeOfRelease.Primary, DilutionLevel.High, VentilationAvailability.Good) => "Non-hazardous (Zone 1 NE)"
+      case (GradeOfRelease.Secondary, DilutionLevel.High, VentilationAvailability.Good) => "Non-hazardous (Zone 2 NE)"
+
+      case (GradeOfRelease.Continuous, DilutionLevel.High, VentilationAvailability.Fair) => "Zone 2 (Zone 0 NE)"
+      case (GradeOfRelease.Primary, DilutionLevel.High, VentilationAvailability.Fair) => "Zone 2 (Zone 1 NE)"
+      case (GradeOfRelease.Secondary, DilutionLevel.High, VentilationAvailability.Fair) => "Non-hazardous (Zone 2 NE)"
+
+      case (GradeOfRelease.Continuous, DilutionLevel.High, VentilationAvailability.Poor) => "Zone 1 (Zone 0 NE)"
+      case (GradeOfRelease.Primary, DilutionLevel.High, VentilationAvailability.Poor) => "Zone 2 (Zone 1 NE)"
+      case (GradeOfRelease.Secondary, DilutionLevel.High, VentilationAvailability.Poor) => "Zone 2"
+
+      case (GradeOfRelease.Continuous, DilutionLevel.Medium, VentilationAvailability.Good) => "Zone 0"
+      case (GradeOfRelease.Primary, DilutionLevel.Medium, VentilationAvailability.Good) => "Zone 1"
+      case (GradeOfRelease.Secondary, DilutionLevel.Medium, VentilationAvailability.Good) => "Zone 2"
+
+      case (GradeOfRelease.Continuous, DilutionLevel.Medium, VentilationAvailability.Fair) => "Zone 0 + Zone 2"
+      case (GradeOfRelease.Primary, DilutionLevel.Medium, VentilationAvailability.Fair) => "Zone 1 + Zone 2"
+      case (GradeOfRelease.Secondary, DilutionLevel.Medium, VentilationAvailability.Fair) => "Zone 2"
+
+      case (GradeOfRelease.Continuous, DilutionLevel.Medium, VentilationAvailability.Poor) => "Zone 0 + Zone 1"
+      case (GradeOfRelease.Primary, DilutionLevel.Medium, VentilationAvailability.Poor) => "Zone 1 + Zone 2"
+      case (GradeOfRelease.Secondary, DilutionLevel.Medium, VentilationAvailability.Poor) => "Zone 2"
+
+      case (GradeOfRelease.Continuous, DilutionLevel.Low, _) => "Zone 0"
+      case (GradeOfRelease.Primary, DilutionLevel.Low, _) => "Zone 1 or Zone 0"
+      case (GradeOfRelease.Secondary, DilutionLevel.Low, _) => "Zone 1 and even Zone 0"
+
+      case x => throw new Exception(s"Could not determine zone from combination [$x]")
+    }
+  }
+
+  private[zone] def calculateZoneExtent(request: ReleaseRateRequest, releaseCharacter: Expression): String = {
+
+    ElementTable.elements.get(request.getCasNumber) match {
+      case None => ???
+      case Some(element) =>
+        //val lfl = getValue(request.getReleaseRateValues.getLowerFlammableLimit)
+
+        val backgroundConcentration = if (request.getIsIndoors) Some(determineBackgroundConcentration(request).calculate())
+        else None
+
+        val ventilationVelocity = determineVentilationVelocity(request, element)
+        val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRateValues.getLowerFlammableLimit), releaseCharacter, request.getIsIndoors)
+        ZoneCalculator.determineZone(request.getGradeOfRelease, dilutionLevel, request.getVentilationAvailability)
+    }
+  }
+
+  private[zone] def determineBackgroundConcentration(request: ReleaseRateRequest): Formula = {
+
+    val backgroundConcentrationValues = request.getBgConcentrationValues
+
+    val QgSymbol = Symbol(getValue(request.getReleaseRateValues.getVolumetricGasFlowRate), "Q_g")
+    val fSymbol = Symbol(getValue(backgroundConcentrationValues.getSafetyFactor), "f")
+    val Q1Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAir), "Q_1")
+    val Q2Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAirGas), "Q_2")
+    val CSymbol = Symbol(getValue(backgroundConcentrationValues.getAirChangeFrequency), "C")
+    val V0Symbol = Symbol(getValue(backgroundConcentrationValues.getRoomVolume), "V_0")
+    val SSymbol = Symbol(getValue(backgroundConcentrationValues.getCrossSectionArea), "S")
+
+    new BackgroundConcentrationFormula(fSymbol, QgSymbol, Q2Symbol)
+  }
+
+  private[zone] def determineVentilationVelocity(request: ReleaseRateRequest, element: Element): (String, Expression) = {
+    val heavierThanAir = element.RDT > 1
+    if (request.getIsIndoors) {
+      ???
+    } else {
+      // This is all determined from table C.1
+      (request.getIsEvaporationFromPool, request.getVentilationVelocityValues.getObstructed, heavierThanAir, request.getVentilationVelocityValues.getElevation) match {
+        case (true, Obstruction.Unobstructed, _, _) => ("> 0.25 m/s", Value(0.25))
+        case (true, Obstruction.Obstructed, _, _) => ("> 0.1 m/s", Value(0.1))
+
+        case (_, Obstruction.Unobstructed, false, d) if d <= 2d => ("0.5 m/s", Value(0.5))
+        case (_, Obstruction.Unobstructed, false, d) if d <= 5d => ("2 m/s", Value(2))
+        case (_, Obstruction.Unobstructed, false, _) => ("1 m/s", Value(1))
+
+        case (_, Obstruction.Obstructed, false, d) if d <= 2d => ("0.5 m/s", Value(0.5))
+        case (_, Obstruction.Obstructed, false, d) if d <= 5d => ("1 m/s", Value(1))
+        case (_, Obstruction.Obstructed, false, _) => ("0.5 m/s", Value(0.5))
+
+        case (_, Obstruction.Unobstructed, true, d) if d <= 2d => ("0.3 m/s", Value(0.3))
+        case (_, Obstruction.Unobstructed, true, d) if d <= 5d => ("1 m/s", Value(1))
+        case (_, Obstruction.Unobstructed, true, _) => ("0.6 m/s", Value(0.6))
+
+        case (_, Obstruction.Obstructed, true, d) if d <= 2d => ("0.15 m/s", Value(0.15))
+        case (_, Obstruction.Obstructed, true, d) if d <= 5d => ("1 m/s", Value(1))
+        case (_, Obstruction.Obstructed, true, _) => ("0.3 m/s", Value(0.3))
+      }
+    }
+  }
+
+  private def ykxm(k: Double = 1, m: Double = 0)(x: Double): Double = k * x + m
+
+  private[zone] def determinePollutionDistance(releaseType: ReleaseType, releaseCharacter: Expression): Symbol = {
+    val line = releaseType match {
+      case ReleaseType.HeavyGas => ykxm(m = 0.015)(_)
+      case ReleaseType.DiffusiveJet => ykxm(m = 0.045)(_)
+      case ReleaseType.Jet => ykxm(m = 0.25)(_)
+      case x => throw new Exception(s"Release type $x not recognized")
+    }
+
+    Symbol(Value(line(releaseCharacter.calculate())), "m")
+  }
+
+  private[zone] def determineDilutionLevel(backgroundConcentration: Option[Double], ventilationVelocity: Expression, lfl: Expression, releaseCharacter: Expression, isIndoors: Boolean): DilutionLevel.Value = {
+    // Figure C.1
+    (isIndoors, backgroundConcentration.getOrElse(0d) > 0.25 * lfl.calculate()) match {
+      case (false, true) =>
+        DilutionLevel.Low
+      case _ =>
+        val lowLimit = ykxm(m = -0.022)(_)
+        val highLimit = ykxm(m = 0.05)(_)
+
+        ventilationVelocity.calculate() match {
+          case ventVelocity if ventVelocity < lowLimit(releaseCharacter.calculate()) => DilutionLevel.Low
+          case ventVelocity if ventVelocity > highLimit(releaseCharacter.calculate()) => DilutionLevel.High
+          case _ => DilutionLevel.Medium
+        }
+    }
+  }
+}
+
+object ZoneType extends Enumeration {
+  val Zone0: Value = Value
+  val Zone1: Value = Value
+  val Zone2: Value = Value
+}
+
+
+object DilutionLevel extends Enumeration {
+  val Low: Value = Value
+  val Medium: Value = Value
+  val High: Value = Value
+}

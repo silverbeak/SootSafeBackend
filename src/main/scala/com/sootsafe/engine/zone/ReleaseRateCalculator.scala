@@ -1,15 +1,13 @@
-package com.sootsafe.server
+package com.sootsafe.engine.zone
 
 import com.sootsafe.arithmetic._
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateCalculationResult, ReleaseRateRequest, ReleaseRateResultEntry}
+import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
 
 import scala.util.{Failure, Success, Try}
 
-object ReleaseRateCalculator extends Symbols {
+object ReleaseRateCalculator extends Symbols with RequestUtils {
 
-  private[server] def handleRequest(request: ReleaseRateRequest): Either[ReleaseRateCalculationResult, String] = {
-
-    import scala.collection.JavaConversions._
+  def handleRequest(request: ReleaseRateRequest): Either[ReleaseRateCalculationResult, String] = {
 
     Try(performCalculation(request)) match {
       case Success(releaseRateExpression) =>
@@ -19,9 +17,14 @@ object ReleaseRateCalculator extends Symbols {
           .setReleaseCharacter(releaseRateExpression.calculate())
           .build()
 
+        val zoneExtent = ZoneCalculator.determinePollutionDistance(request.getReleaseType, releaseRateExpression)
+        val zoneLabel = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression)
+
         val result = ReleaseRateCalculationResult
           .newBuilder()
-          .addAllEntries(Seq(entry))
+          .setReleaseRateResult(entry)
+          .setZoneExtent(zoneExtent.expression.calculate())
+          .setZoneLabel(zoneLabel)
           .build()
 
         Left(result)
@@ -31,14 +34,13 @@ object ReleaseRateCalculator extends Symbols {
     }
   }
 
-  private[server] def performCalculation(request: ReleaseRateRequest): Expression = {
+  def performCalculation(request: ReleaseRateRequest): Expression = {
 
     val performReleaseCalculation = request.getPerformReleaseCalculation
     val isGasCalculation = request.getIsGasCalculation
     val hasReleaseRateInKgPerSecond = request.getHasReleaseRateInKgPerSecond
     val isEvaporationFromPool = request.getIsEvaporationFromPool
 
-    val getValue: Double => Expression = value => Value(value)
 
     val values = request.getReleaseRateValues
 
@@ -74,7 +76,7 @@ object ReleaseRateCalculator extends Symbols {
 
     val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
 
-//    val latex = ReleaseRateReportGenerator.generateLatex(calculationSequence :+ FormulaContainer(formula, Some("Release characteristics")))
+    //    val latex = ReleaseRateReportGenerator.generateLatex(calculationSequence :+ FormulaContainer(formula, Some("Release characteristics")))
 
     //    println(s"Texified:\n$latex")
 
@@ -83,7 +85,7 @@ object ReleaseRateCalculator extends Symbols {
 
   case class FormulaContainer(formula: Formula, description: Option[String])
 
-  private[server] def prepareSymbols(performReleaseCalculation: Boolean,
+  private[zone] def prepareSymbols(performReleaseCalculation: Boolean,
                                      isGasCalculation: Boolean,
                                      hasReleaseRateInKgPerSecond: Boolean,
                                      isEvaporationFromPool: Boolean,
@@ -177,7 +179,7 @@ object ReleaseRateCalculator extends Symbols {
     }
   }
 
-  private[server] def calculateB5(wg: Expression, M: Expression, rhoG: Expression): Formula = {
+  private[zone] def calculateB5(wg: Expression, M: Expression, rhoG: Expression): Formula = {
 
     val rhoSymbol = (M, rhoG) match {
       case (Expression.Zero, rho_g) =>
