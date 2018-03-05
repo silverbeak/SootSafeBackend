@@ -26,7 +26,8 @@ object ReleaseRateReportGenerator {
 
     val uniqueFormulas = formulaList
       .filter(entry => !entry.formula.isInstanceOf[PlainFormula])
-      .map(f => f.formula.identifier -> f).toMap
+      .map(f => f.formula.identifier -> f)
+      .toMap
 
     val formulaSection = uniqueFormulas.map {
       case (_, entry) =>
