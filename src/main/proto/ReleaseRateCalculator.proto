@@ -38,13 +38,20 @@ message ReleaseRateValues {
     double compressibilityFactor = 17;   // Z
 }
 
+message RoomDimension {
+    double width = 1;                    // B
+    double height = 2;                   // H
+    double depth = 3;                    // L (using 'depth' instead of length to avoid risk of conflict with reserved keywords)
+}
+
 message BackgroundConcentrationValues {
     double safetyFactor = 1;            // f
     double volumetricFlowAir = 2;       // Q1
     double volumetricFlowAirGas = 3;    // Q2
     double airChangeFrequency = 4;      // C
-    double roomVolume = 5;              // V0
-    double crossSectionArea = 6;        // S
+    double airEnteringRoomFlowRate = 5; // Q or Q_A
+    RoomDimension roomDimensions = 6;   // V0
+    double crossSectionArea = 7;        // S
 }
 
 message VentilationVelocityValues {

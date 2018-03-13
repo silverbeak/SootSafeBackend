@@ -43,7 +43,7 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
       result.getReleaseType should be(ReleaseType.DiffusiveJet)
       result.getVentilationAvailability should be(VentilationAvailability.Fair)
       result.getReleaseRateValues.getVolumetricGasFlowRate should be(1)
-      result.getReleaseRateValues.getSafetyFactor should be(2)
+      result.getReleaseRateValues.getSafetyFactor should be(2.3)
       result.getVentilationVelocityValues.getObstructed should be(Obstruction.Unobstructed)
     }
   }
@@ -58,7 +58,7 @@ object FakeMessage {
     "isEvaporationFromPool" -> true,
     "releaseRateValues" -> Map(
       "volumetricGasFlowRate" -> 1,
-      "safetyFactor" -> 2
+      "safetyFactor" -> "2.3"
     ),
 
     "isIndoors" -> true,

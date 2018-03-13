@@ -7,7 +7,7 @@ import scala.reflect.ClassTag
 
 object MessageSerializer {
   def serializer[T <: Message : ClassTag](json: String, builder: Message.Builder): T = {
-    com.google.protobuf.util.JsonFormat.parser.merge(json, builder)
+    com.google.protobuf.util.JsonFormat.parser.ignoringUnknownFields.merge(json, builder)
     builder.build match {
       case x: T => x
       case x: Message =>

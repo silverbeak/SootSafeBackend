@@ -1,6 +1,6 @@
 package com.sootsafe.engine.zone
 
-import com.sootsafe.arithmetic.{BackgroundConcentrationFormula, Expression, Formula, Symbol, Value}
+import com.sootsafe.arithmetic.{BackgroundConcentrationFormulaV1, BackgroundConcentrationFormulaV2, Expression, Formula, Symbol, Value}
 import com.sootsafe.server.{Element, ElementTable}
 import ReleaseRateCalculator.getValue
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
@@ -65,18 +65,33 @@ object ZoneCalculator {
     val QgSymbol = Symbol(getValue(request.getReleaseRateValues.getVolumetricGasFlowRate), "Q_g")
     val fSymbol = Symbol(getValue(backgroundConcentrationValues.getSafetyFactor), "f")
     val Q1Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAir), "Q_1")
-    val Q2Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAirGas), "Q_2")
+    //    val Q2Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAirGas), "Q_2")
+    val QaSymbol = Symbol(getValue(backgroundConcentrationValues.getAirEnteringRoomFlowRate), "Q_A")
     val CSymbol = Symbol(getValue(backgroundConcentrationValues.getAirChangeFrequency), "C")
-    val V0Symbol = Symbol(getValue(backgroundConcentrationValues.getRoomVolume), "V_0")
+    val roomLSymbol = Symbol(getValue(backgroundConcentrationValues.getRoomDimensions.getDepth), "L")
+    val roomBSymbol = Symbol(getValue(backgroundConcentrationValues.getRoomDimensions.getWidth), "W")
+    val roomHSymbol = Symbol(getValue(backgroundConcentrationValues.getRoomDimensions.getHeight), "H")
+    val V0Symbol = Symbol(roomLSymbol.expression * roomHSymbol.expression * roomBSymbol.expression, "V_0")
     val SSymbol = Symbol(getValue(backgroundConcentrationValues.getCrossSectionArea), "S")
 
-    new BackgroundConcentrationFormula(fSymbol, QgSymbol, Q2Symbol)
+    val Q2Symbol = Symbol(CSymbol.expression * V0Symbol.expression, "Q_2")
+
+    if (Q2Symbol.expression.toValue == Expression.Zero) {
+      new BackgroundConcentrationFormulaV1(fSymbol, QgSymbol, QaSymbol)
+    } else {
+      new BackgroundConcentrationFormulaV2(fSymbol, QgSymbol, Q2Symbol)
+    }
   }
 
   private[zone] def determineVentilationVelocity(request: ReleaseRateRequest, element: Element): (String, Expression) = {
     val heavierThanAir = element.RDT > 1
     if (request.getIsIndoors) {
-      ???
+      val roomLSymbol = Symbol(getValue(request.getBgConcentrationValues.getRoomDimensions.getDepth), "L")
+      val roomHSymbol = Symbol(getValue(request.getBgConcentrationValues.getRoomDimensions.getHeight), "H")
+      val airFlow = Symbol(getValue(request.getBgConcentrationValues.getAirEnteringRoomFlowRate), "Q_A")
+
+      val ventilationVelocity = airFlow.expression / (roomHSymbol.expression * roomLSymbol.expression)
+      (s"${ventilationVelocity.calculate()} m/s", ventilationVelocity)
     } else {
       // This is all determined from table C.1
       (request.getIsEvaporationFromPool, request.getVentilationVelocityValues.getObstructed, heavierThanAir, request.getVentilationVelocityValues.getElevation) match {

@@ -73,8 +73,10 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     val lflSymbol = Symbol(lfl, "LFL")
     val calculatedQq = calculationSequence.last
     val qgSymbol = Symbol(Value(calculatedQq.formula.calculate()), "Q_g")
+    val WgSymbol = Symbol(Wg, "W_g")
+    val rhoGSymbol = Symbol(rhoG, """\\rho_G""")
 
-    val formula = new ReleaseCharacter(kSymbol, lflSymbol, qgSymbol)
+    val formula = new ReleaseCharacter2(WgSymbol, rhoGSymbol, kSymbol, lflSymbol)
 
     //    val latex = ReleaseRateReportGenerator.generateLatex(calculationSequence :+ FormulaContainer(formula, Some("Release characteristics")))
 
@@ -194,6 +196,10 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
         val calculatedRho = new MolarMassToRho(mSymbol, paSymbol, RSymbol, TaSymbol).calculate()
 
         rho.copy(expression = Value(calculatedRho))
+
+      case (_, rho_g) =>
+        rho.copy(expression = rho_g)
+
 
       case _ => throw new Exception("Rho or M must be specified")
     }

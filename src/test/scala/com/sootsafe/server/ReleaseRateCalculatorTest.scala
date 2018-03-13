@@ -1,6 +1,9 @@
 package com.sootsafe.server
 
+import com.sootsafe.backend.grpc.FakeMessage
 import com.sootsafe.engine.zone.ReleaseRateCalculator
+import com.sootsafe.firebase.subscriber.MessageSerializer
+import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateRequest, ReleaseRateValues}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpecLike}
 
@@ -61,6 +64,18 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         case Left(result) =>
           result.getReleaseRateResult.getKey should be(request.getKey)
           result.getReleaseRateResult.getReleaseCharacter should be(0.1317365269461078)
+      }
+    }
+
+    "handle request based on json" in {
+      val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
+      val request = MessageSerializer.serializer[ReleaseRateRequest](FakeMessage.jsonMsg, builder)
+
+      ReleaseRateCalculator.handleRequest(request) match {
+        case Right(errorString) => fail(errorString)
+        case Left(result) =>
+          result.getReleaseRateResult.getKey should be(request.getKey)
+          result.getReleaseRateResult.getReleaseCharacter should be(4.299566740685911)
       }
     }
 

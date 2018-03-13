@@ -34,8 +34,13 @@ dependencies {
 
     compile 'org.json4s:json4s-native_2.11:3.5.3'
 
-    // https://mvnrepository.com/artifact/org.json4s/json4s-native
-    compile group: 'org.json4s', name: 'json4s-native_2.11', version: '3.6.0-M2'
+    // https://firebase.google.com/docs/firestore/quickstart
+    compile 'com.google.firebase:firebase-admin:5.9.0'
+
+    // https://mvnrepository.com/artifact/org.json4s/json4s-jackson
+    compile group: 'org.json4s', name: 'json4s-jackson_2.11', version: '3.6.0-M2'
+
+    compile 'com.google.code.gson:gson:2.8.2'
 
     // https://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
     testCompile 'org.scalatest:scalatest_2.11:3.0.4'

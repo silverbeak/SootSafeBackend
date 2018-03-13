@@ -192,7 +192,7 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     val f = Symbol(Value(.98), "f")
     val Q2 = Symbol(Value(0.1), "Q_2")
 
-    val backgroundConcentration = new BackgroundConcentrationFormula(f, Qg, Q2)
+    val backgroundConcentration = new BackgroundConcentrationFormulaV2(f, Qg, Q2)
 
     "texify formula" in {
       backgroundConcentration.texifyFormula() should be("""X_b = \dfrac{fQ_g}{Q_2} (vol/vol)""")

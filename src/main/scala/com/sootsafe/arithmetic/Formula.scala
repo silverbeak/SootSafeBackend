@@ -222,6 +222,28 @@ class ReleaseCharacter(k: Symbol, lfl: Symbol, qg: Symbol) extends Formula with 
   override def identifier: UUID = ReleaseCharacter.identifier
 }
 
+object ReleaseCharacter2 {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = None // TODO: Fix. I'm sure there is a reference here somewhere
+}
+
+class ReleaseCharacter2(wg: Symbol, rhoG: Symbol, k: Symbol, lfl: Symbol) extends Formula with Symbols with Units {
+  val result = Symbol(Expression.Zero, "???")
+
+  override val reference: Option[String] = ReleaseCharacter2.reference
+
+  override def texifyFormula(): String = s"""${result.sign} = \\dfrac{${wg.sign}}{${rhoG.sign}\\ ${k.sign}\\ ${lfl.sign} } ($cubic_meter_per_second)"""
+
+  override def getExpression: Expression = wg.expression / (rhoG.expression * k.expression * lfl.expression)
+
+  override def identifier: UUID = ReleaseCharacter2.identifier
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+}
+
 object VolumetricGasFlow {
   val identifier: UUID = UUID.randomUUID()
 
@@ -324,14 +346,36 @@ class PlainFormula(expression: Expression) extends Formula {
   override def identifier: UUID = PlainFormula.identifier
 }
 
-object BackgroundConcentrationFormula {
+object BackgroundConcentrationFormulaV1 {
   val identifier: UUID = UUID.randomUUID()
 
   val reference: Option[String] = Some("C.1: Områden med explosiv gasatmosfär")
 }
 
-class BackgroundConcentrationFormula(f: Symbol, Qg: Symbol, Q2: Symbol) extends Formula with Units {
-  override val reference: Option[String] = BackgroundConcentrationFormula.reference
+class BackgroundConcentrationFormulaV1(f: Symbol, Qg: Symbol, Q1: Symbol) extends Formula with Units {
+  override val reference: Option[String] = BackgroundConcentrationFormulaV1.reference
+
+  private val Xb = Symbol(Expression.Zero, "X_b")
+
+  override def texifyFormula(): String = s"""${Xb.sign} = \\dfrac{${f.sign}${Qg.sign}}{${Qg.sign} + ${Q1.sign}} ($vol_vol)"""
+
+  override def getExpression: Expression = (f.expression * Qg.expression) / (Qg.expression + Q1.expression)
+
+  override def identifier: UUID = BackgroundConcentrationFormulaV2.identifier
+
+  override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+}
+
+object BackgroundConcentrationFormulaV2 {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = Some("C.1: Områden med explosiv gasatmosfär")
+}
+
+class BackgroundConcentrationFormulaV2(f: Symbol, Qg: Symbol, Q2: Symbol) extends Formula with Units {
+  override val reference: Option[String] = BackgroundConcentrationFormulaV2.reference
 
   private val Xb = Symbol(Expression.Zero, "X_b")
 
@@ -339,7 +383,7 @@ class BackgroundConcentrationFormula(f: Symbol, Qg: Symbol, Q2: Symbol) extends 
 
   override def getExpression: Expression = (f.expression * Qg.expression) / Q2.expression
 
-  override def identifier: UUID = BackgroundConcentrationFormula.identifier
+  override def identifier: UUID = BackgroundConcentrationFormulaV2.identifier
 
   override def texify(): String = getExpression.texify()
 
