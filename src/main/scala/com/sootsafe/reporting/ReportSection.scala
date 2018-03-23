@@ -57,4 +57,6 @@ case class FormulaSection(formulaContainer: Option[FormulaContainer], decision: 
       decision.map(_.texify() + decisionSpacer) +
       formulaContainer.map(_.formula.texify() + formulaSpacer)
   }
+
+  def calculate(): Option[Double] = formulaContainer.map(_.formula.calculate())
 }

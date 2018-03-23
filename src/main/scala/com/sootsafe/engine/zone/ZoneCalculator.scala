@@ -99,7 +99,7 @@ object ZoneCalculator {
     }
   }
 
-  private[zone] def determineVentilationVelocity(request: ReleaseRateRequest, element: Element): (String, Expression) = {
+  private[zone] def determineVentilationVelocity(request: ReleaseRateRequest, element: Element): (FormulaSection, Expression) = {
     val heavierThanAir = element.RDT > 1
     if (request.getIsIndoors) {
       val roomLSymbol = Symbol(getValue(request.getBgConcentrationValues.getRoomDimensions.getDepth), "L")
@@ -107,10 +107,17 @@ object ZoneCalculator {
       val airFlow = Symbol(getValue(request.getBgConcentrationValues.getAirEnteringRoomFlowRate), "Q_A")
 
       val ventilationVelocity = airFlow.expression / (roomHSymbol.expression * roomLSymbol.expression)
-      (s"${ventilationVelocity.calculate()} m/s", ventilationVelocity)
+
+      val ventilationSection = FormulaSection(
+        Some(FormulaContainer(new PlainFormula(ventilationVelocity))),
+        Some(Decision("Since the leakage is indoors, the ventilation velocity is calculated based on the room volume and the air flow")),
+        Some(Description(s"Total ventilation velocity: ${ventilationVelocity.calculate()} m/s"))
+      )
+
+      (ventilationSection, ventilationVelocity)
     } else {
       // This is all determined from table C.1
-      (request.getIsEvaporationFromPool, request.getVentilationVelocityValues.getObstructed, heavierThanAir, request.getVentilationVelocityValues.getElevation) match {
+      val (description, ventilationVelocity) = (request.getIsEvaporationFromPool, request.getVentilationVelocityValues.getObstructed, heavierThanAir, request.getVentilationVelocityValues.getElevation) match {
         case (true, Obstruction.Unobstructed, _, _) => ("> 0.25 m/s", Value(0.25))
         case (true, Obstruction.Obstructed, _, _) => ("> 0.1 m/s", Value(0.1))
 
@@ -130,6 +137,14 @@ object ZoneCalculator {
         case (_, Obstruction.Obstructed, true, d) if d <= 5d => ("1 m/s", Value(1))
         case (_, Obstruction.Obstructed, true, _) => ("0.3 m/s", Value(0.3))
       }
+
+      val ventilationSection = FormulaSection(
+        None,
+        Some(Decision("An outdoor leakage is determined from a diagram")),
+        Some(Description(s"Total ventilation velocity: $description"))
+      )
+
+      (ventilationSection, ventilationVelocity)
     }
   }
 
