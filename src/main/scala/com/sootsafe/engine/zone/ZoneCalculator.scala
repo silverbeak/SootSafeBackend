@@ -70,7 +70,7 @@ object ZoneCalculator {
 
         val ventilationVelocity = determineVentilationVelocity(request, element)
         val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRateValues.getLowerFlammableLimit), releaseCharacter, request.getIsIndoors)
-        ZoneCalculator.determineZone(request.getGradeOfRelease, dilutionLevel, request.getVentilationAvailability)
+        ZoneCalculator.determineZone(request.getGradeOfRelease, dilutionLevel._2, request.getVentilationAvailability)
     }
   }
 
@@ -174,20 +174,35 @@ object ZoneCalculator {
     )
   }
 
-  private[zone] def determineDilutionLevel(backgroundConcentration: Option[Formula], ventilationVelocity: Expression, lfl: Expression, releaseCharacter: Expression, isIndoors: Boolean): DilutionLevel.Value = {
+  private[zone] def determineDilutionLevel(backgroundConcentration: Option[Formula], ventilationVelocity: Expression, lfl: Expression, releaseCharacter: Expression, isIndoors: Boolean): (FormulaSection, DilutionLevel.Value) = {
     // Figure C.1
     (isIndoors, backgroundConcentration.getOrElse(new PlainFormula(Expression.Zero)).calculate() > 0.25 * lfl.calculate()) match {
       case (false, true) =>
-        DilutionLevel.Low
+
+        val dilutionLevelSection = FormulaSection(
+          None,
+          Some(Decision("The dilution level is determined to be low, since the leakage is outdoors, and the background concentration is below 25% of the lower flammability level")),
+          None
+        )
+
+        (dilutionLevelSection, DilutionLevel.Low)
       case _ =>
         val lowLimit = ykxm(m = Value(-0.022))(_)
         val highLimit = ykxm(m = Value(0.05))(_)
 
-        ventilationVelocity.calculate() match {
+        val dilutionLevel = ventilationVelocity.calculate() match {
           case ventVelocity if ventVelocity < lowLimit(releaseCharacter).calculate() => DilutionLevel.Low
           case ventVelocity if ventVelocity > highLimit(releaseCharacter).calculate() => DilutionLevel.High
           case _ => DilutionLevel.Medium
         }
+
+        val dilutionLevelSection = FormulaSection(
+          None,
+          Some(Decision(s"The dilution level has been determined to be $dilutionLevel based on the diagram in XXX")),
+          None
+        )
+
+        (dilutionLevelSection, dilutionLevel)
     }
   }
 }
