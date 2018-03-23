@@ -1,5 +1,8 @@
 package com.sootsafe.arithmetic
 
+import com.sootsafe.reporting.Fixture.Latex
+import com.sootsafe.reporting.{DefaultReportFormat, ReportFormat}
+
 object Arithmetic {
 
   def texify(expression: Expression): String =
@@ -33,7 +36,10 @@ object Arithmetic {
 }
 
 trait Expression {
-  def texify(): String
+  // TODO: Should this be a part of Expression? I think perhaps it should be supplied as implicit to all 'texify' methods
+  private[arithmetic] implicit val reportFormat: ReportFormat = DefaultReportFormat
+
+  def texify(): Latex
 
   def calculate(): Double
 
@@ -71,7 +77,7 @@ case class Empty() extends Expression {
 }
 
 case class Value(value: Double) extends Expression {
-  override def texify(): String = s"$value"
+  override def texify(): String = reportFormat.write(value)
 
   override def calculate(): Double = value
 }

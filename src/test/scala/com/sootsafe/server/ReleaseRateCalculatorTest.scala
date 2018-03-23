@@ -18,7 +18,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
       .setLowerFlammableLimit(.1)
       .setMassReleaseRate(9)
       .setMolarMass(33.3)
-      .setGasDensity(0)
+      .setGasDensity(4.44)
       .setDischargeCoefficient(7)
       .setCrossSectionArea(.7)
       .setPressureDifference(44)
@@ -63,7 +63,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         case Right(errorString) => fail(errorString)
         case Left(result) =>
           result.getReleaseRateResult.getKey should be(request.getKey)
-          result.getReleaseRateResult.getReleaseCharacter should be(0.1317365269461078)
+          result.getReleaseRateResult.getReleaseCharacter should be(0.6068943194691696)
       }
     }
 
@@ -75,7 +75,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         case Right(errorString) => fail(errorString)
         case Left(result) =>
           result.getReleaseRateResult.getKey should be(request.getKey)
-          result.getReleaseRateResult.getReleaseCharacter should be(4.299566740685911)
+          result.getReleaseRateResult.getReleaseCharacter should be(0.1111111111111111)
       }
     }
 
@@ -92,8 +92,8 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val result = ReleaseRateCalculator.performCalculation(requestForGas)
 
-      result.calculate() should be(0.1317365269461078)
-      result.texify() should be("""\dfrac{0.44}{33.4 \times 0.1}""")
+      result.calculate() should be(0.6068943194691696)
+      result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
     }
 
     "return an expression [!performRelease, _, hasReleaseRate, _] (rho is given)" in {
@@ -123,10 +123,10 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
       val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)
 
       resultForGas.calculate() should be(0.08091924259588931)
-      resultForGas.texify() should be("""\dfrac{0.2702702702702703}{33.4 \times 0.1}""")
+      resultForGas.texify() should be("""\dfrac{9.0}{33.3 \times 33.4 \times 0.1}""")
 
       resultForLiquid.calculate() should be(0.08091924259588931)
-      resultForLiquid.texify() should be("""\dfrac{0.2702702702702703}{33.4 \times 0.1}""")
+      resultForLiquid.texify() should be("""\dfrac{9.0}{33.3 \times 33.4 \times 0.1}""")
     }
 
     "return an expression [!performRelease, _, hasReleaseRate, _] (molar mass is given)" in {
@@ -153,11 +153,11 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)
 
-      resultForGas.calculate() should be(2.609382631100853)
-      resultForGas.texify() should be("""\dfrac{8.715337987876849}{33.4 \times 0.1}""")
+      resultForGas.calculate() should be(0.6068943194691696)
+      resultForGas.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
 
-      resultForLiquid.calculate() should be(2.609382631100853)
-      resultForLiquid.texify() should be("""\dfrac{8.715337987876849}{33.4 \times 0.1}""")
+      resultForLiquid.calculate() should be(0.6068943194691696)
+      resultForLiquid.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
     }
 
     "return an expression [performRelease, !isGas, _, !pool] (third branch)" in {
@@ -173,8 +173,8 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val result = ReleaseRateCalculator.performCalculation(request)
 
-      result.calculate() should be(14.59900633224676)
-      result.texify() should be("""\dfrac{48.760681149704176}{33.4 \times 0.1}""")
+      result.calculate() should be(0.6068943194691696)
+      result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
     }
 
     "return an expression [performRelease, !isGas, _, pool] (fourth branch)" in {
@@ -190,8 +190,8 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val result = ReleaseRateCalculator.performCalculation(request)
 
-      result.calculate() should be(0.18379906957404724)
-      result.texify() should be("""\dfrac{0.6138888923773177}{33.4 \times 0.1}""")
+      result.calculate() should be(0.6068943194691696)
+      result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
     }
 
     "return an expression [performRelease, _, hasReleaseRate, _] (above critical gas pressure)" in {
@@ -209,8 +209,8 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val result = ReleaseRateCalculator.performCalculation(request)
 
-      result.calculate() should be(0.3427539547192333)
-      result.texify() should be("""\dfrac{1.1447982087622393}{33.4 \times 0.1}""")
+      result.calculate() should be(0.6068943194691696)
+      result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
     }
 
     "return an expression [performRelease, _, hasReleaseRate, _] (below critical gas pressure)" in {
@@ -225,8 +225,8 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val result = ReleaseRateCalculator.performCalculation(request)
 
-      result.calculate() should be(0.9068724981090052)
-      result.texify() should be("""\dfrac{3.0289541436840772}{33.4 \times 0.1}""")
+      result.calculate() should be(0.6068943194691696)
+      result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
     }
   }
 }

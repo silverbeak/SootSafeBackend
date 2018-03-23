@@ -6,11 +6,9 @@ import com.sootsafe.firebase.subscriber.{MessageSerializer, Subscriber}
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRateRequest
 import io.grpc.{Server, ServerBuilder}
-import org.json4s.DefaultFormats
 
-import scala.collection.mutable
-import scala.concurrent.{Channel, Future}
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.{Channel, Future}
 
 class SootSafeCalculatorService(port: Int) {
 

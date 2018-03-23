@@ -10,7 +10,7 @@
     "lowerFlammableLimit": 3,
     "massReleaseRate": 4,
     "molarMass": 5,
-//    "gasDensity": 6,
+    "gasDensity": 6,
     "dischargeCoefficient": 7,
     "crossSectionArea": 8,
     "pressureDifference": 9,

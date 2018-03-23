@@ -1,8 +1,9 @@
 package com.sootsafe.engine.zone
 
-import com.sootsafe.arithmetic.{BackgroundConcentrationFormulaV1, BackgroundConcentrationFormulaV2, Expression, Formula, Symbol, Value}
+import com.sootsafe.arithmetic._
 import com.sootsafe.server.{Element, ElementTable}
-import ReleaseRateCalculator.getValue
+import ReleaseRateCalculator.{FormulaContainer, getValue}
+import com.sootsafe.reporting._
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
 
 object ZoneCalculator {
@@ -49,8 +50,23 @@ object ZoneCalculator {
       case Some(element) =>
         //val lfl = getValue(request.getReleaseRateValues.getLowerFlammableLimit)
 
-        val backgroundConcentration = if (request.getIsIndoors) Some(determineBackgroundConcentration(request).calculate())
+        val backgroundConcentration = if (request.getIsIndoors) Some(determineBackgroundConcentration(request))
         else None
+
+        val backgroundConcentrationSection = backgroundConcentration match {
+          case Some(bgConcentration) =>
+            FormulaSection(
+              Some(FormulaContainer(bgConcentration)),
+              None,
+              Some(Description("Background Concentration"))
+            )
+          case None =>
+            FormulaSection(
+              None,
+              Some(Decision("Background concentration is not determined because leakage is outdoors")),
+              Some(Description("Background Concentration"))
+            )
+        }
 
         val ventilationVelocity = determineVentilationVelocity(request, element)
         val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRateValues.getLowerFlammableLimit), releaseCharacter, request.getIsIndoors)
@@ -117,31 +133,44 @@ object ZoneCalculator {
     }
   }
 
-  private def ykxm(k: Double = 1, m: Double = 0)(x: Double): Double = k * x + m
+  private def ykxm(k: Expression = Value(1), m: Expression = Expression.Zero)(x: Expression): Expression = k * x + m
 
-  private[zone] def determinePollutionDistance(releaseType: ReleaseType, releaseCharacter: Expression): Symbol = {
+  private[zone] def determinePollutionDistance(releaseType: ReleaseType, releaseCharacter: Expression): CalculationSection = {
     val line = releaseType match {
-      case ReleaseType.HeavyGas => ykxm(m = 0.015)(_)
-      case ReleaseType.DiffusiveJet => ykxm(m = 0.045)(_)
-      case ReleaseType.Jet => ykxm(m = 0.25)(_)
+      case ReleaseType.HeavyGas => ykxm(m = Value(0.015))(_)
+      case ReleaseType.DiffusiveJet => ykxm(m = Value(0.045))(_)
+      case ReleaseType.Jet => ykxm(m = Value(0.25))(_)
       case x => throw new Exception(s"Release type $x not recognized")
     }
 
-    Symbol(Value(line(releaseCharacter.calculate())), "m")
+    val pollutionDistanceFormula = new PlainFormula(line(releaseCharacter))
+    CalculationSection(
+      Some(Description("Determine the spread of the pollution")),
+      None,
+      Seq(
+        FormulaCalculation(
+          FormulaContainer(
+            pollutionDistanceFormula,
+            Some("Determine pollution distance"),
+            Some(s"Release type $releaseType and release character = ${releaseCharacter.toValue.texify()} gives a pollution distance of ${pollutionDistanceFormula.toValue.texify()}")
+          )
+        )
+      )
+    )
   }
 
-  private[zone] def determineDilutionLevel(backgroundConcentration: Option[Double], ventilationVelocity: Expression, lfl: Expression, releaseCharacter: Expression, isIndoors: Boolean): DilutionLevel.Value = {
+  private[zone] def determineDilutionLevel(backgroundConcentration: Option[Formula], ventilationVelocity: Expression, lfl: Expression, releaseCharacter: Expression, isIndoors: Boolean): DilutionLevel.Value = {
     // Figure C.1
-    (isIndoors, backgroundConcentration.getOrElse(0d) > 0.25 * lfl.calculate()) match {
+    (isIndoors, backgroundConcentration.getOrElse(new PlainFormula(Expression.Zero)).calculate() > 0.25 * lfl.calculate()) match {
       case (false, true) =>
         DilutionLevel.Low
       case _ =>
-        val lowLimit = ykxm(m = -0.022)(_)
-        val highLimit = ykxm(m = 0.05)(_)
+        val lowLimit = ykxm(m = Value(-0.022))(_)
+        val highLimit = ykxm(m = Value(0.05))(_)
 
         ventilationVelocity.calculate() match {
-          case ventVelocity if ventVelocity < lowLimit(releaseCharacter.calculate()) => DilutionLevel.Low
-          case ventVelocity if ventVelocity > highLimit(releaseCharacter.calculate()) => DilutionLevel.High
+          case ventVelocity if ventVelocity < lowLimit(releaseCharacter).calculate() => DilutionLevel.Low
+          case ventVelocity if ventVelocity > highLimit(releaseCharacter).calculate() => DilutionLevel.High
           case _ => DilutionLevel.Medium
         }
     }

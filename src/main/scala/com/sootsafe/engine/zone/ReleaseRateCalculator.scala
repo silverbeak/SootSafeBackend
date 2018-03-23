@@ -1,11 +1,14 @@
 package com.sootsafe.engine.zone
 
 import com.sootsafe.arithmetic._
+import com.sootsafe.reporting._
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
 
 import scala.util.{Failure, Success, Try}
 
 object ReleaseRateCalculator extends Symbols with RequestUtils {
+
+  private implicit val reportFormat: ReportFormat = DefaultReportFormat
 
   def handleRequest(request: ReleaseRateRequest): Either[ReleaseRateCalculationResult, String] = {
 
@@ -18,12 +21,17 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
           .build()
 
         val zoneExtent = ZoneCalculator.determinePollutionDistance(request.getReleaseType, releaseRateExpression)
+
+        val zoneExtentSection = ReleaseRateReportGenerator.generateCalculationChapter(CalculationChapter(Seq(zoneExtent)))
+
+//        println(s"ZoneExtent: \n$zoneExtentSection")
+
         val zoneLabel = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression)
 
         val result = ReleaseRateCalculationResult
           .newBuilder()
           .setReleaseRateResult(entry)
-          .setZoneExtent(zoneExtent.expression.calculate())
+          //          .setZoneExtent(zoneExtent.expression.calculate())
           .setZoneLabel(zoneLabel)
           .build()
 
@@ -85,26 +93,26 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     formula
   }
 
-  case class FormulaContainer(formula: Formula, description: Option[String])
+  case class FormulaContainer(formula: Formula, description: Option[String] = None, decision: Option[String] = None)
 
   private[zone] def prepareSymbols(performReleaseCalculation: Boolean,
-                                     isGasCalculation: Boolean,
-                                     hasReleaseRateInKgPerSecond: Boolean,
-                                     isEvaporationFromPool: Boolean,
-                                     Qg: Expression,
-                                     Wg: Expression,
-                                     M: Expression,
-                                     rhoG: Expression,
-                                     Cd: Expression,
-                                     S: Expression,
-                                     deltaP: Expression,
-                                     Ap: Expression,
-                                     uw: Expression,
-                                     T: Expression,
-                                     gma: Expression,
-                                     pa: Expression,
-                                     criticalPressure: Expression,
-                                     compressibilityFactor: Expression): Seq[FormulaContainer] = {
+                                   isGasCalculation: Boolean,
+                                   hasReleaseRateInKgPerSecond: Boolean,
+                                   isEvaporationFromPool: Boolean,
+                                   Qg: Expression,
+                                   Wg: Expression,
+                                   M: Expression,
+                                   rhoG: Expression,
+                                   Cd: Expression,
+                                   S: Expression,
+                                   deltaP: Expression,
+                                   Ap: Expression,
+                                   uw: Expression,
+                                   T: Expression,
+                                   gma: Expression,
+                                   pa: Expression,
+                                   criticalPressure: Expression,
+                                   compressibilityFactor: Expression): Seq[FormulaContainer] = {
     val R = 8324d
     val rSymbol = Symbol(Value(R), "R")
 

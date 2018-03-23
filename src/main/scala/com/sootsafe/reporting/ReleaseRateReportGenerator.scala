@@ -8,21 +8,36 @@ object ReleaseRateReportGenerator {
 
   val pageBreak = """\pagebreak"""
 
-  def generateLatex(formulaList: Seq[FormulaContainer]): Latex = {
+  def generateCalculationChapter(calculationChapter: CalculationChapter)(implicit format: ReportFormat): Latex = {
+    calculationChapter.calculationSectionList.map(generateCalculationSection).mkString
+  }
+
+  private def generateCalculationSection(calculationSection: CalculationSection)(implicit format: ReportFormat): Latex = {
+    s"""
+       |${calculationSection.formulaCalculation.map(fc => generateCalculationPart(fc.formula))}
+       |${calculationSection.decision.getOrElse("")}
+       """.stripMargin
+  }
+
+  private def generateCalculationPart(formulaContainer: FormulaContainer)(implicit format: ReportFormat): Latex = {
+    s"""
+       |%
+       |\\subsection{${formulaContainer.description.getOrElse("")}}
+       |(Formula \\ref{${formulaContainer.formula.identifier}})
+       |\\hfill \\break
+       |\\par
+       |\\begin{flushleft}
+       |$$ ${formulaContainer.formula.texify()} = ${format.write(formulaContainer.formula.calculate())} $$
+       |\\end{flushleft}
+       |${formulaContainer.decision.getOrElse("")}
+       |%
+      """.stripMargin
+  }
+
+  def generateLatex(formulaList: Seq[FormulaContainer])(implicit format: ReportFormat): Latex = {
     val body = formulaList
       .filter(entry => !entry.formula.isInstanceOf[PlainFormula])
-      .map(entry =>
-        s"""
-           |%
-           |\\subsection{${entry.description.getOrElse("")}}
-           |(Formula \\ref{${entry.formula.identifier}})
-           |\\hfill \\break
-           |\\par
-           |\\begin{flushleft}
-           |$$ ${entry.formula.texify()} = ${entry.formula.calculate()} $$
-           |\\end{flushleft}
-           |%
-      """.stripMargin)
+      .map(generateCalculationPart)
 
     val uniqueFormulas = formulaList
       .filter(entry => !entry.formula.isInstanceOf[PlainFormula])

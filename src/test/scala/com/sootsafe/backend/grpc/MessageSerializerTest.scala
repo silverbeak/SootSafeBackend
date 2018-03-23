@@ -58,7 +58,8 @@ object FakeMessage {
     "isEvaporationFromPool" -> true,
     "releaseRateValues" -> Map(
       "volumetricGasFlowRate" -> 1,
-      "safetyFactor" -> "2.3"
+      "safetyFactor" -> "2.3",
+      "gasDensity" -> "4.44"
     ),
 
     "isIndoors" -> true,
