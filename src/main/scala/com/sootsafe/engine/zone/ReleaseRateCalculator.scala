@@ -31,7 +31,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
         val zoneExtentReport = ReleaseRateReportGenerator.generateCalculationSection(calculationSection)
 
-        println(s"ZoneExtent: \n$zoneExtentReport")
+        println(s"ZoneExtent:$zoneExtentReport\nEnd ZoneExtent")
 
         val result = ReleaseRateCalculationResult
           .newBuilder()

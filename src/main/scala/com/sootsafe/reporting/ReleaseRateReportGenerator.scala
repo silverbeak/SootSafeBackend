@@ -2,7 +2,6 @@ package com.sootsafe.reporting
 
 import com.sootsafe.arithmetic.PlainFormula
 import com.sootsafe.reporting.Fixture.Latex
-import com.sootsafe.engine.zone.ReleaseRateCalculator.FormulaContainer
 
 object ReleaseRateReportGenerator {
 
@@ -13,35 +12,36 @@ object ReleaseRateReportGenerator {
 //  }
 
   def generateCalculationSection(calculationSection: CalculationSection)(implicit format: ReportFormat): Latex = {
+    val calcs = calculationSection.formulaSection.map(generateCalculationPart)
     s"""
-       |${calculationSection.description.map(_.description)}
-       |${calculationSection.formulaSection.map(fs => fs.formulaContainer.map(generateCalculationPart))}
+       |${calculationSection.description.map(_.description).getOrElse("")}
+       |${calcs.mkString("\n")}
        """.stripMargin
   }
 
-  private def generateCalculationPart(formulaContainer: FormulaContainer)(implicit format: ReportFormat): Latex = {
+  private def generateCalculationPart(fSection: FormulaSection)(implicit format: ReportFormat): Latex = {
     s"""
        |%
-       |\\subsection{${formulaContainer.description.getOrElse("")}}
-       |(Formula \\ref{${formulaContainer.formula.identifier}})
+       |\\subsection{${fSection.description.map(_.description).getOrElse("")}}
+       |(Formula \\ref{${fSection.formulaContainer.map(c => c.formula.identifier).getOrElse("")}})
        |\\hfill \\break
        |\\par
        |\\begin{flushleft}
-       |$$ ${formulaContainer.formula.texify()} = ${format.write(formulaContainer.formula.calculate())} $$
+       |$$ ${fSection.formulaContainer.map(c => c.formula.texify())} = ${format.write(fSection.formulaContainer.map(c => c.formula.calculate()))} $$
        |\\end{flushleft}
-       |${formulaContainer.decision.getOrElse("")}
+       |${fSection.decision.map(_.decision).getOrElse("")}
        |%
       """.stripMargin
   }
 
-  def generateLatex(formulaList: Seq[FormulaContainer])(implicit format: ReportFormat): Latex = {
+  def generateLatex(formulaList: Seq[FormulaSection])(implicit format: ReportFormat): Latex = {
     val body = formulaList
-      .filter(entry => !entry.formula.isInstanceOf[PlainFormula])
+      .filter(entry => !entry.formulaContainer.exists(c => c.formula.isInstanceOf[PlainFormula]))
       .map(generateCalculationPart)
 
     val uniqueFormulas = formulaList
-      .filter(entry => !entry.formula.isInstanceOf[PlainFormula])
-      .map(f => f.formula.identifier -> f)
+      .filter(entry => !entry.formulaContainer.exists(c => c.formula.isInstanceOf[PlainFormula]))
+      .flatMap(f => f.formulaContainer.map(_.formula.identifier -> f))
       .toMap
 
     val formulaSection = uniqueFormulas.map {
@@ -49,8 +49,8 @@ object ReleaseRateReportGenerator {
         s"""
            |%
            |\\paragraph{}
-           |\\begin{equation} \\label{${entry.formula.identifier}}
-           |${entry.formula.texifyFormula()}
+           |\\begin{equation} \\label{${entry.formulaContainer.map(_.formula.identifier).getOrElse("")}}
+           |${entry.formulaContainer.map(_.formula.texifyFormula()).getOrElse("")}
            |\\end{equation}
            |\\newline
            |%
