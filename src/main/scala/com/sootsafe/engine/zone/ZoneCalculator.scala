@@ -9,8 +9,8 @@ import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
 object ZoneCalculator {
   def determineZone(gradeOfRelease: GradeOfRelease,
                     dilutionLevel: DilutionLevel.Value,
-                    ventilationAvailability: VentilationAvailability): String = {
-    (gradeOfRelease, dilutionLevel, ventilationAvailability) match {
+                    ventilationAvailability: VentilationAvailability): FormulaSection = {
+    val result = (gradeOfRelease, dilutionLevel, ventilationAvailability) match {
       case (GradeOfRelease.Continuous, DilutionLevel.High, VentilationAvailability.Good) => "Non-hazardous (Zone 0 NE)"
       case (GradeOfRelease.Primary, DilutionLevel.High, VentilationAvailability.Good) => "Non-hazardous (Zone 1 NE)"
       case (GradeOfRelease.Secondary, DilutionLevel.High, VentilationAvailability.Good) => "Non-hazardous (Zone 2 NE)"
@@ -41,9 +41,15 @@ object ZoneCalculator {
 
       case x => throw new Exception(s"Could not determine zone from combination [$x]")
     }
+
+    FormulaSection(
+      None,
+      Some(Decision(s"$gradeOfRelease release grade, $dilutionLevel dilution level and $ventilationAvailability ventilation availability gives $result")),
+      Some(Description("Determining the zone is based on table XXX"))
+    )
   }
 
-  private[zone] def calculateZoneExtent(request: ReleaseRateRequest, releaseCharacter: Expression): String = {
+  private[zone] def calculateZoneExtent(request: ReleaseRateRequest, releaseCharacter: Expression): Seq[FormulaSection] = {
 
     ElementTable.elements.get(request.getCasNumber) match {
       case None => ???
@@ -70,7 +76,8 @@ object ZoneCalculator {
 
         val ventilationVelocity = determineVentilationVelocity(request, element)
         val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRateValues.getLowerFlammableLimit), releaseCharacter, request.getIsIndoors)
-        ZoneCalculator.determineZone(request.getGradeOfRelease, dilutionLevel._2, request.getVentilationAvailability)
+        val zoneSection = ZoneCalculator.determineZone(request.getGradeOfRelease, dilutionLevel._2, request.getVentilationAvailability)
+        Seq(backgroundConcentrationSection, ventilationVelocity._1, dilutionLevel._1, zoneSection)
     }
   }
 
@@ -150,7 +157,7 @@ object ZoneCalculator {
 
   private def ykxm(k: Expression = Value(1), m: Expression = Expression.Zero)(x: Expression): Expression = k * x + m
 
-  private[zone] def determinePollutionDistance(releaseType: ReleaseType, releaseCharacter: Expression): CalculationSection = {
+  private[zone] def determinePollutionDistance(releaseType: ReleaseType, releaseCharacter: Expression): FormulaSection = {
     val line = releaseType match {
       case ReleaseType.HeavyGas => ykxm(m = Value(0.015))(_)
       case ReleaseType.DiffusiveJet => ykxm(m = Value(0.045))(_)
@@ -159,18 +166,10 @@ object ZoneCalculator {
     }
 
     val pollutionDistanceFormula = new PlainFormula(line(releaseCharacter))
-    CalculationSection(
-      Some(Description("Determine the spread of the pollution")),
-      None,
-      Seq(
-        FormulaCalculation(
-          FormulaContainer(
-            pollutionDistanceFormula,
-            Some("Determine pollution distance"),
-            Some(s"Release type $releaseType and release character = ${releaseCharacter.toValue.texify()} gives a pollution distance of ${pollutionDistanceFormula.toValue.texify()}")
-          )
-        )
-      )
+    FormulaSection(
+      Some(FormulaContainer(pollutionDistanceFormula)),
+      Some(Decision("Release type $releaseType and release character = ${releaseCharacter.toValue.texify()} gives a pollution distance of ${pollutionDistanceFormula.toValue.texify()}")),
+      Some(Description("Determine pollution distance"))
     )
   }
 

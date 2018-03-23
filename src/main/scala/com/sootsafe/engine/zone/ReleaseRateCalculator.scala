@@ -22,17 +22,22 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
         val zoneExtent = ZoneCalculator.determinePollutionDistance(request.getReleaseType, releaseRateExpression)
 
-        val zoneExtentSection = ReleaseRateReportGenerator.generateCalculationChapter(CalculationChapter(Seq(zoneExtent)))
+        val zoneFormulaSections = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression)
 
-//        println(s"ZoneExtent: \n$zoneExtentSection")
+        val calculationSection = CalculationSection(
+          None,
+          Seq(zoneExtent) ++ zoneFormulaSections
+        )
 
-        val zoneLabel = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression)
+        val zoneExtentReport = ReleaseRateReportGenerator.generateCalculationSection(calculationSection)
+
+        println(s"ZoneExtent: \n$zoneExtentReport")
 
         val result = ReleaseRateCalculationResult
           .newBuilder()
           .setReleaseRateResult(entry)
           //          .setZoneExtent(zoneExtent.expression.calculate())
-          .setZoneLabel(zoneLabel)
+          //          .setZoneLabel(zoneFormulaSections)
           .build()
 
         Left(result)

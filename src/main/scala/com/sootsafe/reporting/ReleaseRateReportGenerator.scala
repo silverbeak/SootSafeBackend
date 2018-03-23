@@ -8,14 +8,14 @@ object ReleaseRateReportGenerator {
 
   val pageBreak = """\pagebreak"""
 
-  def generateCalculationChapter(calculationChapter: CalculationChapter)(implicit format: ReportFormat): Latex = {
-    calculationChapter.calculationSectionList.map(generateCalculationSection).mkString
-  }
+//  def generateCalculationChapter(calculationChapter: CalculationChapter)(implicit format: ReportFormat): Latex = {
+//    calculationChapter.calculationSectionList.map(generateCalculationSection).mkString
+//  }
 
-  private def generateCalculationSection(calculationSection: CalculationSection)(implicit format: ReportFormat): Latex = {
+  def generateCalculationSection(calculationSection: CalculationSection)(implicit format: ReportFormat): Latex = {
     s"""
-       |${calculationSection.formulaCalculation.map(fc => generateCalculationPart(fc.formula))}
-       |${calculationSection.decision.getOrElse("")}
+       |${calculationSection.description.map(_.description)}
+       |${calculationSection.formulaSection.map(fs => fs.formulaContainer.map(generateCalculationPart))}
        """.stripMargin
   }
 

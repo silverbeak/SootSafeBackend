@@ -7,21 +7,19 @@ trait ReportSection {
   def texify(): Latex
 }
 
-case class CalculationChapter(calculationSectionList: Seq[CalculationSection]) extends ReportSection {
+case class CalculationChapter(calculationSectionList: Seq[ReportSection]) extends ReportSection {
   private val spacer: Latex = "XXX"
 
   override def texify(): Latex = calculationSectionList.mkString(spacer)
 }
 
-case class CalculationSection(description: Option[Description], decision: Option[Decision], formulaCalculation: Seq[FormulaCalculation]) extends ReportSection {
+case class CalculationSection(description: Option[Description], formulaSection: Seq[FormulaSection]) extends ReportSection {
   private val descriptionSpacer: Latex = "XXX"
-  private val decisionSpacer: Latex = "XXX"
   private val formulaSpacer: Latex = "XXX"
 
   override def texify(): Latex = {
     description.map(_.texify() + descriptionSpacer).getOrElse("") +
-      decision.map(_.texify() + decisionSpacer) +
-      formulaCalculation.map(_.texify() + formulaSpacer)
+      formulaSection.map(_.texify() + formulaSpacer)
   }
 }
 
