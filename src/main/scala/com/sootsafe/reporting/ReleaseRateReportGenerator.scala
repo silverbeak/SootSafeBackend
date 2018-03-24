@@ -7,9 +7,9 @@ object ReleaseRateReportGenerator {
 
   val pageBreak = """\pagebreak"""
 
-//  def generateCalculationChapter(calculationChapter: CalculationChapter)(implicit format: ReportFormat): Latex = {
-//    calculationChapter.calculationSectionList.map(generateCalculationSection).mkString
-//  }
+  //  def generateCalculationChapter(calculationChapter: CalculationChapter)(implicit format: ReportFormat): Latex = {
+  //    calculationChapter.calculationSectionList.map(generateCalculationSection).mkString
+  //  }
 
   def generateCalculationSection(calculationSection: CalculationSection)(implicit format: ReportFormat): Latex = {
     val calcs = calculationSection.formulaSection.map(generateCalculationPart)
@@ -23,14 +23,19 @@ object ReleaseRateReportGenerator {
     s"""
        |%
        |\\subsection{${fSection.description.map(_.description).getOrElse("")}}
-       |(Formula \\ref{${fSection.formulaContainer.map(c => c.formula.identifier).getOrElse("")}})
+       |${fSection.formulaContainer.map(c => s"""(Formula \\ref{${c.formula.identifier}})""").getOrElse("")}
        |\\hfill \\break
-       |\\par
-       |\\begin{flushleft}
-       |$$ ${fSection.formulaContainer.map(c => c.formula.texify())} = ${format.write(fSection.formulaContainer.map(c => c.formula.calculate()))} $$
-       |\\end{flushleft}
-       |${fSection.decision.map(_.decision).getOrElse("")}
-       |%
+       |${
+      fSection.formulaContainer.map(c =>
+        s"""
+           |\\par
+           |\\begin{flushleft}
+           |$$ ${c.formula.texify()} = ${format.write(c.formula.calculate())} $$
+           |\\end{flushleft}
+           |""".stripMargin).getOrElse("")
+    }
+            |${fSection.decision.map(_.decision).getOrElse("")}
+            |%
       """.stripMargin
   }
 
@@ -45,12 +50,12 @@ object ReleaseRateReportGenerator {
       .toMap
 
     val formulaSection = uniqueFormulas.map {
-      case (_, entry) =>
+      case (_, entry) if entry.formulaContainer.isDefined =>
         s"""
            |%
            |\\paragraph{}
-           |\\begin{equation} \\label{${entry.formulaContainer.map(_.formula.identifier).getOrElse("")}}
-           |${entry.formulaContainer.map(_.formula.texifyFormula()).getOrElse("")}
+           |\\begin{equation} \\label{${entry.formulaContainer.get.formula.identifier}}
+           |${entry.formulaContainer.get.formula.texifyFormula()}
            |\\end{equation}
            |\\newline
            |%
