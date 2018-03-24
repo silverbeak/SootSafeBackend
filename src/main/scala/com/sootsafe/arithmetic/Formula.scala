@@ -3,6 +3,7 @@ package com.sootsafe.arithmetic
 import java.util.UUID
 
 import com.sootsafe.model.NodeModule
+import com.sootsafe.reporting.Fixture.Latex
 
 trait FormulaParameter
 
@@ -386,6 +387,26 @@ class BackgroundConcentrationFormulaV2(f: Symbol, Qg: Symbol, Q2: Symbol) extend
   override def identifier: UUID = BackgroundConcentrationFormulaV2.identifier
 
   override def texify(): String = getExpression.texify()
+
+  override def calculate(): Double = getExpression.calculate()
+}
+
+object VentilationVelocityFormula {
+  val identifier: UUID = UUID.randomUUID()
+
+  val reference: Option[String] = None // TODO: Look up reference
+}
+
+class VentilationVelocityFormula(airFlow: Symbol, roomHeightSymbol: Symbol, roomLengthSymbol: Symbol) extends Formula with Units {
+  override val reference: Option[String] = VentilationVelocityFormula.reference
+
+  override def texifyFormula(): String = s"""??? = \\dfrac{${airFlow.sign}}{${roomHeightSymbol.sign} \\times ${roomLengthSymbol.sign}}"""
+
+  override def getExpression: Expression = airFlow.expression / (roomHeightSymbol.expression * roomLengthSymbol.expression)
+
+  override def identifier: UUID = VentilationVelocityFormula.identifier
+
+  override def texify(): Latex = getExpression.texify()
 
   override def calculate(): Double = getExpression.calculate()
 }

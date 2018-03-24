@@ -113,12 +113,12 @@ object ZoneCalculator {
       val roomHSymbol = Symbol(getValue(request.getBgConcentrationValues.getRoomDimensions.getHeight), "H")
       val airFlow = Symbol(getValue(request.getBgConcentrationValues.getAirEnteringRoomFlowRate), "Q_A")
 
-      val ventilationVelocity = airFlow.expression / (roomHSymbol.expression * roomLSymbol.expression)
+      val ventilationVelocity = new VentilationVelocityFormula(airFlow, roomHSymbol, roomLSymbol)
 
       val ventilationSection = FormulaSection(
-        Some(FormulaContainer(new PlainFormula(ventilationVelocity))),
-        Some(Decision("Since the leakage is indoors, the ventilation velocity is calculated based on the room volume and the air flow")),
-        Some(Description(s"Total ventilation velocity: ${ventilationVelocity.calculate()} m/s"))
+        Some(FormulaContainer(ventilationVelocity)),
+        Some(Decision(s"Since the leakage is indoors, the ventilation velocity is calculated based on the room volume and the air flow. ${ventilationVelocity.calculate()} m/s")),
+        Some(Description(s"Total ventilation velocity"))
       )
 
       (ventilationSection, ventilationVelocity)
@@ -181,7 +181,7 @@ object ZoneCalculator {
         val dilutionLevelSection = FormulaSection(
           None,
           Some(Decision("The dilution level is determined to be low, since the leakage is outdoors, and the background concentration is below 25% of the lower flammability level")),
-          None
+          Some(Description("Determine dilution level"))
         )
 
         (dilutionLevelSection, DilutionLevel.Low)
@@ -198,7 +198,7 @@ object ZoneCalculator {
         val dilutionLevelSection = FormulaSection(
           None,
           Some(Decision(s"The dilution level has been determined to be $dilutionLevel based on the diagram in XXX")),
-          None
+          Some(Description("Determine dilution level"))
         )
 
         (dilutionLevelSection, dilutionLevel)
