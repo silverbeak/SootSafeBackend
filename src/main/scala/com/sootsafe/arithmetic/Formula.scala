@@ -400,7 +400,9 @@ object VentilationVelocityFormula {
 class VentilationVelocityFormula(airFlow: Symbol, roomHeightSymbol: Symbol, roomLengthSymbol: Symbol) extends Formula with Units {
   override val reference: Option[String] = VentilationVelocityFormula.reference
 
-  override def texifyFormula(): String = s"""??? = \\dfrac{${airFlow.sign}}{${roomHeightSymbol.sign} \\times ${roomLengthSymbol.sign}}"""
+  private val uw = Symbol(Expression.Zero, "u_w")
+
+  override def texifyFormula(): String = s"""${uw.sign} = \\dfrac{${airFlow.sign}}{${roomHeightSymbol.sign} \\times ${roomLengthSymbol.sign}} ($meters_per_second)"""
 
   override def getExpression: Expression = airFlow.expression / (roomHeightSymbol.expression * roomLengthSymbol.expression)
 

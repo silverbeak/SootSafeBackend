@@ -203,4 +203,21 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     }
   }
 
+  "Ventilation velocity" must {
+
+    val airFlow = Symbol(Value(43), "Q_a")
+    val roomLengthSymbol = Symbol(Value(.98), "L")
+    val roomHeightSymbol = Symbol(Value(0.1), "B")
+
+    val backgroundConcentration = new VentilationVelocityFormula(airFlow, roomHeightSymbol, roomLengthSymbol)
+
+    "texify formula" in {
+      backgroundConcentration.texifyFormula() should be("""u_w = \dfrac{Q_a}{B \times L} (m/s)""")
+    }
+
+    "texify calculation" in {
+      backgroundConcentration.texify() should be("""\dfrac{43.0}{0.1 \times 0.98}""")
+    }
+  }
+
 }

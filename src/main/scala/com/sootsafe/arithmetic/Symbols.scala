@@ -14,6 +14,8 @@ trait Units {
   val kg_per_cubic_meter: String = "kg/m^3"
 
   val vol_vol: String = "vol/vol"
+
+  val meters_per_second: String = "m/s"
 }
 
 trait Symbols {
