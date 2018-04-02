@@ -47,7 +47,7 @@ object Fixture {
       .stripMargin
 
   val end: String =
-    s"""\\newline
+    s"""
        |%
        |\\end{document}"""
       .stripMargin
