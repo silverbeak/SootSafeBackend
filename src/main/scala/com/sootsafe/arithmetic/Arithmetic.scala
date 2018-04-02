@@ -1,7 +1,6 @@
 package com.sootsafe.arithmetic
 
-import com.sootsafe.reporting.Fixture.Latex
-import com.sootsafe.reporting.{DefaultReportFormat, ReportFormat}
+import com.sootsafe.reporting.{DefaultReportFormat, ReportFormat, Texifyable}
 
 object Arithmetic {
 
@@ -35,11 +34,9 @@ object Arithmetic {
 
 }
 
-trait Expression {
+trait Expression extends Texifyable {
   // TODO: Should this be a part of Expression? I think perhaps it should be supplied as implicit to all 'texify' methods
   private[arithmetic] implicit val reportFormat: ReportFormat = DefaultReportFormat
-
-  def texify(): Latex
 
   def calculate(): Double
 

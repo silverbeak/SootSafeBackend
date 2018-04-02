@@ -147,7 +147,7 @@ object ZoneCalculator {
 
       val ventilationSection = FormulaSection(
         None,
-        Some(Decision("An outdoor leakage is determined from a diagram")),
+        Some(Decision("An outdoor leakage is determined from table C.1")),
         Some(Description(s"Total ventilation velocity: $description"))
       )
 

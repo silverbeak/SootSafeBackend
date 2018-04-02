@@ -394,7 +394,7 @@ class BackgroundConcentrationFormulaV2(f: Symbol, Qg: Symbol, Q2: Symbol) extend
 object VentilationVelocityFormula {
   val identifier: UUID = UUID.randomUUID()
 
-  val reference: Option[String] = None // TODO: Look up reference
+  val reference: Option[String] = Some("Table E.1, row 15: Områden med explosiv gasatmosfär")
 }
 
 class VentilationVelocityFormula(airFlow: Symbol, roomHeightSymbol: Symbol, roomLengthSymbol: Symbol) extends Formula with Units {
