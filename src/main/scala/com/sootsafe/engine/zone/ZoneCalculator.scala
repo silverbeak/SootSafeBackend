@@ -157,11 +157,13 @@ object ZoneCalculator {
 
   private def ykxm(k: Expression = Value(1), m: Expression = Expression.Zero)(x: Expression): Expression = k * x + m
 
+  private def ykxmLog(constant: Expression = Value(1), m: Expression = Value(1))(x: Expression): Expression = (x ^ m) * constant
+
   private[zone] def determinePollutionDistance(releaseType: ReleaseType, releaseCharacter: Expression): FormulaSection = {
     val line = releaseType match {
-      case ReleaseType.HeavyGas => ykxm(m = Value(0.015))(_)
-      case ReleaseType.DiffusiveJet => ykxm(m = Value(0.045))(_)
-      case ReleaseType.Jet => ykxm(m = Value(0.25))(_)
+      case ReleaseType.HeavyGas => ykxmLog(constant = Value(9), m = Value(0.5))(_)
+      case ReleaseType.DiffusiveJet => ykxmLog(constant = Value(4.2), m = Value(0.5))(_)
+      case ReleaseType.Jet => ykxmLog(constant = Value(1.8), m = Value(0.5))(_)
       case x => throw new Exception(s"Release type $x not recognized")
     }
 
