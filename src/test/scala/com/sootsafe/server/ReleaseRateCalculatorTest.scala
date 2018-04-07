@@ -90,7 +90,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(requestForGas)
+      val result = ReleaseRateCalculator.performCalculation(requestForGas)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -109,7 +109,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)
+      val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
 
       val requestForLiquid = ReleaseRateRequest
         .newBuilder()
@@ -120,7 +120,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)
+      val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)._1
 
       resultForGas.calculate() should be(0.08091924259588931)
       resultForGas.texify() should be("""\dfrac{9.0}{33.3 \times 33.4 \times 0.1}""")
@@ -140,7 +140,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)
+      val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
 
       val requestForLiquid = ReleaseRateRequest
         .newBuilder()
@@ -151,7 +151,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)
+      val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)._1
 
       resultForGas.calculate() should be(0.6068943194691696)
       resultForGas.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -171,7 +171,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)
+      val result = ReleaseRateCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -188,7 +188,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)
+      val result = ReleaseRateCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -207,7 +207,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)
+      val result = ReleaseRateCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -223,7 +223,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRateValues(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)
+      val result = ReleaseRateCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")

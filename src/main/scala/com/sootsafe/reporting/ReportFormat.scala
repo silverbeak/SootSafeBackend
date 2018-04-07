@@ -14,7 +14,7 @@ object DefaultReportFormat extends ReportFormat {
 
   def write(num: BigDecimal): String = {
 //    num.setScale(decimalPlaces, BigDecimal.RoundingMode.HALF_UP).toDouble.toString
-    num.round(new MathContext(significantFigures)).doubleValue().toString
+    num.round(new MathContext(significantFigures)).bigDecimal.toPlainString
   }
 
   override def write(num: Option[Double]): String = if (num.isEmpty) "" else write(num.get)

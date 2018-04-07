@@ -17,19 +17,24 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
         val entry = ReleaseRateResultEntry
           .newBuilder()
           .setKey(request.getKey)
-          .setReleaseCharacter(releaseRateExpression.calculate())
+          .setReleaseCharacter(releaseRateExpression._1.calculate())
           .build()
 
-        val zoneExtent = ZoneCalculator.determinePollutionDistance(request.getReleaseType, releaseRateExpression)
+        val zoneExtent = ZoneCalculator.determinePollutionDistance(request.getReleaseType, releaseRateExpression._1)
 
-        val zoneFormulaSections = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression)
+        val zoneFormulaSections = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression._1)
 
-        val calculationSection = CalculationSection(
-          None,
+        val releaseRateCalculationSection = CalculationSection(
+          Some(Description("Determine the release rate")),
+          releaseRateExpression._2
+        )
+
+        val zoneCalculationSection = CalculationSection(
+          Some(Description("Determine the zone type")),
           Seq(zoneExtent) ++ zoneFormulaSections
         )
 
-        val zoneExtentReport = ReleaseRateReportGenerator.generateLatex(calculationSection)
+        val zoneExtentReport = ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection))
 
         println(s"ZoneExtent:\n$zoneExtentReport\nEnd ZoneExtent")
 
@@ -47,7 +52,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     }
   }
 
-  def performCalculation(request: ReleaseRateRequest): Expression = {
+  def performCalculation(request: ReleaseRateRequest): (Expression, Seq[FormulaSection]) = {
 
     val performReleaseCalculation = request.getPerformReleaseCalculation
     val isGasCalculation = request.getIsGasCalculation
@@ -91,11 +96,13 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
     val formula = new ReleaseCharacter2(WgSymbol, rhoGSymbol, kSymbol, lflSymbol)
 
-    //    val latex = ReleaseRateReportGenerator.generateLatex(calculationSequence :+ FormulaContainer(formula, Some("Release characteristics")))
+    val formulaCollection = calculationSequence :+ FormulaContainer(formula, Some("Release characteristics"))
 
-    //    println(s"Texified:\n$latex")
-
-    formula
+    (formula, formulaCollection.map(container => FormulaSection(
+      Option(container),
+      container.decision.map(Decision),
+      container.description.map(Description)))
+    )
   }
 
   case class FormulaContainer(formula: Formula, description: Option[String] = None, decision: Option[String] = None)
@@ -124,17 +131,17 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     (performReleaseCalculation, isGasCalculation, hasReleaseRateInKgPerSecond, isEvaporationFromPool) match {
       case (false, true, false, _) =>
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        Seq(FormulaContainer(new PlainFormula(Qg), None))
+        Seq(FormulaContainer(new PlainFormula(Qg), Some("Characteristic of release")))
 
       case (false, false, false, _) =>
         // För vätska: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        Seq(FormulaContainer(new PlainFormula(Qg), None))
+        Seq(FormulaContainer(new PlainFormula(Qg), Some("Characteristic of release")))
 
       case (false, _, true, _) =>
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
         val b5formula = calculateB5(Wg, M, rhoG)
-        Seq(FormulaContainer(b5formula, None))
+        Seq(FormulaContainer(b5formula, Some("Volumetric flow rate")))
 
       case (true, false, _, false) =>
         // För gas: Beräkna Wg(ekv B.1)
@@ -143,12 +150,12 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
         val cdSymbol = Symbol(Cd, "C_d")
         val sSymbol = Symbol(S, "S")
-        val deltaPSymbol = Symbol(deltaP, s"${delta.sign}p")
+        val deltaPSymbol = Symbol(deltaP, s"${Delta.sign}p")
 
         val wg = new ReleaseRateOfLiquid(cdSymbol, sSymbol, deltaPSymbol)
 
         val b5formula = calculateB5(wg, M, rhoG)
-        Seq(FormulaContainer(wg, None), FormulaContainer(b5formula, None))
+        Seq(FormulaContainer(wg, Some("Release rate")), FormulaContainer(b5formula, Some("Volumetric flow rate")))
 
 
       case (true, false, _, true) =>
@@ -165,7 +172,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
         val we = new Evaporation(uwSymbol, apSymbol, pvSymbol, mSymbol, rSymbol, tSymbol)
 
         val b5formula = calculateB5(we, M, rhoG)
-        Seq(FormulaContainer(we, None), FormulaContainer(b5formula, None))
+        Seq(FormulaContainer(we, Some("Evaporation rate")), FormulaContainer(b5formula, Some("Volumetric flow rate")))
 
       case (true, true, _, _) =>
         // För vätska: Beräkna kritiskt tryck  (ekv B.2)

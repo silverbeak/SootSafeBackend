@@ -2,6 +2,8 @@ package com.sootsafe.reporting
 
 import com.sootsafe.engine.zone.ReleaseRateCalculator.FormulaContainer
 import com.sootsafe.reporting.Fixture.Latex
+import com.sootsafe.reporting.figures.Figure
+import com.sootsafe.reporting.tables.Table
 
 trait ReportSection {
   def texify(): Latex
@@ -45,7 +47,12 @@ case class FormulaDefinition(formula: FormulaContainer) extends ReportSection {
   override def texify(): Latex = formula.formula.texifyFormula() // TODO: Add reference/description somewhere?
 }
 
-case class FormulaSection(formulaContainer: Option[FormulaContainer], decision: Option[Decision], description: Option[Description]) extends ReportSection {
+case class FormulaSection(formulaContainer: Option[FormulaContainer],
+                          decision: Option[Decision],
+                          description: Option[Description],
+                          tableReferences: Seq[Table] = Nil,
+                          figureReferences: Seq[Figure] = Nil) extends ReportSection {
+
   private val descriptionSpacer: Latex = "XXX"
   private val decisionSpacer: Latex = "XXX"
   private val formulaSpacer: Latex = "XXX"

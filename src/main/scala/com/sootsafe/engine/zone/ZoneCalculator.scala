@@ -4,6 +4,8 @@ import com.sootsafe.arithmetic._
 import com.sootsafe.server.{Element, ElementTable}
 import ReleaseRateCalculator.{FormulaContainer, getValue}
 import com.sootsafe.reporting._
+import com.sootsafe.reporting.figures.{FigureC1, FigureD1}
+import com.sootsafe.reporting.tables.{TableC1, TableD1}
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
 
 object ZoneCalculator {
@@ -44,8 +46,9 @@ object ZoneCalculator {
 
     FormulaSection(
       None,
-      Some(Decision(s"$gradeOfRelease release grade, $dilutionLevel dilution level and $ventilationAvailability ventilation availability gives $result")),
-      Some(Description("Determining the zone is based on table XXX"))
+      Some(Decision(s"""$gradeOfRelease release grade, $dilutionLevel dilution level and $ventilationAvailability ventilation availability gives $result based on Table \\ref{table:${TableD1.identifier}}""")),
+      Some(Description("Determining the zone type")),
+      Seq(TableD1)
     )
   }
 
@@ -117,8 +120,8 @@ object ZoneCalculator {
 
       val ventilationSection = FormulaSection(
         Some(FormulaContainer(ventilationVelocity)),
-        Some(Decision(s"Since the leakage is indoors, the ventilation velocity is calculated based on the room volume and the air flow. ${ventilationVelocity.calculate()} m/s")),
-        Some(Description(s"Total ventilation velocity"))
+        Some(Decision("Since the leakage is indoors, the ventilation velocity is calculated based on the room volume and the air flow.")),
+        Some(Description("Total ventilation velocity"))
       )
 
       (ventilationSection, ventilationVelocity)
@@ -147,7 +150,7 @@ object ZoneCalculator {
 
       val ventilationSection = FormulaSection(
         None,
-        Some(Decision("An outdoor leakage is determined from table C.1")),
+        Some(Decision(s"An outdoor leakage is determined from table \\ref{table:${TableC1.identifier}}")),
         Some(Description(s"Total ventilation velocity: $description"))
       )
 
@@ -160,18 +163,24 @@ object ZoneCalculator {
   private def ykxmLog(constant: Expression = Value(1), m: Expression = Value(1))(x: Expression): Expression = (x ^ m) * constant
 
   private[zone] def determinePollutionDistance(releaseType: ReleaseType, releaseCharacter: Expression): FormulaSection = {
-    val line = releaseType match {
+
+    def releaseTypeToLineFunction(releaseType: ReleaseType): Expression => Expression = releaseType match {
+      // The constant (offset) values for these functions have been determined by back tracing the graphs in figure D.1 the document
       case ReleaseType.HeavyGas => ykxmLog(constant = Value(9), m = Value(0.5))(_)
       case ReleaseType.DiffusiveJet => ykxmLog(constant = Value(4.2), m = Value(0.5))(_)
       case ReleaseType.Jet => ykxmLog(constant = Value(1.8), m = Value(0.5))(_)
       case x => throw new Exception(s"Release type $x not recognized")
     }
 
+    val line = releaseTypeToLineFunction(releaseType)
+
     val pollutionDistanceFormula = new PlainFormula(line(releaseCharacter))
     FormulaSection(
       Some(FormulaContainer(pollutionDistanceFormula)),
-      Some(Decision(s"Release type $releaseType and release character = ${releaseCharacter.toValue.texify()} gives a pollution radius of ${pollutionDistanceFormula.toValue.texify()}")),
-      Some(Description("Determine pollution radius"))
+      Some(Decision(s"Release type $releaseType and release character = ${releaseCharacter.toValue.texify()} gives a pollution radius of ${pollutionDistanceFormula.toValue.texify()}, based on Diagram \\ref{fig:${FigureD1.identifier}}")),
+      Some(Description("Determine pollution radius")),
+      Nil,
+      Seq(FigureD1)
     )
   }
 
@@ -188,8 +197,8 @@ object ZoneCalculator {
 
         (dilutionLevelSection, DilutionLevel.Low)
       case _ =>
-        val lowLimit = ykxm(m = Value(-0.022))(_)
-        val highLimit = ykxm(m = Value(0.05))(_)
+        val lowLimit = ykxmLog(m = Value(1), constant = Value(0.045))(_)
+        val highLimit = ykxmLog(m = Value(1), constant = Value(13.5))(_)
 
         val dilutionLevel = ventilationVelocity.calculate() match {
           case ventVelocity if ventVelocity < lowLimit(releaseCharacter).calculate() => DilutionLevel.Low
@@ -199,8 +208,10 @@ object ZoneCalculator {
 
         val dilutionLevelSection = FormulaSection(
           None,
-          Some(Decision(s"The dilution level has been determined to be $dilutionLevel based on the diagram in XXX")),
-          Some(Description("Determine dilution level"))
+          Some(Decision(s"The dilution level has been determined to be $dilutionLevel based on Diagram \\ref{fig:${FigureC1.identifier}}")),
+          Some(Description("Determine dilution level")),
+          Nil,
+          Seq(FigureC1)
         )
 
         (dilutionLevelSection, dilutionLevel)
