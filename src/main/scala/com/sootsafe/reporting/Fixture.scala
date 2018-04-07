@@ -8,12 +8,14 @@ trait Texifyable {
   def texHeaders(): Seq[Latex] = Nil
 }
 
+trait Referable
+
 object Fixture {
 
   type Latex = String
 
   def head(title: Option[String], author: Option[String]): String =
-    s"""|\\documentclass[12pt, letterpaper]{article}
+    s"""|\\documentclass[10pt, letterpaper]{article}
         |\\usepackage{amsmath}
         |\\usepackage{graphicx}
         |\\usepackage[utf8]{inputenc}
@@ -23,6 +25,9 @@ object Fixture {
         |\\usepackage[margin=0.8in]{geometry}
         |\\usepackage[printwatermark]{xwatermark}
         |\\usepackage{boldline}
+        |\\usepackage{pgfplots}
+        |\\usepackage{threeparttable}
+        |\\usepackage{multirow}
         |\\newwatermark*[allpages,color=red!50,angle=45,scale=3,xpos=0,ypos=0]{SOOTSAFE.COM}
         |
         |% \\DeclarePairedDelimiter\\abs{\\lvert}{\\rvert}%
