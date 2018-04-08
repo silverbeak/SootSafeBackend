@@ -1,10 +1,11 @@
 package com.sootsafe.server
 
+import com.google.cloud.firestore.DocumentReference
 import com.google.protobuf.InvalidProtocolBufferException
-import com.sootsafe.engine.zone.ReleaseRateCalculator
 import com.sootsafe.firebase.subscriber.{MessageSerializer, Subscriber}
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRateRequest
+import com.sootsafe.server.requesthandler.ReleaseRateRequestHandler
 import io.grpc.{Server, ServerBuilder}
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -46,7 +47,7 @@ object Runner {
     val calculatorService = new SootSafeCalculatorService(8980)
     calculatorService.start()
 
-    val messageChannel = new Channel[String]
+    val messageChannel = new Channel[(String, DocumentReference)]
 
     val firestore = Subscriber.database()
     Subscriber.subscribe(firestore, messageChannel)
@@ -54,26 +55,17 @@ object Runner {
     Future {
       while (true) {
         val changeMap = messageChannel.read
-//        println(s"Message: $changeMap")
+        //        println(s"Message: $changeMap")
         try {
           val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
-          val releaseRateRequest = MessageSerializer.serializer[ReleaseRateRequest](changeMap, builder)
-//          println(s"In channel: $releaseRateRequest")
-          ReleaseRateCalculator.handleRequest(releaseRateRequest) match {
-            case Left(result) =>
-              println(s"Successful! $result")
-              // TODO: Write successful result to Firebase
-              // TODO: Write report to firebase
-            case Right(errorStr) =>
-              println(s"Encountered error: $errorStr")
-              // TODO: Write error to firebase
-          }
+          val releaseRateRequest = MessageSerializer.serializer[ReleaseRateRequest](changeMap._1, builder)
+          ReleaseRateRequestHandler.handleRequest(releaseRateRequest, changeMap._2)
         } catch {
           case e: InvalidProtocolBufferException => println(s"Invalid protocol buffer exception! ${e.getMessage}")
           case e: Throwable =>
-//            println(s"Error caught[${e.getClass.getName}]: ${e.getMessage}")
+            //            println(s"Error caught[${e.getClass.getName}]: ${e.getMessage}")
             println(s"Error: ${e.getMessage}\n${e.getStackTrace.mkString("\n")}")
-          throw new Exception(s"ERROR in channel!", e)
+            throw new Exception(s"ERROR in channel!", e)
         }
       }
     }

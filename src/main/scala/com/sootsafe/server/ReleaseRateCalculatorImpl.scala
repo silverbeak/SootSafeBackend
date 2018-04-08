@@ -16,7 +16,7 @@ class ReleaseRateCalculatorImpl extends ReleaseRateCalculatorGrpc.ReleaseRateCal
 
     val response = ReleaseRateCalculator.handleRequest(request) match {
       case Left(result) =>
-        result
+        result._1
       case Right(error) =>
         val errorMessage = ErrorMessage
           .newBuilder()

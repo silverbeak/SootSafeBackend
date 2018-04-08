@@ -15,7 +15,7 @@ import scala.concurrent.Channel
 
 object Subscriber {
 
-  def subscribe(db: Firestore, messageChannel: Channel[String]): Unit = {
+  def subscribe(db: Firestore, messageChannel: Channel[(String, DocumentReference)]): Unit = {
 
     import org.json4s.jackson.Serialization.write
 
@@ -34,17 +34,14 @@ object Subscriber {
           } {
             (change.getType, change.getDocument.exists) match {
               case (DocumentChange.Type.ADDED, true) =>
-                System.out.println("Added data: " + change.getDocument.getData + ", " + change.getType)
-//                val fakeMap: java.util.Map[String, AnyRef] = Map("FakeResult" -> UUID.randomUUID())
-//                docRef.document("report").set(fakeMap)
+                System.out.println("Added data: " + change.getDocument.getId + ", Reference: " + change.getDocument.getReference.getPath)
                 val gson = new Gson()
                 val json = gson.toJson(change.getDocument.getData)
-//                val json = write(change.getDocument.getData)
-                messageChannel.write(json)
+                messageChannel.write(json, change.getDocument.getReference)
               case (DocumentChange.Type.MODIFIED, _) =>
                 System.out.println("Modified data: " + change.getDocument.getData + ", " + change.getType)
                 val json = write(change.getDocument.getData)
-                messageChannel.write(json)
+                messageChannel.write(json, change.getDocument.getReference)
               case (changeType, _) =>
                 System.out.print(s"ChangeType $changeType not implemented/supported")
             }
@@ -61,7 +58,10 @@ object Subscriber {
     // Use a service account// Use a service account
     val serviceAccount = new FileInputStream(serviceAccountFileURL.getFile)
     val credentials = GoogleCredentials.fromStream(serviceAccount)
-    val options = new FirebaseOptions.Builder().setCredentials(credentials).build
+    val options = new FirebaseOptions.Builder()
+      .setStorageBucket("sootsafe-app-test.appspot.com")
+      .setCredentials(credentials)
+      .build
     FirebaseApp.initializeApp(options)
 
     FirestoreClient.getFirestore

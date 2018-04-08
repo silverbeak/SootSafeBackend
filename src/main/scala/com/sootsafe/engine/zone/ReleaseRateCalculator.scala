@@ -1,6 +1,11 @@
 package com.sootsafe.engine.zone
 
+import java.io.{File, PrintWriter}
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import com.sootsafe.arithmetic._
+import com.sootsafe.reporting.Fixture.Latex
 import com.sootsafe.reporting._
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
 
@@ -10,7 +15,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
   private implicit val reportFormat: ReportFormat = DefaultReportFormat
 
-  def handleRequest(request: ReleaseRateRequest): Either[ReleaseRateCalculationResult, String] = {
+  def handleRequest(request: ReleaseRateRequest): Either[(ReleaseRateCalculationResult, String), String] = {
 
     Try(performCalculation(request)) match {
       case Success(releaseRateExpression) =>
@@ -36,7 +41,11 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
         val zoneExtentReport = ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection))
 
-        println(s"ZoneExtent:\n$zoneExtentReport\nEnd ZoneExtent")
+//        println(s"ZoneExtent:\n$zoneExtentReport\nEnd ZoneExtent")
+
+        val filename = generateTexFileName()
+        writeTexToFile(zoneExtentReport, s"temp/sootsafe/$filename")
+
 
         val result = ReleaseRateCalculationResult
           .newBuilder()
@@ -45,11 +54,28 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
           //          .setZoneLabel(zoneFormulaSections)
           .build()
 
-        Left(result)
+        LatexCompiler.latexToPdf(s"temp/sootsafe/$filename", "temp/sootsafe") match {
+          case Failure(e) =>
+            Right(s"Could not create pdf file with name $filename")
+          case Success(pdfPath) =>
+            Left((result, pdfPath))
+        }
+
 
       case Failure(e) =>
         Right(s"Could not calculate release rate character. Error: ${e.getMessage}")
     }
+  }
+
+  private def generateTexFileName(): String = {
+    val format = new SimpleDateFormat("YYYY-MM-dd_HHmmss")
+    format.format(new Date()) + ".tex"
+  }
+
+  private def writeTexToFile(tex: Latex, targetFilename: String): Unit = {
+    val writer = new PrintWriter(new File(targetFilename))
+    writer.write(tex)
+    writer.close()
   }
 
   def performCalculation(request: ReleaseRateRequest): (Expression, Seq[FormulaSection]) = {
