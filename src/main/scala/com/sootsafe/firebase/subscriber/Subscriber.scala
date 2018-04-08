@@ -11,16 +11,14 @@ import com.google.gson.Gson
 import org.json4s.DefaultFormats
 
 import scala.concurrent.Channel
+import scala.util.{Failure, Success, Try}
 
 
 object Subscriber {
 
   def subscribe(db: Firestore, messageChannel: Channel[(String, DocumentReference)]): Unit = {
 
-    import org.json4s.jackson.Serialization.write
-
     import scala.collection.JavaConversions._
-    implicit val formats: DefaultFormats.type = DefaultFormats
 
     val docRef = db.collection("releaseRate")
     docRef.addSnapshotListener(new EventListener[QuerySnapshot]() {
@@ -32,23 +30,36 @@ object Subscriber {
           for {
             change <- snapshot.getDocumentChanges
           } {
-            (change.getType, change.getDocument.exists) match {
-              case (DocumentChange.Type.ADDED, true) =>
-                System.out.println("Added data: " + change.getDocument.getId + ", Reference: " + change.getDocument.getReference.getPath)
-                val gson = new Gson()
-                val json = gson.toJson(change.getDocument.getData)
+            singleDocumentUpdateToJson(messageChannel, change) match {
+              case Success(json) =>
                 messageChannel.write(json, change.getDocument.getReference)
-              case (DocumentChange.Type.MODIFIED, _) =>
-                System.out.println("Modified data: " + change.getDocument.getData + ", " + change.getType)
-                val json = write(change.getDocument.getData)
-                messageChannel.write(json, change.getDocument.getReference)
-              case (changeType, _) =>
-                System.out.print(s"ChangeType $changeType not implemented/supported")
+
+              case Failure(e) =>
+                ???
             }
           }
         }
       }
     })
+  }
+
+  private def singleDocumentUpdateToJson(messageChannel: Channel[(String, DocumentReference)], change: DocumentChange): Try[String] = {
+    import org.json4s.jackson.Serialization.write
+    implicit val formats: DefaultFormats.type = DefaultFormats
+
+    (change.getType, change.getDocument.exists) match {
+      case (DocumentChange.Type.ADDED, true) =>
+        System.out.println("Added data: " + change.getDocument.getId + ", Reference: " + change.getDocument.getReference.getPath)
+        val gson = new Gson()
+        Success(gson.toJson(change.getDocument.getData))
+
+      case (DocumentChange.Type.MODIFIED, _) =>
+        System.out.println("Modified data: " + change.getDocument.getData + ", " + change.getType)
+        Success(write(change.getDocument.getData))
+
+      case (changeType, _) =>
+        Failure(new Exception(s"ChangeType $changeType not implemented/supported"))
+    }
   }
 
   // FIXME: Setting should go here I guess

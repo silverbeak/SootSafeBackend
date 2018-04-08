@@ -53,7 +53,7 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     }
 
     "texify calculation" in {
-      vmVaporisation.texify() should be("""\dfrac{6.5 \times {1.0}^{0.78} \times 2.0 \times 1.15}{{10.0}^{5.0} \times {88.0}^{0.333}} \times \dfrac{992200.0}{9.09}""")
+      vmVaporisation.texify() should be("""\dfrac{6.5 \times {1.0}^{0.78} \times 2.0 \times 1.15}{{10.0}^{5.0} \times {88.0}^{0.333}} \times \dfrac{992200}{9.09}""")
     }
   }
 
@@ -131,7 +131,7 @@ class DynamicPressureTest extends WordSpecLike with Matchers with Symbols {
     }
 
     "texify calculation" in {
-      limitedGasRate.texify() should be("""34.0 \times 45.5 \times 0.005 \times \sqrt{0.065 \times \dfrac{24.0}{88.4 \times 0.44 \times 0.0} \times {\left({\dfrac{2.0}{0.065 + 1.0}}\right)}^{\dfrac{0.065 + 1.0}{0.065 - 1.0}}}""")
+      limitedGasRate.texify() should be("""34.0 \times 45.5 \times 0.005 \times \sqrt{0.065 \times \dfrac{24.00}{88.4 \times 0.44 \times 0.0} \times {\left({\dfrac{2.0}{0.065 + 1.0}}\right)}^{\dfrac{0.065 + 1.0}{0.065 - 1.0}}}""")
     }
   }
 

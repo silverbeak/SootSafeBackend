@@ -61,7 +61,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       ReleaseRateCalculator.handleRequest(request) match {
         case Right(errorString) => fail(errorString)
-        case Left(result) =>
+        case Left((result, _)) =>
           result.getReleaseRateResult.getKey should be(request.getKey)
           result.getReleaseRateResult.getReleaseCharacter should be(0.6068943194691696)
       }
@@ -73,7 +73,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       ReleaseRateCalculator.handleRequest(request) match {
         case Right(errorString) => fail(errorString)
-        case Left(result) =>
+        case Left((result, _)) =>
           result.getReleaseRateResult.getKey should be(request.getKey)
           result.getReleaseRateResult.getReleaseCharacter should be(0.1111111111111111)
       }

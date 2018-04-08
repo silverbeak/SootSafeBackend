@@ -14,7 +14,7 @@ import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRat
 object ReleaseRateRequestHandler {
   def handleRequest(releaseRateRequest: ReleaseRateRequest, documentReference: DocumentReference): Unit = {
     import scala.collection.JavaConverters._
-    ReleaseRateCalculator.handleRequest(releaseRateRequest) match {
+    ReleaseRateCalculator.handleRequest(releaseRateRequest, generateReport = true) match {
       case Left(result) =>
         println(s"Successful! $result")
         // TODO: Write successful result to Firebase

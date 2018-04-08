@@ -15,7 +15,8 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
   private implicit val reportFormat: ReportFormat = DefaultReportFormat
 
-  def handleRequest(request: ReleaseRateRequest): Either[(ReleaseRateCalculationResult, String), String] = {
+  def handleRequest(request: ReleaseRateRequest,
+                    generateReport: Boolean = false): Either[(ReleaseRateCalculationResult, String), String] = {
 
     Try(performCalculation(request)) match {
       case Success(releaseRateExpression) =>
@@ -39,14 +40,6 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
           Seq(zoneExtent) ++ zoneFormulaSections
         )
 
-        val zoneExtentReport = ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection))
-
-//        println(s"ZoneExtent:\n$zoneExtentReport\nEnd ZoneExtent")
-
-        val filename = generateTexFileName()
-        writeTexToFile(zoneExtentReport, s"temp/sootsafe/$filename")
-
-
         val result = ReleaseRateCalculationResult
           .newBuilder()
           .setReleaseRateResult(entry)
@@ -54,11 +47,19 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
           //          .setZoneLabel(zoneFormulaSections)
           .build()
 
-        LatexCompiler.latexToPdf(s"temp/sootsafe/$filename", "temp/sootsafe") match {
-          case Failure(e) =>
-            Right(s"Could not create pdf file with name $filename")
-          case Success(pdfPath) =>
-            Left((result, pdfPath))
+        if (generateReport) {
+          val zoneExtentReport = ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection))
+          val filename = generateTexFileName()
+          writeTexToFile(zoneExtentReport, s"temp/sootsafe/$filename")
+          LatexCompiler.latexToPdf(s"temp/sootsafe/$filename", "temp/sootsafe") match {
+            case Failure(e) =>
+              Right(s"Could not create pdf file with name $filename. Error: ${e.getMessage}")
+            case Success(pdfPath) =>
+              Left((result, pdfPath))
+          }
+        } else {
+          // FIXME: Not sure what to do about this. It's just to deal with the time it takes to generate the PDF
+          Left((result, ""))
         }
 
 
