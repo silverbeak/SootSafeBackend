@@ -89,7 +89,7 @@ object ZoneCalculator {
     val backgroundConcentrationValues = request.getBgConcentrationValues
 
     val QgSymbol = Symbol(getValue(request.getReleaseRateValues.getVolumetricGasFlowRate), "Q_g")
-    val fSymbol = Symbol(getValue(backgroundConcentrationValues.getSafetyFactor), "f")
+    val fSymbol = Symbol(getValue(backgroundConcentrationValues.getVentilationEfficiencyFactor), "f")
     val Q1Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAir), "Q_1")
     //    val Q2Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAirGas), "Q_2")
     val QaSymbol = Symbol(getValue(backgroundConcentrationValues.getAirEnteringRoomFlowRate), "Q_A")

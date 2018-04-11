@@ -245,14 +245,14 @@ object ReleaseCharacter2 {
   val reference: Option[String] = None // TODO: Fix. I'm sure there is a reference here somewhere
 }
 
-class ReleaseCharacter2(wg: Symbol, rhoG: Symbol, k: Symbol, lfl: Symbol) extends Formula with Symbols with Units {
+class ReleaseCharacter2(we: Symbol, rhoG: Symbol, k: Symbol, lfl: Symbol) extends Formula with Symbols with Units {
   val result = Symbol(Expression.Zero, "Q_{rc}")
 
   override val reference: Option[String] = ReleaseCharacter2.reference
 
-  override def texifyFormula(includeUnit: Boolean = false): String = s"""${result.sign} = \\dfrac{${wg.sign}}{${rhoG.sign}\\ ${k.sign}\\ ${lfl.sign} } $unit"""
+  override def texifyFormula(includeUnit: Boolean = false): String = s"""${result.sign} = \\dfrac{${we.sign}}{${rhoG.sign}\\ ${k.sign}\\ ${lfl.sign} } $unit"""
 
-  override def getExpression: Expression = wg.expression / (rhoG.expression * k.expression * lfl.expression)
+  override def getExpression: Expression = we.expression / (rhoG.expression * k.expression * lfl.expression)
 
   override def identifier: UUID = ReleaseCharacter2.identifier
 

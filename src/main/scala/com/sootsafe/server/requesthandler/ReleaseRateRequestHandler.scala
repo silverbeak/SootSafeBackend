@@ -23,7 +23,7 @@ object ReleaseRateRequestHandler {
         val fileContent = readPdf(result._2)
         val blobPath = writeFileToFirebaseStorage(fileContent).toString
         val firestore = documentReference.getFirestore
-        firestore.document(documentReference.getPath).collection("report").add(Map[String, String]("reportPath" -> blobPath).asJava)
+        firestore.document(documentReference.getPath).collection("report").document("pdf").create(Map[String, String]("reportPath" -> blobPath).asJava)
 
       case Right(errorStr) =>
         println(s"Encountered error: $errorStr")

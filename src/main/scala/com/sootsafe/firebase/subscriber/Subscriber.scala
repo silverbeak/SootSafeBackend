@@ -49,7 +49,7 @@ object Subscriber {
 
     (change.getType, change.getDocument.exists) match {
       case (DocumentChange.Type.ADDED, true) =>
-        System.out.println("Added data: " + change.getDocument.getId + ", Reference: " + change.getDocument.getReference.getPath)
+        System.out.println("Added data: " + change.getDocument.getData + ", Reference: " + change.getDocument.getReference.getPath)
         val gson = new Gson()
         Success(gson.toJson(change.getDocument.getData))
 

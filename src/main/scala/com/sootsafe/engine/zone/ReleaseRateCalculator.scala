@@ -92,11 +92,11 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     val Qg = getValue(values.getVolumetricGasFlowRate)
     val k = getValue(values.getSafetyFactor)
     val lfl = getValue(values.getLowerFlammableLimit)
-    val Wg = getValue(values.getMassReleaseRate)
+    val We = getValue(values.getEvaporationRate)
     val M = getValue(values.getMolarMass)
     val rhoG = getValue(values.getGasDensity)
     val Cd = getValue(values.getDischargeCoefficient)
-    val S = getValue(values.getCrossSectionArea)
+    val S = getValue(request.getBgConcentrationValues.getCrossSectionArea)
     val deltaP = getValue(values.getPressureDifference)
     val Ap = getValue(values.getPoolSurfaceArea)
     val uw = getValue(values.getWindSpeed)
@@ -110,7 +110,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
       isGasCalculation,
       hasReleaseRateInKgPerSecond,
       isEvaporationFromPool,
-      Qg, Wg, M, rhoG, Cd, S, deltaP, Ap, uw, T, gma, pa,
+      Qg, We, M, rhoG, Cd, S, deltaP, Ap, uw, T, gma, pa,
       criticalGasPressure,
       compressibilityFactor)
 
@@ -118,7 +118,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     val lflSymbol = Symbol(lfl, "LFL")
     val calculatedQq = calculationSequence.last
     val qgSymbol = Symbol(Value(calculatedQq.formula.calculate()), "Q_g")
-    val WgSymbol = Symbol(Wg, "W_g")
+    val WgSymbol = Symbol(We, "W_e")
     val rhoGSymbol = Symbol(rhoG, """\\rho_G""")
 
     val formula = new ReleaseCharacter2(WgSymbol, rhoGSymbol, kSymbol, lflSymbol)

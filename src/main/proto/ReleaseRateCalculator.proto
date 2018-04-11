@@ -22,11 +22,12 @@ message ReleaseRateValues {
     double volumetricGasFlowRate = 1;    // Q_g
     double safetyFactor = 2;             // k
     double lowerFlammableLimit = 3;      // LFL
-    double massReleaseRate = 4;          // W_g
+    //double massReleaseRate = 4;          // W_g
+    double evaporationRate = 4;          // W_e
     double molarMass = 5;                // M
     double gasDensity = 6;               // rho_g
     double dischargeCoefficient = 7;     // C_d
-    double crossSectionArea = 8;         // S
+//    double crossSectionArea = 8;         // S
     double pressureDifference = 9;       // p
     double poolSurfaceArea = 10;         // A_p
     double windSpeed = 11;               // u_w
@@ -45,13 +46,13 @@ message RoomDimension {
 }
 
 message BackgroundConcentrationValues {
-    double safetyFactor = 1;            // f
-    double volumetricFlowAir = 2;       // Q1
-    double volumetricFlowAirGas = 3;    // Q2
-    double airChangeFrequency = 4;      // C
-    double airEnteringRoomFlowRate = 5; // Q or Q_A
-    RoomDimension roomDimensions = 6;   // V0
-    double crossSectionArea = 7;        // S
+    double ventilationEfficiencyFactor = 1; // f
+    double volumetricFlowAir = 2;           // Q1
+    double volumetricFlowAirGas = 3;        // Q2
+    double airChangeFrequency = 4;          // C
+    double airEnteringRoomFlowRate = 5;     // Q or Q_A
+    RoomDimension roomDimensions = 6;       // V0
+    double crossSectionArea = 7;            // S
 }
 
 message VentilationVelocityValues {
