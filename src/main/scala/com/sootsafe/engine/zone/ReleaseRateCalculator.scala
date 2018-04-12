@@ -48,14 +48,18 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
           .build()
 
         if (generateReport) {
-          val zoneExtentReport = ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection))
-          val filename = generateTexFileName()
-          writeTexToFile(zoneExtentReport, s"temp/sootsafe/$filename")
-          LatexCompiler.latexToPdf(s"temp/sootsafe/$filename", "temp/sootsafe") match {
+          Try(ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection))) match {
             case Failure(e) =>
-              Right(s"Could not create pdf file with name $filename. Error: ${e.getMessage}")
-            case Success(pdfPath) =>
-              Left((result, pdfPath))
+              Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
+            case Success(zoneExtentReport) =>
+              val filename = generateTexFileName()
+              writeTexToFile(zoneExtentReport, s"temp/sootsafe/$filename")
+              LatexCompiler.latexToPdf(s"temp/sootsafe/$filename", "temp/sootsafe") match {
+                case Failure(e) =>
+                  Right(s"Could not create pdf file with name $filename. Error: ${e.getMessage}")
+                case Success(pdfPath) =>
+                  Left((result, pdfPath))
+              }
           }
         } else {
           // FIXME: Not sure what to do about this. It's just to deal with the time it takes to generate the PDF

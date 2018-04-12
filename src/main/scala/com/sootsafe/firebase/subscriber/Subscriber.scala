@@ -16,31 +16,33 @@ import scala.util.{Failure, Success, Try}
 
 object Subscriber {
 
-  def subscribe(db: Firestore, messageChannel: Channel[(String, DocumentReference)]): Unit = {
+  private def createSnapshotListener(messageChannel: Channel[(String, DocumentReference)]) = new EventListener[QuerySnapshot]() {
 
     import scala.collection.JavaConversions._
 
-    val docRef = db.collection("releaseRate")
-    docRef.addSnapshotListener(new EventListener[QuerySnapshot]() {
-      override def onEvent(snapshot: QuerySnapshot, e: FirestoreException): Unit = {
-        if (e != null) {
-          System.err.println("Listen failed: " + e)
-          throw new Exception(s"Listen to firebase failed", e)
-        } else {
-          for {
-            change <- snapshot.getDocumentChanges
-          } {
-            singleDocumentUpdateToJson(messageChannel, change) match {
-              case Success(json) =>
-                messageChannel.write(json, change.getDocument.getReference)
+    override def onEvent(snapshot: QuerySnapshot, e: FirestoreException): Unit = {
+      if (e != null) {
+        System.err.println("Listen failed: " + e)
+        throw new Exception(s"Listen to firebase failed", e)
+      } else {
+        for {
+          change <- snapshot.getDocumentChanges
+        } {
+          singleDocumentUpdateToJson(messageChannel, change) match {
+            case Success(json) =>
+              messageChannel.write(json, change.getDocument.getReference)
 
-              case Failure(e) =>
-                ???
-            }
+            case Failure(e) =>
+              ???
           }
         }
       }
-    })
+    }
+  }
+
+  def subscribe(db: Firestore, messageChannel: Channel[(String, DocumentReference)]): Unit = {
+    val docRef = db.collection("releaseRate")
+    docRef.addSnapshotListener(createSnapshotListener(messageChannel))
   }
 
   private def singleDocumentUpdateToJson(messageChannel: Channel[(String, DocumentReference)], change: DocumentChange): Try[String] = {
