@@ -16,30 +16,6 @@ import scala.util.{Failure, Success, Try}
 
 object Subscriber {
 
-  private def createSnapshotListener(messageChannel: Channel[(String, DocumentReference)]) = new EventListener[QuerySnapshot]() {
-
-    import scala.collection.JavaConversions._
-
-    override def onEvent(snapshot: QuerySnapshot, e: FirestoreException): Unit = {
-      if (e != null) {
-        System.err.println("Listen failed: " + e)
-        throw new Exception(s"Listen to firebase failed", e)
-      } else {
-        for {
-          change <- snapshot.getDocumentChanges
-        } {
-          singleDocumentUpdateToJson(messageChannel, change) match {
-            case Success(json) =>
-              messageChannel.write(json, change.getDocument.getReference)
-
-            case Failure(e) =>
-              ???
-          }
-        }
-      }
-    }
-  }
-
   private def createEventListener(messageChannel: Channel[(String, DocumentReference)],
                                   db: Firestore): EventListener[DocumentSnapshot] = new EventListener[DocumentSnapshot] {
 
@@ -82,25 +58,6 @@ object Subscriber {
       Success(gson.toJson(snapshot.getData))
     } else {
       Failure(new Exception(s"Document with id ${snapshot.getId} does not exist"))
-    }
-  }
-
-  private def singleDocumentUpdateToJson(messageChannel: Channel[(String, DocumentReference)], change: DocumentChange): Try[String] = {
-    import org.json4s.jackson.Serialization.write
-    implicit val formats: DefaultFormats.type = DefaultFormats
-
-    (change.getType, change.getDocument.exists) match {
-      case (DocumentChange.Type.ADDED, true) =>
-        System.out.println("Added data: " + change.getDocument.getData + ", Reference: " + change.getDocument.getReference.getPath)
-        val gson = new Gson()
-        Success(gson.toJson(change.getDocument.getData))
-
-      case (DocumentChange.Type.MODIFIED, _) =>
-        System.out.println("Modified data: " + change.getDocument.getData + ", " + change.getType)
-        Success(write(change.getDocument.getData))
-
-      case (changeType, _) =>
-        Failure(new Exception(s"ChangeType $changeType not implemented/supported"))
     }
   }
 
