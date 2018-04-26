@@ -120,10 +120,10 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
     val kSymbol = Symbol(k, "k")
     val lflSymbol = Symbol(lfl, "LFL")
-    val calculatedQq = calculationSequence.last
-    val qgSymbol = Symbol(Value(calculatedQq.formula.calculate()), "Q_g")
+//    val calculatedQq = calculationSequence.last
+//    val qgSymbol = Symbol(Value(calculatedQq.formula.calculate()), "Q_g")
     val WgSymbol = Symbol(We, "W_e")
-    val rhoGSymbol = Symbol(rhoG, """\\rho_G""")
+    val rhoGSymbol = Symbol(rhoG, """\rho_G""")
 
     val formula = new ReleaseCharacter2(WgSymbol, rhoGSymbol, kSymbol, lflSymbol)
 
@@ -171,8 +171,9 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
       case (false, _, true, _) =>
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-        val b5formula = calculateB5(Wg, M, rhoG)
-        Seq(FormulaContainer(b5formula, Some("Volumetric flow rate")))
+//        val b5formula = calculateB5(Wg, M, rhoG)
+//        Seq(FormulaContainer(b5formula, Some("Volumetric flow rate")))
+        Nil
 
       case (true, false, _, false) =>
         // För gas: Beräkna Wg(ekv B.1)
