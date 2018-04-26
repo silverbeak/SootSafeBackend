@@ -2,6 +2,7 @@ import com.github.maiflai.ScalaTestAction
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
@@ -22,8 +23,8 @@ apply from: 'protobuf.gradle'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    jcenter()
     mavenCentral()
+    jcenter()
 }
 
 dependencies {

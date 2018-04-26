@@ -1,9 +1,32 @@
 apply plugin: 'docker'
 apply plugin: 'application'
 
+dependencies {
+    compile 'se.transmode.gradle:gradle-docker:1.2'
+}
+
+group = 'com.sootsafe'
 project.group = 'gcr.io/sootsafe-app-test'
 mainClassName = 'com.sootsafe.server.Runner'
 
-dependencies {
-    compile 'se.transmode.gradle:gradle-docker:1.2'
+docker {
+    maintainer = 'Kristofer Jarl <kristofer@sootsafe.com>'
+//    baseImage = 'ubuntu'
+}
+
+// There are two build tasks right now. I'd like to use the second one, but I'm keeping both for now
+task ssDocker(type: Docker) {
+    applicationName = "sootsafe-backend"
+    //runCommand 'echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list'
+    runCommand "apt-get update"
+    runCommand "apt-get install -y latexmk texlive-latex3 texlive-science texlive-latex-extra texlive-fonts-recommended"
+
+    addFile("build/distributions/sootsafe-backend.tar")
+    runCommand("mkdir -p temp/sootsafe")
+
+    entryPoint(["/sootsafe-backend/bin/sootsafe-backend"])
+}
+
+task ss2(type: Docker) {
+    dockerfile = "Dockerfile"
 }
