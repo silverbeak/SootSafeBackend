@@ -1,7 +1,6 @@
 package com.sootsafe.firebase.subscriber
 
-import java.io.FileInputStream
-import java.net.URL
+import java.io.InputStream
 
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore._
@@ -62,12 +61,12 @@ object Subscriber {
   }
 
   // FIXME: Setting should go here I guess
-  private val serviceAccountURL: URL = getClass.getResource("/keys/SootSafeAppTest.json")
+  private lazy val getServiceAccountStream: InputStream = {
+    getClass.getClassLoader.getResourceAsStream("keys/SootSafeAppTest.json")
+  }
 
-  def database(serviceAccountFileURL: URL = serviceAccountURL): Firestore = {
-    // Use a service account// Use a service account
-    val serviceAccount = new FileInputStream(serviceAccountFileURL.getFile)
-    val credentials = GoogleCredentials.fromStream(serviceAccount)
+  def database(serviceAccountStream: InputStream = getServiceAccountStream): Firestore = {
+    val credentials = GoogleCredentials.fromStream(serviceAccountStream)
     val options = new FirebaseOptions.Builder()
       .setStorageBucket("sootsafe-app-test.appspot.com")
       .setCredentials(credentials)
