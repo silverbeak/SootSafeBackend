@@ -79,22 +79,23 @@ object ReleaseRateReportGenerator {
     }
   }
 
-  def generateLatex(calculationSection: CalculationSection)(implicit format: ReportFormat): Latex = {
+  def generateLatex(calculationSection: CalculationSection, authorName: Option[String])(implicit format: ReportFormat): Latex = {
     val body = generateCalculationSection(calculationSection)
     val formulas = generateFormulaSection(calculationSection.formulaSection)
     val tables = generateTableSection(calculationSection.formulaSection)
-    documentBuilder(Seq(body), formulas, tables)
+    documentBuilder(Seq(body), authorName, formulas, tables)
   }
 
-  def generateLatex(calculationSections: Seq[CalculationSection])(implicit format: ReportFormat): Latex = {
+  def generateLatex(calculationSections: Seq[CalculationSection], authorName: Option[String])(implicit format: ReportFormat): Latex = {
     val body = calculationSections.map(generateCalculationSection)
     val formulas = calculationSections.flatMap(calculationSection => generateFormulaSection(calculationSection.formulaSection))
     val tables = calculationSections.flatMap(calculationSection => generateTableSection(calculationSection.formulaSection))
     val figures = calculationSections.flatMap(calculationSection => generateFigureSection(calculationSection.formulaSection))
-    documentBuilder(body, formulas, tables, figures)
+    documentBuilder(body, authorName, formulas, tables, figures)
   }
 
   private def documentBuilder(body: Iterable[Latex],
+                              authorName: Option[String],
                               formulaSection: Iterable[Latex],
                               tableSection: Iterable[Latex] = Nil,
                               diagramSection: Iterable[Latex] = Nil): Latex = {
@@ -115,7 +116,7 @@ object ReleaseRateReportGenerator {
       ""
     }
 
-    Fixture.head(Some("Release rate report"), Some("Jane Doe")) +
+    Fixture.head(Some("Release rate report"), authorName) +
       "\n\\section{Calculations}\n" +
       body.mkString +
       pageBreak +

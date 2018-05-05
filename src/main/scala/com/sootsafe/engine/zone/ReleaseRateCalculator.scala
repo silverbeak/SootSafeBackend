@@ -48,10 +48,19 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
           .build()
 
         if (generateReport) {
-          Try(ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection))) match {
+          val authorName = Option(request.getAtexMetadata.getAuthorName)
+          Try(ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection), authorName)) match {
             case Failure(e) =>
               Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
             case Success(zoneExtentReport) =>
+// New generator in service. Fix response handling, then activate
+//              Try(new PdfGenerator().generate(zoneExtentReport)) match {
+//                case Failure(e) =>
+//                  Right(s"Could not convert tex to PDF. Error: ${e.getMessage}")
+//                case Success(pdf) =>
+//                  Left((result, new String(pdf)))
+//              }
+
               val filename = generateTexFileName()
               writeTexToFile(zoneExtentReport, s"temp/sootsafe/$filename")
               LatexCompiler.latexToPdf(s"temp/sootsafe/$filename", "temp/sootsafe") match {
