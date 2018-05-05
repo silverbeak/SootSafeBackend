@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package com.sootsafe.latex;
+option java_package = "com.sootsafe.latex";
+
+service TexToPdf {
+    rpc Convert (TexMessage) returns (PdfResponse) {}
+}
+
+message TexMessage {
+    bytes tex = 1;
+}
+
+message ErrorMessage {
+    int32 error_code = 1;
+    string error_message = 2;
+}
+
+message PdfResponse {
+    ErrorMessage error = 1;
+    bytes pdf = 2;
+}

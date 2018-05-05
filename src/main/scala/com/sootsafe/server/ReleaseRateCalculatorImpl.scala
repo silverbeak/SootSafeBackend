@@ -3,18 +3,19 @@ package com.sootsafe.server
 import java.util.Date
 
 import com.sootsafe.engine.zone.ReleaseRateCalculator
+import com.sootsafe.reporting.TexToPdfGenerator
 import com.sootsafe.server.calculator.ReleaseRateCalculatorGrpc
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateCalculationResult, ReleaseRateRequest}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
 import io.grpc.stub.StreamObserver
 
-class ReleaseRateCalculatorImpl extends ReleaseRateCalculatorGrpc.ReleaseRateCalculatorImplBase {
+class ReleaseRateCalculatorImpl(pdfGenerator: TexToPdfGenerator) extends ReleaseRateCalculatorGrpc.ReleaseRateCalculatorImplBase {
 
   override def getReleaseRate(request: ReleaseRateRequest,
                               responseObserver: StreamObserver[ReleaseRateCalculationResult]): Unit = {
     val now = new Date().getTime
 
-    val response = ReleaseRateCalculator.handleRequest(request) match {
+    val response = ReleaseRateCalculator.handleRequest(request, pdfGenerator) match {
       case Left(result) =>
         result._1
       case Right(error) =>

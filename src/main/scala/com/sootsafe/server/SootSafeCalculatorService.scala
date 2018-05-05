@@ -3,6 +3,7 @@ package com.sootsafe.server
 import com.google.cloud.firestore.DocumentReference
 import com.google.protobuf.InvalidProtocolBufferException
 import com.sootsafe.firebase.subscriber.{MessageSerializer, Subscriber}
+import com.sootsafe.reporting.PdfGeneratorServiceClient
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRateRequest
 import com.sootsafe.server.requesthandler.ReleaseRateRequestHandler
@@ -13,10 +14,12 @@ import scala.concurrent.{Channel, Future}
 
 class SootSafeCalculatorService(port: Int) {
 
+  val pdfGeneratorServiceClient = new PdfGeneratorServiceClient("dev.localhost", 50051)
+
   private val server: Server = ServerBuilder
     .forPort(port)
     .addService(new SootSafeCalculatorImpl())
-    .addService(new ReleaseRateCalculatorImpl())
+    .addService(new ReleaseRateCalculatorImpl(pdfGeneratorServiceClient))
     .build()
 
   def start(): Unit = {
@@ -44,6 +47,7 @@ class SootSafeCalculatorService(port: Int) {
 object Runner {
 
   def main(args: Array[String]): Unit = {
+    val pdfGeneratorServiceClient = new PdfGeneratorServiceClient("dev.localhost", 50051)
     val calculatorService = new SootSafeCalculatorService(8980)
     calculatorService.start()
 
@@ -59,7 +63,7 @@ object Runner {
         try {
           val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
           val releaseRateRequest = MessageSerializer.serializer[ReleaseRateRequest](changeMap._1, builder)
-          ReleaseRateRequestHandler.handleRequest(releaseRateRequest, changeMap._2)
+          ReleaseRateRequestHandler.handleRequest(releaseRateRequest, changeMap._2, pdfGeneratorServiceClient)
         } catch {
           case e: InvalidProtocolBufferException => println(s"Invalid protocol buffer exception! ${e.getMessage}")
           case e: Throwable =>

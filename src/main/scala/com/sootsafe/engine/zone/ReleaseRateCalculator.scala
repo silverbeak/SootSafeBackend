@@ -1,11 +1,6 @@
 package com.sootsafe.engine.zone
 
-import java.io.{File, PrintWriter}
-import java.text.SimpleDateFormat
-import java.util.Date
-
 import com.sootsafe.arithmetic._
-import com.sootsafe.reporting.Fixture.Latex
 import com.sootsafe.reporting._
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
 
@@ -16,7 +11,8 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
   private implicit val reportFormat: ReportFormat = DefaultReportFormat
 
   def handleRequest(request: ReleaseRateRequest,
-                    generateReport: Boolean = false): Either[(ReleaseRateCalculationResult, String), String] = {
+                    pdfGenerator: TexToPdfGenerator,
+                    generateReport: Boolean = false): Either[(ReleaseRateCalculationResult, Array[Byte]), String] = {
 
     Try(performCalculation(request)) match {
       case Success(releaseRateExpression) =>
@@ -53,43 +49,23 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
             case Failure(e) =>
               Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
             case Success(zoneExtentReport) =>
-// New generator in service. Fix response handling, then activate
-//              Try(new PdfGenerator().generate(zoneExtentReport)) match {
-//                case Failure(e) =>
-//                  Right(s"Could not convert tex to PDF. Error: ${e.getMessage}")
-//                case Success(pdf) =>
-//                  Left((result, new String(pdf)))
-//              }
-
-              val filename = generateTexFileName()
-              writeTexToFile(zoneExtentReport, s"temp/sootsafe/$filename")
-              LatexCompiler.latexToPdf(s"temp/sootsafe/$filename", "temp/sootsafe") match {
+              pdfGenerator.generate(zoneExtentReport) match {
                 case Failure(e) =>
-                  Right(s"Could not create pdf file with name $filename. Error: ${e.getMessage}")
-                case Success(pdfPath) =>
-                  Left((result, pdfPath))
+                  Right(s"Could not convert tex to PDF. Error: ${e.getMessage}")
+                case Success(pdf) =>
+                  Left((result, pdf))
               }
+
           }
         } else {
           // FIXME: Not sure what to do about this. It's just to deal with the time it takes to generate the PDF
-          Left((result, ""))
+          Left((result, Array()))
         }
 
 
       case Failure(e) =>
         Right(s"Could not calculate release rate character. Error: ${e.getMessage}")
     }
-  }
-
-  private def generateTexFileName(): String = {
-    val format = new SimpleDateFormat("YYYY-MM-dd_HHmmss")
-    format.format(new Date()) + ".tex"
-  }
-
-  private def writeTexToFile(tex: Latex, targetFilename: String): Unit = {
-    val writer = new PrintWriter(new File(targetFilename))
-    writer.write(tex)
-    writer.close()
   }
 
   def performCalculation(request: ReleaseRateRequest): (Expression, Seq[FormulaSection]) = {
