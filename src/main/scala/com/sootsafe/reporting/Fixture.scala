@@ -29,9 +29,9 @@ object Fixture {
         |\\usepackage{threeparttable}
         |\\usepackage{multirow}
         |% Change base font for entire document to latin modern
-        |\usepackage{lmodern}
-        |\renewcommand{\familydefault}{\sfdefault}   % Supprime le serif (dyslexie)
-        |\usepackage[font=sf, labelfont={sf}]{caption}
+        |\\usepackage{lmodern}
+        |\\renewcommand{\\familydefault}{\\sfdefault}   % Supprime le serif (dyslexie)
+        |\\usepackage[font=sf, labelfont={sf}]{caption}
         |% End font update
         |
         |\\newwatermark*[allpages,color=red!50,angle=45,scale=3,xpos=0,ypos=0]{SOOTSAFE.COM}
