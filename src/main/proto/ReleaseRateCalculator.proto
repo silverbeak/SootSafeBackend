@@ -60,26 +60,31 @@ message VentilationVelocityValues {
     Obstruction obstructed = 2;
 }
 
+message AtexMetadata {
+    string authorName = 1;
+}
+
 message ReleaseRateRequest {
     int32 key = 1;
-    bool isGasCalculation = 2;
-    bool performReleaseCalculation = 3;
-    bool hasReleaseRateInKgPerSecond = 4;
-    bool isEvaporationFromPool = 5;
+    AtexMetadata atexMetadata = 2;
+    bool isGasCalculation = 3;
+    bool performReleaseCalculation = 4;
+    bool hasReleaseRateInKgPerSecond = 5;
+    bool isEvaporationFromPool = 6;
 
-    ReleaseRateValues releaseRateValues = 6;
+    ReleaseRateValues releaseRateValues = 7;
 
-    bool isIndoors = 7;
+    bool isIndoors = 8;
 
-    BackgroundConcentrationValues bgConcentrationValues = 8;
+    BackgroundConcentrationValues bgConcentrationValues = 9;
 
-    GradeOfRelease gradeOfRelease = 9;
-    ReleaseType releaseType = 10;
+    GradeOfRelease gradeOfRelease = 10;
+    ReleaseType releaseType = 11;
 
-    VentilationVelocityValues ventilationVelocityValues = 11;
-    VentilationAvailability ventilationAvailability = 12;
+    VentilationVelocityValues ventilationVelocityValues = 12;
+    VentilationAvailability ventilationAvailability = 13;
 
-    string casNumber = 13;
+    string casNumber = 14;
 }
 
 service ReleaseRateCalculator {
