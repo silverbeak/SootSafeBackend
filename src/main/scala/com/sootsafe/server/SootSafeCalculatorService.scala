@@ -7,6 +7,7 @@ import com.sootsafe.reporting.PdfGeneratorServiceClient
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRateRequest
 import com.sootsafe.server.requesthandler.ReleaseRateRequestHandler
+import com.typesafe.config.{Config, ConfigFactory}
 import io.grpc.{Server, ServerBuilder}
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -14,7 +15,12 @@ import scala.concurrent.{Channel, Future}
 
 class SootSafeCalculatorService(port: Int) {
 
-  val pdfGeneratorServiceClient = new PdfGeneratorServiceClient("dev.localhost", 50051)
+  private val config: Config = ConfigFactory.load()
+
+  val pdfServiceHost: String = config.getString("pdfGenerator.address")
+  val pdfServicePort: Int = config.getInt("pdfGenerator.port")
+
+  val pdfGeneratorServiceClient = new PdfGeneratorServiceClient(pdfServiceHost, pdfServicePort)
 
   private val server: Server = ServerBuilder
     .forPort(port)
@@ -46,8 +52,13 @@ class SootSafeCalculatorService(port: Int) {
 
 object Runner {
 
+  private val config: Config = ConfigFactory.load()
+  private val pdfServiceHost: String = config.getString("pdfGenerator.address")
+  private val pdfServicePort: Int = config.getInt("pdfGenerator.port")
+
   def main(args: Array[String]): Unit = {
-    val pdfGeneratorServiceClient = new PdfGeneratorServiceClient("dev.localhost", 50051)
+
+    val pdfGeneratorServiceClient = new PdfGeneratorServiceClient(pdfServiceHost, pdfServicePort)
     val calculatorService = new SootSafeCalculatorService(8980)
     calculatorService.start()
 
