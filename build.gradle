@@ -53,6 +53,9 @@ dependencies {
     testRuntime 'org.scala-lang.modules:scala-xml_2.11:1.0.6'
 
     testRuntime 'org.pegdown:pegdown:1.4.2'
+
+    // https://mvnrepository.com/artifact/com.typesafe/config
+    compile group: 'com.typesafe', name: 'config', version: '1.3.3'
 }
 
 // test.dependsOn scalaTest // so that running "test" would run this first, then the JUnit tests
