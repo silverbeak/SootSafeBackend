@@ -7,6 +7,7 @@ import com.google.cloud.firestore._
 import com.google.firebase.cloud.FirestoreClient
 import com.google.firebase.{FirebaseApp, FirebaseOptions}
 import com.google.gson.Gson
+import com.typesafe.config.ConfigFactory
 import org.json4s.DefaultFormats
 
 import scala.concurrent.Channel
@@ -16,6 +17,8 @@ import scala.util.{Failure, Success, Try}
 object Subscriber {
 
   import scala.collection.JavaConversions._
+
+  private val conf = ConfigFactory.load()
 
   private def createEventListener(messageChannel: Channel[(String, DocumentReference)],
                                   db: Firestore): EventListener[QuerySnapshot] with Object {
@@ -69,15 +72,16 @@ object Subscriber {
     }
   }
 
-  // FIXME: Setting should go here I guess
   private lazy val getServiceAccountStream: InputStream = {
-    getClass.getClassLoader.getResourceAsStream("keys/SootSafeAppTest.json")
+    val keyFilePath = conf.getString("firebase.keyFile")
+    getClass.getClassLoader.getResourceAsStream(keyFilePath)
   }
 
   def database(serviceAccountStream: InputStream = getServiceAccountStream): Firestore = {
+    val storageBucket = conf.getString("firebase.storageBucket")
     val credentials = GoogleCredentials.fromStream(serviceAccountStream)
     val options = new FirebaseOptions.Builder()
-      .setStorageBucket("sootsafe-app-test.appspot.com")
+      .setStorageBucket(storageBucket)
       .setCredentials(credentials)
       .build
     FirebaseApp.initializeApp(options)
