@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: calculator
+spec:
+  containers:
+  - name: tex-to-pdf-service
+    image: eu.gcr.io/sootsafe-app-test/tex-to-pdf-service:0.1
+    imagePullPolicy: Never
+  - name: calculator-service
+    image: eu.gcr.io/sootsafe-app-test/sootsafe-backend:0.1
+    imagePullPolicy: Never
+    env:
+      - name: PDF_SERVICE_ADDRESS
+        value: "localhost"
+      - name: PDF_SERVICE_PORT
+        value: "50051"
+
