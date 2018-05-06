@@ -26,13 +26,7 @@ class PdfGeneratorServiceClient(address: String, port: Int) extends TexToPdfGene
 
   def generate(payload: Latex): Try[Array[Byte]] = {
     val request = TexMessage.newBuilder().setTex(ByteString.copyFrom(payload.getBytes)).build()
-    Try(blockingStub.convert(request)) match {
-      case Success(response) =>
-        println(s"This is my response: $response")
-        Success(response.getPdf.toByteArray)
-      case Failure(e) =>
-        Failure(e)
-    }
+    Try(blockingStub.convert(request)).map(_.getPdf.toByteArray)
   }
 }
 
