@@ -6,7 +6,7 @@ dependencies {
 }
 
 group = 'com.sootsafe'
-project.group = 'eu.gcr.io/sootsafe-app-test'
+project.group = 'eu.gcr.io/sootsafe-app'
 mainClassName = 'com.sootsafe.server.Runner'
 
 docker {
