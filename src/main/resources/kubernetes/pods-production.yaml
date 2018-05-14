@@ -5,9 +5,9 @@ metadata:
 spec:
   containers:
   - name: tex-to-pdf-service
-    image: eu.gcr.io/sootsafe-app-test/tex-to-pdf-service:0.1
+    image: eu.gcr.io/sootsafe-app/tex-to-pdf-service:0.1
   - name: calculator-service
-    image: eu.gcr.io/sootsafe-app-test/sootsafe-backend:0.2.0
+    image: eu.gcr.io/sootsafe-app/sootsafe-backend:0.4.0
     env:
       - name: PDF_SERVICE_ADDRESS
         value: "localhost"
