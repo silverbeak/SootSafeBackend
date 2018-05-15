@@ -78,7 +78,7 @@ object ZoneCalculator {
         }
 
         val ventilationVelocity = determineVentilationVelocity(request, element)
-        val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRateValues.getLowerFlammableLimit), releaseCharacter, request.getIsIndoors)
+        val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRate.getLowerFlammableLimit), releaseCharacter, request.getIsIndoors)
         val zoneSection = ZoneCalculator.determineZone(request.getGradeOfRelease, dilutionLevel._2, request.getVentilationAvailability)
         Seq(backgroundConcentrationSection, ventilationVelocity._1, dilutionLevel._1, zoneSection)
     }
@@ -86,9 +86,9 @@ object ZoneCalculator {
 
   private[zone] def determineBackgroundConcentration(request: ReleaseRateRequest): Formula = {
 
-    val backgroundConcentrationValues = request.getBgConcentrationValues
+    val backgroundConcentrationValues = request.getBackgroundConcentration
 
-    val QgSymbol = Symbol(getValue(request.getReleaseRateValues.getVolumetricGasFlowRate), "Q_g")
+    val QgSymbol = Symbol(getValue(request.getReleaseRate.getVolumetricGasFlowRate), "Q_g")
     val fSymbol = Symbol(getValue(backgroundConcentrationValues.getVentilationEfficiencyFactor), "f")
     val Q1Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAir), "Q_1")
     //    val Q2Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAirGas), "Q_2")
@@ -112,9 +112,9 @@ object ZoneCalculator {
   private[zone] def determineVentilationVelocity(request: ReleaseRateRequest, element: Element): (FormulaSection, Expression) = {
     val heavierThanAir = element.RDT > 1
     if (request.getIsIndoors) {
-      val roomLSymbol = Symbol(getValue(request.getBgConcentrationValues.getRoomDimensions.getDepth), "L")
-      val roomHSymbol = Symbol(getValue(request.getBgConcentrationValues.getRoomDimensions.getHeight), "H")
-      val airFlow = Symbol(getValue(request.getBgConcentrationValues.getAirEnteringRoomFlowRate), "Q_A")
+      val roomLSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.getDepth), "L")
+      val roomHSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.getHeight), "H")
+      val airFlow = Symbol(getValue(request.getBackgroundConcentration.getAirEnteringRoomFlowRate), "Q_A")
 
       val ventilationVelocity = new VentilationVelocityFormula(airFlow, roomHSymbol, roomLSymbol)
 

@@ -72,11 +72,11 @@ message ReleaseRateRequest {
     bool hasReleaseRateInKgPerSecond = 5;
     bool isEvaporationFromPool = 6;
 
-    ReleaseRateValues releaseRateValues = 7;
+    ReleaseRateValues releaseRate = 7;
 
     bool isIndoors = 8;
 
-    BackgroundConcentrationValues bgConcentrationValues = 9;
+    BackgroundConcentrationValues backgroundConcentration = 9;
 
     GradeOfRelease gradeOfRelease = 10;
     ReleaseType releaseType = 11;

@@ -14,6 +14,6 @@ spec:
       - name: PDF_SERVICE_PORT
         value: "50051"
       - name: FIREBASE_KEY_FILE_LOCATION
-        value: "keys/SootSafeAppTest.json"
+        value: "keys/SootSafeApp.json"
       - name: FIREBASE_STORAGE_BUCKET
         value: "sootsafe-app.appspot.com"

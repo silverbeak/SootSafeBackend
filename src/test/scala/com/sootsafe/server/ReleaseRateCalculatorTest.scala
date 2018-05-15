@@ -55,7 +55,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
     "handle request" in {
       val request = ReleaseRateRequest
         .newBuilder()
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .setCasNumber("74-86-2")
         .build()
 
@@ -88,7 +88,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(false)
         .setIsEvaporationFromPool(false)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(requestForGas)._1
@@ -107,7 +107,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
@@ -118,7 +118,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)._1
@@ -138,7 +138,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
@@ -149,7 +149,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(false)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)._1
@@ -169,7 +169,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(false)
         .setIsEvaporationFromPool(false)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)._1
@@ -186,7 +186,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(false)
         .setHasReleaseRateInKgPerSecond(false)
         .setIsEvaporationFromPool(true)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)._1
@@ -205,7 +205,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(true)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)._1
@@ -221,7 +221,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setIsGasCalculation(true)
         .setHasReleaseRateInKgPerSecond(true)
         .setIsEvaporationFromPool(true)
-        .setReleaseRateValues(baseRequestValues)
+        .setReleaseRate(baseRequestValues)
         .build()
 
       val result = ReleaseRateCalculator.performCalculation(request)._1

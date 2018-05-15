@@ -76,7 +76,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     val isEvaporationFromPool = request.getIsEvaporationFromPool
 
 
-    val values = request.getReleaseRateValues
+    val values = request.getReleaseRate
 
     val Qg = getValue(values.getVolumetricGasFlowRate)
     val k = getValue(values.getSafetyFactor)
@@ -85,7 +85,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     val M = getValue(values.getMolarMass)
     val rhoG = getValue(values.getGasDensity)
     val Cd = getValue(values.getDischargeCoefficient)
-    val S = getValue(request.getBgConcentrationValues.getCrossSectionArea)
+    val S = getValue(request.getBackgroundConcentration.getCrossSectionArea)
     val deltaP = getValue(values.getPressureDifference)
     val Ap = getValue(values.getPoolSurfaceArea)
     val uw = getValue(values.getWindSpeed)

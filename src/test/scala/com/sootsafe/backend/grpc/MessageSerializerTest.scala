@@ -22,7 +22,7 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
       result.getReleaseType should be(ReleaseType.DiffusiveJet)
       result.getVentilationAvailability should be(VentilationAvailability.Fair)
 
-      result.getReleaseRateValues.getAdiabaticExpansion should be(13)
+      result.getReleaseRate.getAdiabaticExpansion should be(13)
       result.getVentilationVelocityValues.getObstructed should be(Obstruction.Unobstructed)
     }
 
@@ -42,8 +42,8 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
       result.getGradeOfRelease should be(GradeOfRelease.Primary)
       result.getReleaseType should be(ReleaseType.DiffusiveJet)
       result.getVentilationAvailability should be(VentilationAvailability.Fair)
-      result.getReleaseRateValues.getVolumetricGasFlowRate should be(1)
-      result.getReleaseRateValues.getSafetyFactor should be(2.3)
+      result.getReleaseRate.getVolumetricGasFlowRate should be(1)
+      result.getReleaseRate.getSafetyFactor should be(2.3)
       result.getVentilationVelocityValues.getObstructed should be(Obstruction.Unobstructed)
     }
   }
@@ -56,7 +56,7 @@ object FakeMessage {
     "performReleaseCalculation" -> false,
     "hasReleaseRateInKgPerSecond" -> true,
     "isEvaporationFromPool" -> true,
-    "releaseRateValues" -> Map(
+    "releaseRate" -> Map(
       "volumetricGasFlowRate" -> 1,
       "safetyFactor" -> "2.3",
       "gasDensity" -> "4.44"
@@ -64,7 +64,7 @@ object FakeMessage {
 
     "isIndoors" -> true,
 
-    "bgConcentrationValues" -> Map(),
+    "backgroundConcentration" -> Map(),
 
     "gradeOfRelease" -> "Primary",
     "releaseType" -> "DiffusiveJet",
