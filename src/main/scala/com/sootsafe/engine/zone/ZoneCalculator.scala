@@ -178,7 +178,7 @@ object ZoneCalculator {
     val pollutionDistanceFormula = new PlainFormula(line(releaseCharacter))
     FormulaSection(
       Some(FormulaContainer(pollutionDistanceFormula)),
-      Some(Decision(s"Release type $releaseType and release character = ${releaseCharacter.toValue.texify()} gives a pollution radius of ${pollutionDistanceFormula.toValue.texify()}, based on Diagram \\ref{fig:${FigureD1.identifier}}")),
+      Some(Decision(s"Release type $releaseType and release character = ${releaseCharacter.toValue.texify()}$$(m^3/s)$$ gives a pollution radius of ${pollutionDistanceFormula.toValue.texify()}$$(m)$$, based on Diagram \\ref{fig:${FigureD1.identifier}}")),
       Some(Description("Determine pollution radius")),
       Nil,
       Seq(FigureD1)
