@@ -4,25 +4,31 @@ import java.net.URL
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import com.google.cloud.firestore.DocumentReference
+import com.google.api.core.ApiFuture
+import com.google.cloud.firestore.{DocumentReference, WriteResult}
 import com.google.firebase.cloud.StorageClient
 import com.sootsafe.engine.zone.ReleaseRateCalculator
 import com.sootsafe.reporting.TexToPdfGenerator
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRateRequest
 
+import scala.util.{Failure, Try}
+
 
 object ReleaseRateRequestHandler {
-  def handleRequest(releaseRateRequest: ReleaseRateRequest, documentReference: DocumentReference, pdfGenerator: TexToPdfGenerator): Unit = {
+  def handleRequest(releaseRateRequest: ReleaseRateRequest, documentReference: DocumentReference, pdfGenerator: TexToPdfGenerator): Try[ApiFuture[WriteResult]] = {
     import scala.collection.JavaConverters._
 
     ReleaseRateCalculator.handleRequest(releaseRateRequest, pdfGenerator, generateReport = true) match {
       case Left(result) =>
         val blobPath = writeFileToFirebaseStorage(result._2).toString
         val firestore = documentReference.getFirestore
-        firestore.document(documentReference.getPath).collection("report").document("pdf").create(Map[String, String]("reportPath" -> blobPath).asJava)
+        Try(firestore.document(documentReference.getPath).collection("report").document("pdf").create(Map[String, String]("reportPath" -> blobPath).asJava))
 
       case Right(errorStr) =>
-        println(s"Encountered error: $errorStr")
+        val errorMsg = s"Release Rate Error: $errorStr"
+        println(errorMsg)
+        documentReference.getFirestore.collection("releaseRateErrors").add(Map[String, String](("message", errorMsg)))
+        Failure(new Exception(errorMsg))
       // TODO: Write error to firebase
     }
   }

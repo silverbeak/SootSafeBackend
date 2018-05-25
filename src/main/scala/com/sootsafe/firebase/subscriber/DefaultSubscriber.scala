@@ -14,14 +14,19 @@ import scala.concurrent.Channel
 import scala.util.{Failure, Success, Try}
 
 
-object Subscriber {
+trait Subscriber {
+  def subscribe[T](db: Firestore, serializer: PartialFunction[String, T], outputChannel: Channel[(T, DocumentReference)]): Unit
+}
+
+object DefaultSubscriber extends Subscriber {
 
   import scala.collection.JavaConversions._
 
   private val conf = ConfigFactory.load()
 
-  private def createEventListener(messageChannel: Channel[(String, DocumentReference)],
-                                  db: Firestore): EventListener[QuerySnapshot] with Object {
+  private def createEventListener[T](messageChannel: Channel[(T, DocumentReference)],
+                                  db: Firestore,
+                                  serializer: PartialFunction[String, T]): EventListener[QuerySnapshot] with Object {
     def onEvent(snapshot: QuerySnapshot, error: FirestoreException): Unit
   } = new EventListener[QuerySnapshot] {
 
@@ -38,9 +43,10 @@ object Subscriber {
             Try(change.getDocument.getData.get("id")) match {
               case Success(id: String) if change.getType == DocumentChange.Type.ADDED =>
                 val request = db.collection("releaseRate").document(id).get().get()
-                singleDocumentUpdateToJson(messageChannel, request) match {
+                singleDocumentUpdateToJson(request) match {
                   case Success(json) =>
-                    messageChannel.write(json, request.getReference)
+                    val t = serializer(json)
+                    messageChannel.write(t, request.getReference)
 
                     // Delete the original reference to the request data, so that we don't pick it up again if we restart the backend
                     change.getDocument.getReference.delete()
@@ -54,13 +60,13 @@ object Subscriber {
     }
   }
 
-  def subscribe(db: Firestore, messageChannel: Channel[(String, DocumentReference)]): Unit = {
+  def subscribe[T](db: Firestore, serializer: PartialFunction[String, T], messageChannel: Channel[(T, DocumentReference)]): Unit = {
     val docRef = db.collection("releaseRateRequests")
     //    docRef.addSnapshotListener(createSnapshotListener(messageChannel))
-    docRef.addSnapshotListener(createEventListener(messageChannel, db))
+    docRef.addSnapshotListener(createEventListener(messageChannel, db, serializer))
   }
 
-  private def singleDocumentUpdateToJson(messageChannel: Channel[(String, DocumentReference)], snapshot: DocumentSnapshot): Try[String] = {
+  private def singleDocumentUpdateToJson(snapshot: DocumentSnapshot): Try[String] = {
     implicit val formats: DefaultFormats.type = DefaultFormats
 
     if (snapshot.exists()) {

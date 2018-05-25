@@ -1,8 +1,7 @@
 package com.sootsafe.server
 
 import com.google.cloud.firestore.DocumentReference
-import com.google.protobuf.InvalidProtocolBufferException
-import com.sootsafe.firebase.subscriber.{MessageSerializer, Subscriber}
+import com.sootsafe.firebase.subscriber.{DefaultSubscriber, MessageSerializer}
 import com.sootsafe.reporting.PdfGeneratorServiceClient
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
 import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRateRequest
@@ -62,29 +61,24 @@ object Runner {
     val calculatorService = new SootSafeCalculatorService(8980)
     calculatorService.start()
 
-    val messageChannel = new Channel[(String, DocumentReference)]
+    val messageChannel = new Channel[(ReleaseRateRequest, DocumentReference)]
 
-    val firestore = Subscriber.database()
-    Subscriber.subscribe(firestore, messageChannel)
+    val firestore = DefaultSubscriber.database()
+    DefaultSubscriber.subscribe(firestore, referenceToRequest, messageChannel)
 
     Future {
       while (true) {
-        val changeMap = messageChannel.read
-        //        println(s"Message: $changeMap")
-        try {
-          val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
-          val releaseRateRequest = MessageSerializer.serializer[ReleaseRateRequest](changeMap._1, builder)
-          ReleaseRateRequestHandler.handleRequest(releaseRateRequest, changeMap._2, pdfGeneratorServiceClient)
-        } catch {
-          case e: InvalidProtocolBufferException => println(s"Invalid protocol buffer exception! ${e.getMessage}")
-          case e: Throwable =>
-            //            println(s"Error caught[${e.getClass.getName}]: ${e.getMessage}")
-            println(s"Error: ${e.getMessage}\n${e.getStackTrace.mkString("\n")}")
-            throw new Exception(s"ERROR in channel!", e)
-        }
+        val (releaseRateRequest, documentReference) = messageChannel.read
+        ReleaseRateRequestHandler.handleRequest(releaseRateRequest, documentReference, pdfGeneratorServiceClient)
       }
     }
 
     calculatorService.blockUntilShutDown()
+  }
+
+  private val referenceToRequest: PartialFunction[String, ReleaseRateRequest] = {
+    case stringRepr: String =>
+      val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
+      MessageSerializer.serializer[ReleaseRateRequest](stringRepr, builder)
   }
 }
