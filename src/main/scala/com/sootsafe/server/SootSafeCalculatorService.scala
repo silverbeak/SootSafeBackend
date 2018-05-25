@@ -60,25 +60,40 @@ object Runner {
     val pdfGeneratorServiceClient = new PdfGeneratorServiceClient(pdfServiceHost, pdfServicePort)
     val calculatorService = new SootSafeCalculatorService(8980)
     calculatorService.start()
-
-    val messageChannel = new Channel[(ReleaseRateRequest, DocumentReference)]
-
     val firestore = DefaultSubscriber.database()
-    DefaultSubscriber.subscribe(firestore, referenceToRequest, messageChannel)
+
+    val atexMessageChannel = new Channel[(ReleaseRateRequest, DocumentReference)]
+    DefaultSubscriber.subscribe("releaseRateRequests", firestore, referenceToAtexRequest, atexMessageChannel)
 
     Future {
       while (true) {
-        val (releaseRateRequest, documentReference) = messageChannel.read
+        val (releaseRateRequest, documentReference) = atexMessageChannel.read
         ReleaseRateRequestHandler.handleRequest(releaseRateRequest, documentReference, pdfGeneratorServiceClient)
       }
     }
 
+//    val fidMessageChannel = new Channel[(SootSafeModel, DocumentReference)]
+//    DefaultSubscriber.subscribe("fidRequests", firestore, referenceToFidRequest, fidMessageChannel)
+//
+//    Future {
+//      while (true) {
+//        val (fidRequest, documentReferece) = fidMessageChannel.read
+//
+//      }
+//    }
+
     calculatorService.blockUntilShutDown()
   }
 
-  private val referenceToRequest: PartialFunction[String, ReleaseRateRequest] = {
+  private val referenceToAtexRequest: PartialFunction[String, ReleaseRateRequest] = {
     case stringRepr: String =>
       val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
       MessageSerializer.serializer[ReleaseRateRequest](stringRepr, builder)
   }
+
+//  private val referenceToFidRequest: PartialFunction[String, SootSafeModel] = {
+//    case stringRepr =>
+//      val builder = SootSafeCalculatorOuterClass.SootSafeModel.newBuilder
+//      MessageSerializer.serializer[SootSafeModel](stringRepr, builder)
+//  }
 }

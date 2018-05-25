@@ -15,7 +15,7 @@ import scala.util.{Failure, Success, Try}
 
 
 trait Subscriber {
-  def subscribe[T](db: Firestore, serializer: PartialFunction[String, T], outputChannel: Channel[(T, DocumentReference)]): Unit
+  def subscribe[T](requestPath: String, db: Firestore, serializer: PartialFunction[String, T], outputChannel: Channel[(T, DocumentReference)]): Unit
 }
 
 object DefaultSubscriber extends Subscriber {
@@ -60,8 +60,8 @@ object DefaultSubscriber extends Subscriber {
     }
   }
 
-  def subscribe[T](db: Firestore, serializer: PartialFunction[String, T], messageChannel: Channel[(T, DocumentReference)]): Unit = {
-    val docRef = db.collection("releaseRateRequests")
+  def subscribe[T](requestPath: String, db: Firestore, serializer: PartialFunction[String, T], messageChannel: Channel[(T, DocumentReference)]): Unit = {
+    val docRef = db.collection(requestPath)
     //    docRef.addSnapshotListener(createSnapshotListener(messageChannel))
     docRef.addSnapshotListener(createEventListener(messageChannel, db, serializer))
   }
