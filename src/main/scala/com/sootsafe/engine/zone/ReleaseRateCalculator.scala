@@ -2,7 +2,7 @@ package com.sootsafe.engine.zone
 
 import com.sootsafe.arithmetic._
 import com.sootsafe.reporting._
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexCalculationResult, AtexRequest, AtexResultEntry}
 
 import scala.util.{Failure, Success, Try}
 
@@ -10,13 +10,13 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
   private implicit val reportFormat: ReportFormat = DefaultReportFormat
 
-  def handleRequest(request: ReleaseRateRequest,
+  def handleRequest(request: AtexRequest,
                     pdfGenerator: TexToPdfGenerator,
-                    generateReport: Boolean = false): Either[(ReleaseRateCalculationResult, Array[Byte]), String] = {
+                    generateReport: Boolean = false): Either[(AtexCalculationResult, Array[Byte]), String] = {
 
     Try(performCalculation(request)) match {
       case Success(releaseRateExpression) =>
-        val entry = ReleaseRateResultEntry
+        val entry = AtexResultEntry
           .newBuilder()
           .setKey(request.getKey)
           .setReleaseCharacter(releaseRateExpression._1.calculate())
@@ -36,9 +36,9 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
           Seq(zoneExtent) ++ zoneFormulaSections
         )
 
-        val result = ReleaseRateCalculationResult
+        val result = AtexCalculationResult
           .newBuilder()
-          .setReleaseRateResult(entry)
+          .setAtexResult(entry)
           //          .setZoneExtent(zoneExtent.expression.calculate())
           //          .setZoneLabel(zoneFormulaSections)
           .build()
@@ -68,7 +68,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
     }
   }
 
-  def performCalculation(request: ReleaseRateRequest): (Expression, Seq[FormulaSection]) = {
+  def performCalculation(request: AtexRequest): (Expression, Seq[FormulaSection]) = {
 
     val performReleaseCalculation = request.getPerformReleaseCalculation
     val isGasCalculation = request.getIsGasCalculation

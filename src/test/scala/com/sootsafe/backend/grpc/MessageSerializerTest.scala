@@ -1,8 +1,8 @@
 package com.sootsafe.backend.grpc
 
 import com.sootsafe.firebase.subscriber.MessageSerializer
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass._
 import org.json4s.DefaultFormats
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -13,8 +13,8 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
   "MessageSerializerTest" must {
 
     "serialize json" in {
-      val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
-      val result = MessageSerializer.serializer[ReleaseRateRequest](FakeMessage.jsonMsg, builder)
+      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
+      val result = MessageSerializer.serializer[AtexRequest](FakeMessage.jsonMsg, builder)
 
       result.getCasNumber should be("74-86-2")
       result.getIsEvaporationFromPool should be(true)
@@ -34,8 +34,8 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
       val msg = FakeMessage.mapMsg
       val json = write(msg)
 
-      val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
-      val result = MessageSerializer.serializer[ReleaseRateRequest](json, builder)
+      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
+      val result = MessageSerializer.serializer[AtexRequest](json, builder)
 
       result.getCasNumber should be("74-86-2")
       result.getIsEvaporationFromPool should be(true)

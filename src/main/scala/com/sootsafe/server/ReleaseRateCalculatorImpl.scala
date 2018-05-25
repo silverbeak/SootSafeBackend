@@ -4,15 +4,15 @@ import java.util.Date
 
 import com.sootsafe.engine.zone.ReleaseRateCalculator
 import com.sootsafe.reporting.TexToPdfGenerator
-import com.sootsafe.server.calculator.ReleaseRateCalculatorGrpc
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateCalculationResult, ReleaseRateRequest}
+import com.sootsafe.server.calculator.AtexCalculatorGrpc
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexCalculationResult, AtexRequest}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
 import io.grpc.stub.StreamObserver
 
-class ReleaseRateCalculatorImpl(pdfGenerator: TexToPdfGenerator) extends ReleaseRateCalculatorGrpc.ReleaseRateCalculatorImplBase {
+class ReleaseRateCalculatorImpl(pdfGenerator: TexToPdfGenerator) extends AtexCalculatorGrpc.AtexCalculatorImplBase {
 
-  override def getReleaseRate(request: ReleaseRateRequest,
-                              responseObserver: StreamObserver[ReleaseRateCalculationResult]): Unit = {
+  override def calculateAtex(request: AtexRequest,
+                              responseObserver: StreamObserver[AtexCalculationResult]): Unit = {
     val now = new Date().getTime
 
     val response = ReleaseRateCalculator.handleRequest(request, pdfGenerator) match {
@@ -25,7 +25,7 @@ class ReleaseRateCalculatorImpl(pdfGenerator: TexToPdfGenerator) extends Release
           .setErrorMessage(error)
           .build()
 
-        ReleaseRateCalculationResult
+        AtexCalculationResult
           .newBuilder()
           .setErrorMessage(errorMessage)
           .build()

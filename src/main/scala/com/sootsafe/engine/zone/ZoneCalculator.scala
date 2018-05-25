@@ -6,7 +6,8 @@ import ReleaseRateCalculator.{FormulaContainer, getValue}
 import com.sootsafe.reporting._
 import com.sootsafe.reporting.figures.{FigureC1, FigureD1}
 import com.sootsafe.reporting.tables.{TableC1, TableD1}
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass._
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass._
+
 
 object ZoneCalculator {
   def determineZone(gradeOfRelease: GradeOfRelease,
@@ -52,7 +53,7 @@ object ZoneCalculator {
     )
   }
 
-  private[zone] def calculateZoneExtent(request: ReleaseRateRequest, releaseCharacter: Expression): Seq[FormulaSection] = {
+  private[zone] def calculateZoneExtent(request: AtexRequest, releaseCharacter: Expression): Seq[FormulaSection] = {
 
     ElementTable.elements.get(request.getCasNumber) match {
       case None => ???
@@ -84,7 +85,7 @@ object ZoneCalculator {
     }
   }
 
-  private[zone] def determineBackgroundConcentration(request: ReleaseRateRequest): Formula = {
+  private[zone] def determineBackgroundConcentration(request: AtexRequest): Formula = {
 
     val backgroundConcentrationValues = request.getBackgroundConcentration
 
@@ -109,7 +110,7 @@ object ZoneCalculator {
     }
   }
 
-  private[zone] def determineVentilationVelocity(request: ReleaseRateRequest, element: Element): (FormulaSection, Expression) = {
+  private[zone] def determineVentilationVelocity(request: AtexRequest, element: Element): (FormulaSection, Expression) = {
     val heavierThanAir = element.RDT > 1
     if (request.getIsIndoors) {
       val roomLSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.getDepth), "L")

@@ -3,8 +3,8 @@ package com.sootsafe.server
 import com.google.cloud.firestore.DocumentReference
 import com.sootsafe.firebase.subscriber.{DefaultSubscriber, MessageSerializer}
 import com.sootsafe.reporting.PdfGeneratorServiceClient
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.ReleaseRateRequest
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass.AtexRequest
 import com.sootsafe.server.requesthandler.ReleaseRateRequestHandler
 import com.typesafe.config.{Config, ConfigFactory}
 import io.grpc.{Server, ServerBuilder}
@@ -62,13 +62,13 @@ object Runner {
     calculatorService.start()
     val firestore = DefaultSubscriber.database()
 
-    val atexMessageChannel = new Channel[(ReleaseRateRequest, DocumentReference)]
-    DefaultSubscriber.subscribe("releaseRateRequests", firestore, referenceToAtexRequest, atexMessageChannel)
+    val atexMessageChannel = new Channel[(AtexRequest, DocumentReference)]
+    DefaultSubscriber.subscribe("atexRequests", firestore, referenceToAtexRequest, atexMessageChannel)
 
     Future {
       while (true) {
-        val (releaseRateRequest, documentReference) = atexMessageChannel.read
-        ReleaseRateRequestHandler.handleRequest(releaseRateRequest, documentReference, pdfGeneratorServiceClient)
+        val (atexRequest, documentReference) = atexMessageChannel.read
+        ReleaseRateRequestHandler.handleRequest(atexRequest, documentReference, pdfGeneratorServiceClient)
       }
     }
 
@@ -85,10 +85,10 @@ object Runner {
     calculatorService.blockUntilShutDown()
   }
 
-  private val referenceToAtexRequest: PartialFunction[String, ReleaseRateRequest] = {
+  private val referenceToAtexRequest: PartialFunction[String, AtexRequest] = {
     case stringRepr: String =>
-      val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
-      MessageSerializer.serializer[ReleaseRateRequest](stringRepr, builder)
+      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
+      MessageSerializer.serializer[AtexRequest](stringRepr, builder)
   }
 
 //  private val referenceToFidRequest: PartialFunction[String, SootSafeModel] = {

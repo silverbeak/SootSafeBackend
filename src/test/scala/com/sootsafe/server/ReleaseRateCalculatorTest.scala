@@ -4,8 +4,8 @@ import com.sootsafe.backend.grpc.FakeMessage
 import com.sootsafe.engine.zone.ReleaseRateCalculator
 import com.sootsafe.firebase.subscriber.MessageSerializer
 import com.sootsafe.reporting.PdfGeneratorLocal
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass
-import com.sootsafe.server.calculator.ReleaseRateCalculatorOuterClass.{ReleaseRateRequest, ReleaseRateValues}
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass
+import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexRequest, ReleaseRateValues}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpecLike}
 
 class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterEach {
@@ -53,7 +53,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
   "Calculator" must {
     "handle request" in {
-      val request = ReleaseRateRequest
+      val request = AtexRequest
         .newBuilder()
         .setReleaseRate(baseRequestValues)
         .setCasNumber("74-86-2")
@@ -63,26 +63,26 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
       ReleaseRateCalculator.handleRequest(request, new PdfGeneratorLocal) match {
         case Right(errorString) => fail(errorString)
         case Left((result, _)) =>
-          result.getReleaseRateResult.getKey should be(request.getKey)
-          result.getReleaseRateResult.getReleaseCharacter should be(0.6068943194691696)
+          result.getAtexResult.getKey should be(request.getKey)
+          result.getAtexResult.getReleaseCharacter should be(0.6068943194691696)
       }
     }
 
     "handle request based on json" in {
-      val builder = ReleaseRateCalculatorOuterClass.ReleaseRateRequest.newBuilder
-      val request = MessageSerializer.serializer[ReleaseRateRequest](FakeMessage.jsonMsg, builder)
+      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
+      val request = MessageSerializer.serializer[AtexRequest](FakeMessage.jsonMsg, builder)
 
       ReleaseRateCalculator.handleRequest(request, new PdfGeneratorLocal) match {
         case Right(errorString) => fail(errorString)
         case Left((result, _)) =>
-          result.getReleaseRateResult.getKey should be(request.getKey)
-          result.getReleaseRateResult.getReleaseCharacter should be(0.1111111111111111)
+          result.getAtexResult.getKey should be(request.getKey)
+          result.getAtexResult.getReleaseCharacter should be(0.1111111111111111)
       }
     }
 
     "return an expression [!performRelease, !isGas, hasReleaseRate, !isEvaporation]" in {
 
-      val requestForGas = ReleaseRateRequest
+      val requestForGas = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(false)
         .setIsGasCalculation(false)
@@ -101,7 +101,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       baseRequestValues.setGasDensity(33.3).setMolarMass(0)
 
-      val requestForGas = ReleaseRateRequest
+      val requestForGas = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(false)
         .setIsGasCalculation(true)
@@ -112,7 +112,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
 
-      val requestForLiquid = ReleaseRateRequest
+      val requestForLiquid = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(false)
         .setIsGasCalculation(false)
@@ -132,7 +132,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
     "return an expression [!performRelease, _, hasReleaseRate, _] (molar mass is given)" in {
 
-      val requestForGas = ReleaseRateRequest
+      val requestForGas = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(false)
         .setIsGasCalculation(true)
@@ -143,7 +143,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
 
-      val requestForLiquid = ReleaseRateRequest
+      val requestForLiquid = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(false)
         .setIsGasCalculation(false)
@@ -163,7 +163,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
     "return an expression [performRelease, !isGas, _, !pool] (third branch)" in {
 
-      val request = ReleaseRateRequest
+      val request = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(true)
         .setIsGasCalculation(false)
@@ -180,7 +180,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
     "return an expression [performRelease, !isGas, _, pool] (fourth branch)" in {
 
-      val request = ReleaseRateRequest
+      val request = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(true)
         .setIsGasCalculation(false)
@@ -199,7 +199,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
 
       baseRequestValues.setCriticalGasPressure(22)
 
-      val request = ReleaseRateRequest
+      val request = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(true)
         .setIsGasCalculation(true)
@@ -215,7 +215,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
     }
 
     "return an expression [performRelease, _, hasReleaseRate, _] (below critical gas pressure)" in {
-      val request = ReleaseRateRequest
+      val request = AtexRequest
         .newBuilder()
         .setPerformReleaseCalculation(true)
         .setIsGasCalculation(true)
