@@ -7,18 +7,18 @@ import java.util.concurrent.TimeUnit
 import com.google.api.core.ApiFuture
 import com.google.cloud.firestore.{DocumentReference, WriteResult}
 import com.google.firebase.cloud.StorageClient
-import com.sootsafe.engine.zone.ReleaseRateCalculator
+import com.sootsafe.engine.zone.AtexCalculator
 import com.sootsafe.reporting.TexToPdfGenerator
 import com.sootsafe.server.calculator.AtexCalculatorOuterClass.AtexRequest
 
 import scala.util.{Failure, Try}
 
 
-object ReleaseRateRequestHandler {
+object AtexRequestHandler {
   def handleRequest(atexRequest: AtexRequest, documentReference: DocumentReference, pdfGenerator: TexToPdfGenerator): Try[ApiFuture[WriteResult]] = {
     import scala.collection.JavaConverters._
 
-    ReleaseRateCalculator.handleRequest(atexRequest, pdfGenerator, generateReport = true) match {
+    AtexCalculator.handleRequest(atexRequest, pdfGenerator, generateReport = true) match {
       case Left(result) =>
         val blobPath = writeFileToFirebaseStorage(result._2).toString
         val firestore = documentReference.getFirestore

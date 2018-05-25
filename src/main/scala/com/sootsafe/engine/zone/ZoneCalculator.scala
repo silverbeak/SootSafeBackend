@@ -2,7 +2,7 @@ package com.sootsafe.engine.zone
 
 import com.sootsafe.arithmetic._
 import com.sootsafe.server.{Element, ElementTable}
-import ReleaseRateCalculator.{FormulaContainer, getValue}
+import AtexCalculator.{FormulaContainer, getValue}
 import com.sootsafe.reporting._
 import com.sootsafe.reporting.figures.{FigureC1, FigureD1}
 import com.sootsafe.reporting.tables.{TableC1, TableD1}

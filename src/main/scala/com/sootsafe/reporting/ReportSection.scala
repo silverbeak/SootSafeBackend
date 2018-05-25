@@ -1,6 +1,6 @@
 package com.sootsafe.reporting
 
-import com.sootsafe.engine.zone.ReleaseRateCalculator.FormulaContainer
+import com.sootsafe.engine.zone.AtexCalculator.FormulaContainer
 import com.sootsafe.reporting.Fixture.Latex
 import com.sootsafe.reporting.figures.Figure
 import com.sootsafe.reporting.tables.Table

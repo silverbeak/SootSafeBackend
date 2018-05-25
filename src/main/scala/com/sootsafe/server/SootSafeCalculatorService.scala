@@ -5,7 +5,7 @@ import com.sootsafe.firebase.subscriber.{DefaultSubscriber, MessageSerializer}
 import com.sootsafe.reporting.PdfGeneratorServiceClient
 import com.sootsafe.server.calculator.AtexCalculatorOuterClass
 import com.sootsafe.server.calculator.AtexCalculatorOuterClass.AtexRequest
-import com.sootsafe.server.requesthandler.ReleaseRateRequestHandler
+import com.sootsafe.server.requesthandler.AtexRequestHandler
 import com.typesafe.config.{Config, ConfigFactory}
 import io.grpc.{Server, ServerBuilder}
 
@@ -24,7 +24,7 @@ class SootSafeCalculatorService(port: Int) {
   private val server: Server = ServerBuilder
     .forPort(port)
     .addService(new SootSafeCalculatorImpl())
-    .addService(new ReleaseRateCalculatorImpl(pdfGeneratorServiceClient))
+    .addService(new AtexCalculatorImpl(pdfGeneratorServiceClient))
     .build()
 
   def start(): Unit = {
@@ -68,7 +68,7 @@ object Runner {
     Future {
       while (true) {
         val (atexRequest, documentReference) = atexMessageChannel.read
-        ReleaseRateRequestHandler.handleRequest(atexRequest, documentReference, pdfGeneratorServiceClient)
+        AtexRequestHandler.handleRequest(atexRequest, documentReference, pdfGeneratorServiceClient)
       }
     }
 

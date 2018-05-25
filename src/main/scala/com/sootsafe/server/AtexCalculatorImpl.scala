@@ -2,20 +2,20 @@ package com.sootsafe.server
 
 import java.util.Date
 
-import com.sootsafe.engine.zone.ReleaseRateCalculator
+import com.sootsafe.engine.zone.AtexCalculator
 import com.sootsafe.reporting.TexToPdfGenerator
 import com.sootsafe.server.calculator.AtexCalculatorGrpc
 import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexCalculationResult, AtexRequest}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
 import io.grpc.stub.StreamObserver
 
-class ReleaseRateCalculatorImpl(pdfGenerator: TexToPdfGenerator) extends AtexCalculatorGrpc.AtexCalculatorImplBase {
+class AtexCalculatorImpl(pdfGenerator: TexToPdfGenerator) extends AtexCalculatorGrpc.AtexCalculatorImplBase {
 
   override def calculateAtex(request: AtexRequest,
                               responseObserver: StreamObserver[AtexCalculationResult]): Unit = {
     val now = new Date().getTime
 
-    val response = ReleaseRateCalculator.handleRequest(request, pdfGenerator) match {
+    val response = AtexCalculator.handleRequest(request, pdfGenerator) match {
       case Left(result) =>
         result._1
       case Right(error) =>

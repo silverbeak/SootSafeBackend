@@ -6,7 +6,7 @@ import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexCalculationR
 
 import scala.util.{Failure, Success, Try}
 
-object ReleaseRateCalculator extends Symbols with RequestUtils {
+object AtexCalculator extends Symbols with RequestUtils {
 
   private implicit val reportFormat: ReportFormat = DefaultReportFormat
 
@@ -45,7 +45,7 @@ object ReleaseRateCalculator extends Symbols with RequestUtils {
 
         if (generateReport) {
           val authorName = Option(request.getAtexMetadata.getAuthorName)
-          Try(ReleaseRateReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection), authorName)) match {
+          Try(AtexReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection), authorName)) match {
             case Failure(e) =>
               Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
             case Success(zoneExtentReport) =>

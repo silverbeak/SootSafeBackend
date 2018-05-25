@@ -3,7 +3,7 @@ package com.sootsafe.reporting
 import com.sootsafe.arithmetic.PlainFormula
 import com.sootsafe.reporting.Fixture.Latex
 
-object ReleaseRateReportGenerator {
+object AtexReportGenerator {
 
   val pageBreak = """\pagebreak"""
 

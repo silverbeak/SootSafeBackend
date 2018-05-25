@@ -42,7 +42,7 @@ object DefaultSubscriber extends Subscriber {
           change: DocumentChange =>
             Try(change.getDocument.getData.get("id")) match {
               case Success(id: String) if change.getType == DocumentChange.Type.ADDED =>
-                val request = db.collection("releaseRate").document(id).get().get()
+                val request = db.collection("atex").document(id).get().get()
                 singleDocumentUpdateToJson(request) match {
                   case Success(json) =>
                     val t = serializer(json)

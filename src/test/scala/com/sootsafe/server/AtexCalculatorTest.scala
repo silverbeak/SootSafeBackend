@@ -1,14 +1,14 @@
 package com.sootsafe.server
 
 import com.sootsafe.backend.grpc.FakeMessage
-import com.sootsafe.engine.zone.ReleaseRateCalculator
+import com.sootsafe.engine.zone.AtexCalculator
 import com.sootsafe.firebase.subscriber.MessageSerializer
 import com.sootsafe.reporting.PdfGeneratorLocal
 import com.sootsafe.server.calculator.AtexCalculatorOuterClass
 import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexRequest, ReleaseRateValues}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpecLike}
 
-class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterEach {
+class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterEach {
 
   private var baseRequestValues: ReleaseRateValues.Builder = _
 
@@ -60,7 +60,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .build()
 
 
-      ReleaseRateCalculator.handleRequest(request, new PdfGeneratorLocal) match {
+      AtexCalculator.handleRequest(request, new PdfGeneratorLocal) match {
         case Right(errorString) => fail(errorString)
         case Left((result, _)) =>
           result.getAtexResult.getKey should be(request.getKey)
@@ -72,7 +72,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
       val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
       val request = MessageSerializer.serializer[AtexRequest](FakeMessage.jsonMsg, builder)
 
-      ReleaseRateCalculator.handleRequest(request, new PdfGeneratorLocal) match {
+      AtexCalculator.handleRequest(request, new PdfGeneratorLocal) match {
         case Right(errorString) => fail(errorString)
         case Left((result, _)) =>
           result.getAtexResult.getKey should be(request.getKey)
@@ -91,7 +91,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(requestForGas)._1
+      val result = AtexCalculator.performCalculation(requestForGas)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -110,7 +110,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
+      val resultForGas = AtexCalculator.performCalculation(requestForGas)._1
 
       val requestForLiquid = AtexRequest
         .newBuilder()
@@ -121,7 +121,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)._1
+      val resultForLiquid = AtexCalculator.performCalculation(requestForLiquid)._1
 
       resultForGas.calculate() should be(0.08091924259588931)
       resultForGas.texify() should be("""\dfrac{9.0}{33.3 \times 33.4 \times 0.1}""")
@@ -141,7 +141,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val resultForGas = ReleaseRateCalculator.performCalculation(requestForGas)._1
+      val resultForGas = AtexCalculator.performCalculation(requestForGas)._1
 
       val requestForLiquid = AtexRequest
         .newBuilder()
@@ -152,7 +152,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val resultForLiquid = ReleaseRateCalculator.performCalculation(requestForLiquid)._1
+      val resultForLiquid = AtexCalculator.performCalculation(requestForLiquid)._1
 
       resultForGas.calculate() should be(0.6068943194691696)
       resultForGas.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -172,7 +172,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)._1
+      val result = AtexCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -189,7 +189,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)._1
+      val result = AtexCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -208,7 +208,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)._1
+      val result = AtexCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
@@ -224,7 +224,7 @@ class ReleaseRateCalculatorTest extends WordSpecLike with Matchers with BeforeAn
         .setReleaseRate(baseRequestValues)
         .build()
 
-      val result = ReleaseRateCalculator.performCalculation(request)._1
+      val result = AtexCalculator.performCalculation(request)._1
 
       result.calculate() should be(0.6068943194691696)
       result.texify() should be("""\dfrac{9.0}{4.44 \times 33.4 \times 0.1}""")
