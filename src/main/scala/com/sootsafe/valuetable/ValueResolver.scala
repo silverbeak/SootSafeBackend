@@ -1,5 +1,6 @@
 package com.sootsafe.valuetable
 
+import com.sootsafe.arithmetic.{Power, Value}
 import com.sootsafe.calcutils.VelocityCalculator
 import com.sootsafe.model._
 
@@ -13,9 +14,9 @@ trait ValueResolver {
 
   def bendPressureLoss(bend: Bend): Double
 
-  def areaIncrementPressureLoss(areaIncrement: AreaIncrement): Double
+  def areaIncrementPressureLoss(areaIncrement: AreaIncrement, originNode: NodeModule): Double
 
-  def tPipePressureLoss(tPipe: TPipe): Double
+  def tPipePressureLoss(tPipe: TPipe, originNode: NodeModule): Double
 }
 
 object FakeValueResolver extends ValueResolver with PressureLossConstants {
@@ -40,18 +41,17 @@ object FakeValueResolver extends ValueResolver with PressureLossConstants {
     rho * Math.pow(v1 * 1000, 2) / 2 * zeta
   }
 
-  override def tPipePressureLoss(tPipe: TPipe): Double = {
-    val zeta = VelocityCalculator.velocity(tPipe.ssInfo) match {
-      case 0.004965634224467134 =>.6
-      case 0.002536531905527082 => .4 // Fake t-pipe
-      case 0.003382042540702776 => .4 // Fake t-pipe
-    }
+  override def tPipePressureLoss(tPipe: TPipe, originNode: NodeModule): Double = {
+    val v2 = Value(VelocityCalculator.velocity(originNode.ssInfo))
+    val v1 = Value(VelocityCalculator.velocity(tPipe.ssInfo))
 
-    val v1 = VelocityCalculator.velocity(tPipe.ssInfo)
-    rho * Math.pow(v1 * 1000, 2) / 2 * zeta
+    // (Jensen 1990)
+    val zeta = (Value(0.25) * Power(v2 / v1, Value(2)) - v2 / v1 + Value(1)).calculate()
+
+    rho * Math.pow(v1.calculate() * 1000, 2) / 2 * zeta
   }
 
-  override def areaIncrementPressureLoss(areaIncrement: AreaIncrement): Double = {
+  override def areaIncrementPressureLoss(areaIncrement: AreaIncrement, originNode: NodeModule): Double = {
     val zeta = VelocityCalculator.velocity(areaIncrement.ssInfo) match {
       case 0.001691021270351388 => 0.14
       case 0.0021645072260497765 =>.12 // Fake second area increment
@@ -60,6 +60,7 @@ object FakeValueResolver extends ValueResolver with PressureLossConstants {
     val v1 = VelocityCalculator.velocity(areaIncrement.ssInfo)
     rho * Math.pow(v1 * 1000, 2) / 2 * zeta
   }
+
 
 }
 
@@ -93,7 +94,7 @@ object RealValueResolver extends ValueResolver with PressureLossConstants {
   }
 
   // TODO: Fix this... duh!
-  override def tPipePressureLoss(tPipe: TPipe): Double = FakeValueResolver.tPipePressureLoss(tPipe)
+  override def tPipePressureLoss(tPipe: TPipe, originNode: NodeModule): Double = FakeValueResolver.tPipePressureLoss(tPipe, originNode)
 
-  override def areaIncrementPressureLoss(areaIncrement: AreaIncrement): Double = FakeValueResolver.areaIncrementPressureLoss(areaIncrement)
+  override def areaIncrementPressureLoss(areaIncrement: AreaIncrement, originNode: NodeModule): Double = FakeValueResolver.areaIncrementPressureLoss(areaIncrement, originNode)
 }

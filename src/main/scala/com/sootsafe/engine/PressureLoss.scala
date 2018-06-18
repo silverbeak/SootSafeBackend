@@ -41,11 +41,11 @@ class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
         PressureLossEntry(pipe.key, pressureLoss)
 
       case areaIncrement: AreaIncrement =>
-        val pressureLoss = valueResolver.areaIncrementPressureLoss(areaIncrement)
+        val pressureLoss = valueResolver.areaIncrementPressureLoss(areaIncrement, originNode)
         PressureLossEntry(areaIncrement.key, pressureLoss)
 
       case tPipe: TPipe =>
-        val pressureLoss = valueResolver.tPipePressureLoss(tPipe)
+        val pressureLoss = valueResolver.tPipePressureLoss(tPipe, originNode)
         PressureLossEntry(node.key, pressureLoss)
 
       case bend: Bend =>

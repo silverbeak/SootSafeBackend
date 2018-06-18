@@ -22,7 +22,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
       val pressure = StepCalculation.calculateResistanceFromNodeToNextJunction(secondJunction, pressureLossTable)
 
-      pressure should be(3.164158585861644)
+      pressure should be(3.3357317620684928)
     }
 
     "properly calculate the resistance from first junction to the next" in {
@@ -51,7 +51,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
         junction = junction.get.findNextJunction().thisNode
       }
 
-      pressure should be(54.36596993157699)
+      pressure should be(54.64488178026985)
     }
 
     "calculate flow from fire node to first junction" in {
@@ -136,7 +136,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
         aggregatedRegularPressure_p += calculateResistanceFromNodeToNextJunction(Some(junction), pressureLossTable)
       }
 
-      firePressure_delta_p.toValue should be(Value(241.18325024548193))
+      firePressure_delta_p.toValue should be(Value(243.4302821701289))
     }
   }
 }
