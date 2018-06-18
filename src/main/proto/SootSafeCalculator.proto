@@ -32,13 +32,13 @@ message Link {
 }
 
 message Field {
-    repeated Field children = 1;
+    map<string, Field> children = 1;
     string type = 2;
     string name = 3;
     string stringValue = 4;
     double numberValue = 5;
     bool boolValue = 6;
-    bool value = 7;
+    string value = 7;
     double angle = 8;
     double min = 9;
     double max = 10;
@@ -55,7 +55,7 @@ message Node {
     int32 key = 1;
     SootSafeInfo ssInfo = 2;
     Type type = 3;
-    repeated Field fields = 4;
+    map<string, Field> fields = 4;
     int32 angle = 5;
 }
 
@@ -78,8 +78,9 @@ message FirePressureResultEntry {
 }
 
 message FirePressureCalculationResult {
-    repeated FirePressureResultEntry entries = 1;
-    ErrorMessage errorMessage = 2;
+    ErrorMessage errorMessage = 1;
+    repeated FirePressureResultEntry entries = 2;
+    bytes latex = 3;
 }
 
 service SootSafeCalculator {

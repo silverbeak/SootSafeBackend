@@ -1,5 +1,6 @@
 package com.sootsafe.engine.zone
 
+import com.google.protobuf.ByteString
 import com.sootsafe.arithmetic._
 import com.sootsafe.reporting._
 import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexCalculationResult, AtexRequest, AtexResultEntry}
@@ -10,9 +11,7 @@ object AtexCalculator extends Symbols with RequestUtils {
 
   private implicit val reportFormat: ReportFormat = DefaultReportFormat
 
-  def handleRequest(request: AtexRequest,
-                    pdfGenerator: TexToPdfGenerator,
-                    generateReport: Boolean = false): Either[(AtexCalculationResult, Array[Byte]), String] = {
+  def handleRequest(request: AtexRequest): Either[AtexCalculationResult, String] = {
 
     Try(performCalculation(request)) match {
       case Success(releaseRateExpression) =>
@@ -36,32 +35,20 @@ object AtexCalculator extends Symbols with RequestUtils {
           Seq(zoneExtent) ++ zoneFormulaSections
         )
 
-        val result = AtexCalculationResult
-          .newBuilder()
-          .setAtexResult(entry)
-          //          .setZoneExtent(zoneExtent.expression.calculate())
-          //          .setZoneLabel(zoneFormulaSections)
-          .build()
-
-        if (generateReport) {
-          val authorName = Option(request.getAtexMetadata.getAuthorName)
-          Try(AtexReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection), authorName)) match {
-            case Failure(e) =>
-              Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
-            case Success(zoneExtentReport) =>
-              pdfGenerator.generate(zoneExtentReport) match {
-                case Failure(e) =>
-                  Right(s"Could not convert tex to PDF. Error: ${e.getMessage}")
-                case Success(pdf) =>
-                  Left((result, pdf))
-              }
-
-          }
-        } else {
-          // FIXME: Not sure what to do about this. It's just to deal with the time it takes to generate the PDF
-          Left((result, Array()))
+        val authorName = Option(request.getAtexMetadata.getAuthorName)
+        Try(AtexReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection), authorName)) match {
+          case Failure(e) =>
+            Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
+          case Success(zoneExtentReport) =>
+            val result = AtexCalculationResult
+              .newBuilder()
+              .setAtexResult(entry)
+              .setLatex(ByteString.copyFromUtf8(zoneExtentReport))
+              //          .setZoneExtent(zoneExtent.expression.calculate())
+              //          .setZoneLabel(zoneFormulaSections)
+              .build()
+            Left(result)
         }
-
 
       case Failure(e) =>
         Right(s"Could not calculate release rate character. Error: ${e.getMessage}")

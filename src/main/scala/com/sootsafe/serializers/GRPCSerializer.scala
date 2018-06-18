@@ -3,33 +3,33 @@ package com.sootsafe.serializers
 import com.sootsafe.model.{SootSafeInfo => SSInfo, _}
 import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.{Field, Node}
 
+import scala.collection.JavaConversions._
 import scala.reflect.ClassTag
 
 object GRPCSerializer {
 
-  private def findFieldValue[T: ClassTag](fields: Seq[Field], name: String)(implicit ct: ClassTag[T]): Option[T] = {
-    import scala.collection.JavaConversions._
+  private def findFieldValue[T: ClassTag](fields: Map[String, Field], name: String)(implicit ct: ClassTag[T]): Option[T] = {
 
-    def findField(fields: Seq[Field]): Option[Field] = fields.find(_.getName == name) match {
+    def findField(fields: Map[String, Field]): Option[Field] = fields.get(name) match {
       case Some(field) => Some(field)
-      case None if fields.exists(_.getChildrenCount > 0) =>
-        val fs = for {
-          f <- fields.filter(_.getChildrenCount > 0)
-          found <- findField(f.getChildrenList)
-        } yield found
-        fs.headOption
+//      case None if fields.exists() =>
+//        val fs = for {
+//          f <- fields.filter(_.getChildrenCount > 0)
+//          found <- findField(f.getChildrenMap.values().toSeq)
+//        } yield found
+//        fs.headOption
       case None => None
     }
 
     val found = findField(fields)
 
     (ct.runtimeClass, found) match {
-      case (x, Some(field)) if x == classOf[Double] => Option(field.getNumberValue.asInstanceOf[T])
-      case (x, Some(field)) if x == classOf[String] => Option(field.getStringValue.asInstanceOf[T])
-      case (x, Some(field)) if x == classOf[Boolean] => Option(field.getBoolValue.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[Double] => Option(field.getValue.toDouble.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[String] => Option(field.getValue.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[Boolean] => Option(field.getValue.toBoolean.asInstanceOf[T])
       case (x, Some(field)) if x == classOf[Dimension] =>
-        val length = findFieldValue[Double](field.getChildrenList, "length")
-        val diameter = findFieldValue[Double](field.getChildrenList, "diameter")
+        val length = findFieldValue[Double](field.getChildrenMap.toMap[String, Field], "length")
+        val diameter = findFieldValue[Double](field.getChildrenMap.toMap[String, Field], "diameter")
         Option(Dimension(length, diameter).asInstanceOf[T])
       case _ => None
     }
@@ -38,8 +38,7 @@ object GRPCSerializer {
   def deserialize(node: Node): NodeModule = {
     val nodeType = node.getType.getName
 
-    val ssInfo: java.util.List[com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.Field] => SSInfo = { fields =>
-      import scala.collection.JavaConversions._
+    val ssInfo: Map[String, com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.Field] => SSInfo = { fields =>
       SSInfo(
         nodeType,
         findFieldValue[Double](fields, "capacity"),
@@ -51,7 +50,7 @@ object GRPCSerializer {
       )
     }
 
-    val convertedInfo = ssInfo(node.getFieldsList)
+    val convertedInfo = ssInfo(node.getFieldsMap.toMap[String, Field])
 
     nodeType match {
       case "bend" => Bend(node.getKey, convertedInfo)

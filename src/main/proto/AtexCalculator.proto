@@ -16,6 +16,7 @@ message AtexCalculationResult {
     AtexResultEntry atexResult = 2;
     double zoneExtent = 3;
     string zoneLabel = 4;
+    bytes latex = 5;
 }
 
 message ReleaseRateValues {
