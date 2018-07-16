@@ -31,7 +31,8 @@ class PressureLossTest extends WordSpecLike with Matchers {
 
           val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss(firstJunction, outletNode.get)
           val pressureLoss = pressureLossTable.foldLeft(0d)((agg, pl) => pl.pressureLoss + agg)
-          pressureLoss should be(54.64488178026986)
+          pressureLoss should be(55.544371375939654)
+//          pressureLoss should be(54.64488178026986)
           pressureLossTable.length should be(13)
       }
 

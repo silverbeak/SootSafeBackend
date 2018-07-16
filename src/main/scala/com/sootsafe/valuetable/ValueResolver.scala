@@ -52,15 +52,12 @@ object FakeValueResolver extends ValueResolver with PressureLossConstants {
   }
 
   override def areaIncrementPressureLoss(areaIncrement: AreaIncrement, originNode: NodeModule): Double = {
-    val zeta = VelocityCalculator.velocity(areaIncrement.ssInfo) match {
-      case 0.001691021270351388 => 0.14
-      case 0.0021645072260497765 =>.12 // Fake second area increment
-    }
+    val v1 = Value(VelocityCalculator.velocity(originNode.ssInfo))
+    val v2 = Value(VelocityCalculator.velocity(areaIncrement.ssInfo))
 
-    val v1 = VelocityCalculator.velocity(areaIncrement.ssInfo)
-    rho * Math.pow(v1 * 1000, 2) / 2 * zeta
+    val zeta =  (Value(-1) * Power(v2 / v1, Value(0.3)) - ((v2 / v1) * Value(0.48)) + Value(1.3)).calculate()
+    rho * Math.pow(v1.calculate() * 1000, 2) / 2 * zeta
   }
-
 
 }
 
