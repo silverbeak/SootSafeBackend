@@ -1,10 +1,9 @@
 package com.sootsafe.backend.grpc
 
-import com.sootsafe.firebase.subscriber.MessageSerializer
-import com.sootsafe.server.calculator.AtexCalculatorOuterClass
-import com.sootsafe.server.calculator.AtexCalculatorOuterClass._
+import com.sootsafe.server.calculator.AtexCalculator._
 import org.json4s.DefaultFormats
 import org.scalatest.{Matchers, WordSpecLike}
+import scalapb.json4s.JsonFormat
 
 import scala.io.Source
 
@@ -13,17 +12,16 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
   "MessageSerializerTest" must {
 
     "serialize json" in {
-      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
-      val result = MessageSerializer.serializer[AtexRequest](FakeMessage.jsonMsg, builder)
+      val result = JsonFormat.fromJsonString[AtexRequest](FakeMessage.jsonMsg)
 
-      result.getCasNumber should be("74-86-2")
-      result.getIsEvaporationFromPool should be(true)
-      result.getGradeOfRelease should be(GradeOfRelease.Primary)
-      result.getReleaseType should be(ReleaseType.DiffusiveJet)
-      result.getVentilationAvailability should be(VentilationAvailability.Fair)
+      result.casNumber should be("74-86-2")
+      result.isEvaporationFromPool should be(true)
+      result.gradeOfRelease should be(GradeOfRelease.Primary)
+      result.releaseType should be(ReleaseType.DiffusiveJet)
+      result.ventilationAvailability should be(VentilationAvailability.Fair)
 
-      result.getReleaseRate.getAdiabaticExpansion should be(13)
-      result.getVentilationVelocityValues.getObstructed should be(Obstruction.Unobstructed)
+      result.getReleaseRate.adiabaticExpansion should be(13)
+      result.getVentilationVelocityValues.obstructed should be(Obstruction.Unobstructed)
     }
 
     "serialize map" in {
@@ -34,17 +32,16 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
       val msg = FakeMessage.mapMsg
       val json = write(msg)
 
-      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
-      val result = MessageSerializer.serializer[AtexRequest](json, builder)
+      val result = JsonFormat.fromJsonString[AtexRequest](json)
 
-      result.getCasNumber should be("74-86-2")
-      result.getIsEvaporationFromPool should be(true)
-      result.getGradeOfRelease should be(GradeOfRelease.Primary)
-      result.getReleaseType should be(ReleaseType.DiffusiveJet)
-      result.getVentilationAvailability should be(VentilationAvailability.Fair)
-      result.getReleaseRate.getVolumetricGasFlowRate should be(1)
-      result.getReleaseRate.getSafetyFactor should be(2.3)
-      result.getVentilationVelocityValues.getObstructed should be(Obstruction.Unobstructed)
+      result.casNumber should be("74-86-2")
+      result.isEvaporationFromPool should be(true)
+      result.gradeOfRelease should be(GradeOfRelease.Primary)
+      result.releaseType should be(ReleaseType.DiffusiveJet)
+      result.ventilationAvailability should be(VentilationAvailability.Fair)
+      result.releaseRate.get.volumetricGasFlowRate should be(1)
+      result.releaseRate.get.safetyFactor should be(2.3)
+      result.ventilationVelocityValues.get.obstructed should be(Obstruction.Unobstructed)
     }
   }
 }
@@ -58,8 +55,8 @@ object FakeMessage {
     "isEvaporationFromPool" -> true,
     "releaseRate" -> Map(
       "volumetricGasFlowRate" -> 1,
-      "safetyFactor" -> "2.3",
-      "gasDensity" -> "4.44"
+      "safetyFactor" -> 2.3,
+      "gasDensity" -> 4.44
     ),
 
     "isIndoors" -> true,

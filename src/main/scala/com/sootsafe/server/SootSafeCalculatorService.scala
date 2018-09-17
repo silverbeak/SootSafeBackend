@@ -1,17 +1,23 @@
 package com.sootsafe.server
 
+import com.sootsafe.server.calculator.AtexCalculator.AtexCalculatorGrpc
+import com.sootsafe.server.calculator.SootSafeCalculator.SootSafeCalculatorGrpc
 import com.typesafe.config.{Config, ConfigFactory}
 import io.grpc.{Server, ServerBuilder}
 
-class SootSafeCalculatorService(port: Int) {
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class SootSafeCalculatorService(port: Int)(implicit executionContext: ExecutionContext) {
 
   private val server: Server = ServerBuilder
     .forPort(port)
-    .addService(new SootSafeCalculatorImpl())
-    .addService(new AtexCalculatorImpl())
+    .addService(SootSafeCalculatorGrpc.bindService(new SootSafeCalculatorImpl(), executionContext))
+    .addService(AtexCalculatorGrpc.bindService(new AtexCalculatorImpl(), executionContext))
     .build()
 
   def start(): Unit = {
+
     server.start()
     Runtime.getRuntime.addShutdownHook(new Thread() {
       override def run(): Unit = {
@@ -34,7 +40,6 @@ class SootSafeCalculatorService(port: Int) {
 }
 
 object Runner {
-
   private val config: Config = ConfigFactory.load()
   private val grpcServicePort = config.getInt("grpcService.port")
 

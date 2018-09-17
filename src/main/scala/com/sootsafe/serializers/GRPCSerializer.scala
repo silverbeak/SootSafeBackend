@@ -1,9 +1,8 @@
 package com.sootsafe.serializers
 
 import com.sootsafe.model.{SootSafeInfo => SSInfo, _}
-import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.{Field, Node}
+import com.sootsafe.server.calculator.SootSafeCalculator.{Field, Node}
 
-import scala.collection.JavaConversions._
 import scala.reflect.ClassTag
 
 object GRPCSerializer {
@@ -24,21 +23,21 @@ object GRPCSerializer {
     val found = findField(fields)
 
     (ct.runtimeClass, found) match {
-      case (x, Some(field)) if x == classOf[Double] => Option(field.getValue.toDouble.asInstanceOf[T])
-      case (x, Some(field)) if x == classOf[String] => Option(field.getValue.asInstanceOf[T])
-      case (x, Some(field)) if x == classOf[Boolean] => Option(field.getValue.toBoolean.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[Double] => Option(field.value.toDouble.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[String] => Option(field.value.asInstanceOf[T])
+      case (x, Some(field)) if x == classOf[Boolean] => Option(field.value.toBoolean.asInstanceOf[T])
       case (x, Some(field)) if x == classOf[Dimension] =>
-        val length = findFieldValue[Double](field.getChildrenMap.toMap[String, Field], "length")
-        val diameter = findFieldValue[Double](field.getChildrenMap.toMap[String, Field], "diameter")
+        val length = findFieldValue[Double](field.children, "length")
+        val diameter = findFieldValue[Double](field.children, "diameter")
         Option(Dimension(length, diameter).asInstanceOf[T])
       case _ => None
     }
   }
 
   def deserialize(node: Node): NodeModule = {
-    val nodeType = node.getType.getName
+    val nodeType = node.getType.name
 
-    val ssInfo: Map[String, com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.Field] => SSInfo = { fields =>
+    val ssInfo: Map[String, Field] => SSInfo = { fields =>
       SSInfo(
         nodeType,
         findFieldValue[Double](fields, "capacity"),
@@ -50,22 +49,22 @@ object GRPCSerializer {
       )
     }
 
-    val convertedInfo = ssInfo(node.getFieldsMap.toMap[String, Field])
+    val convertedInfo = ssInfo(node.fields)
 
     nodeType match {
-      case "bend" => Bend(node.getKey, convertedInfo)
-      case "outlet" => Outlet(node.getKey, convertedInfo)
-      case "fireCell" => FireCell(node.getKey, convertedInfo)
-      case "pipe" => Pipe(node.getKey, convertedInfo)
-      case "tpipe" => TPipe(node.getKey, convertedInfo)
-      case "areaIncrement" => AreaIncrement(node.getKey, convertedInfo)
-      case "box" => Box(node.getKey, convertedInfo)
-      case _ => NodeModuleBase(node.getKey, convertedInfo)
+      case "bend" => Bend(node.key, convertedInfo)
+      case "outlet" => Outlet(node.key, convertedInfo)
+      case "fireCell" => FireCell(node.key, convertedInfo)
+      case "pipe" => Pipe(node.key, convertedInfo)
+      case "tpipe" => TPipe(node.key, convertedInfo)
+      case "areaIncrement" => AreaIncrement(node.key, convertedInfo)
+      case "box" => Box(node.key, convertedInfo)
+      case _ => NodeModuleBase(node.key, convertedInfo)
     }
   }
 
-  def deserialize(link: com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.Link): Link = {
-    Link(link.getFrom, link.getTo, link.getFid, link.getTid)
+  def deserialize(link: com.sootsafe.server.calculator.SootSafeCalculator.Link): com.sootsafe.model.Link = {
+    com.sootsafe.model.Link(link.from, link.to, link.fid, link.tid)
   }
 
 }

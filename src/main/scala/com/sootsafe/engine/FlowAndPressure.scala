@@ -2,7 +2,7 @@ package com.sootsafe.engine
 
 import com.sootsafe.arithmetic.{Expression, Value}
 import com.sootsafe.model.LinkedNode
-import com.sootsafe.server.calculator.SootSafeCalculatorOuterClass.FirePressureResultEntry
+import com.sootsafe.server.calculator.SootSafeCalculator.FirePressureResultEntry
 
 object FlowAndPressureSequence {
 
@@ -11,17 +11,17 @@ object FlowAndPressureSequence {
   def aggregatePressure(seq: Seq[FlowAndPressure]): Double = seq.map(_.firePressureDifference.calculate()).sum
 
   def toEntries(seq: Seq[FlowAndPressure]): Seq[FirePressureResultEntry] = seq.map(flowAndPressure => {
-    val result = FirePressureResultEntry.newBuilder()
-    result.setAddedFireFlow(flowAndPressure.addedFireFlow.calculate())
-    result.setFirePressureDifference(flowAndPressure.firePressureDifference.calculate())
-    result.setPointRegularPressure(flowAndPressure.pointRegularPressure.calculate())
-    result.setAggregatedRegularFlow(flowAndPressure.aggregatedRegularFlow.calculate())
-    result.setAddedRegularFlow(flowAndPressure.addedRegularFlow.calculate())
-    result.setAggregatedFireFlow(flowAndPressure.aggregatedFireFlow.calculate())
-    result.setPointFirePressure(flowAndPressure.pointFirePressure.calculate())
-    result.setRegularPressureDifference(flowAndPressure.regularPressureDifference.calculate())
-    result.setKey(flowAndPressure.junction.nodeModule.key)
-    result.build()
+    new FirePressureResultEntry(
+      addedFireFlow = flowAndPressure.addedFireFlow.calculate(),
+      firePressureDifference = flowAndPressure.firePressureDifference.calculate(),
+      pointRegularPressure = flowAndPressure.pointRegularPressure.calculate(),
+      aggregatedRegularFlow = flowAndPressure.aggregatedRegularFlow.calculate(),
+      addedRegularFlow = flowAndPressure.addedRegularFlow.calculate(),
+      aggregatedFireFlow = flowAndPressure.aggregatedFireFlow.calculate(),
+      pointFirePressure = flowAndPressure.pointFirePressure.calculate(),
+      regularPressureDifference = flowAndPressure.regularPressureDifference.calculate(),
+      key = flowAndPressure.junction.nodeModule.key
+    )
   })
 }
 

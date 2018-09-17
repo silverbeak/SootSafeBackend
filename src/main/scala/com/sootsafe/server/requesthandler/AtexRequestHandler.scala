@@ -1,12 +1,11 @@
 package com.sootsafe.server.requesthandler
 
 import com.sootsafe.engine.zone.AtexCalculator
-import com.sootsafe.server.calculator.AtexCalculatorOuterClass
-import com.sootsafe.server.calculator.AtexCalculatorOuterClass.AtexRequest
+import com.sootsafe.server.calculator.AtexCalculator.{AtexCalculationResult, AtexRequest}
 
 
 object AtexRequestHandler {
-  def handleRequest(atexRequest: AtexRequest): Either[AtexCalculatorOuterClass.AtexCalculationResult, String] = {
+  def handleRequest(atexRequest: AtexRequest): Either[AtexCalculationResult, String] = {
 
     AtexCalculator.handleRequest(atexRequest) match {
       case Left(result) =>

@@ -3,7 +3,7 @@ package com.sootsafe.engine.zone
 import com.google.protobuf.ByteString
 import com.sootsafe.arithmetic._
 import com.sootsafe.reporting._
-import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexCalculationResult, AtexRequest, AtexResultEntry}
+import com.sootsafe.server.calculator.AtexCalculator.{AtexCalculationResult, AtexRequest, AtexResultEntry}
 
 import scala.util.{Failure, Success, Try}
 
@@ -15,13 +15,13 @@ object AtexCalculator extends Symbols with RequestUtils {
 
     Try(performCalculation(request)) match {
       case Success(releaseRateExpression) =>
-        val entry = AtexResultEntry
-          .newBuilder()
-          .setKey(request.getKey)
-          .setReleaseCharacter(releaseRateExpression._1.calculate())
-          .build()
+        val entry = new AtexResultEntry(
+          key = request.key,
+          releaseCharacter = releaseRateExpression._1.calculate()
 
-        val zoneExtent = ZoneCalculator.determinePollutionDistance(request.getReleaseType, releaseRateExpression._1)
+        )
+
+        val zoneExtent = ZoneCalculator.determinePollutionDistance(request.releaseType, releaseRateExpression._1)
 
         val zoneFormulaSections = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression._1)
 
@@ -35,18 +35,15 @@ object AtexCalculator extends Symbols with RequestUtils {
           Seq(zoneExtent) ++ zoneFormulaSections
         )
 
-        val authorName = Option(request.getAtexMetadata.getAuthorName)
+        val authorName = Option(request.getAtexMetadata.authorName)
         Try(AtexReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection), authorName)) match {
           case Failure(e) =>
             Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
           case Success(zoneExtentReport) =>
-            val result = AtexCalculationResult
-              .newBuilder()
-              .setAtexResult(entry)
-              .setLatex(ByteString.copyFromUtf8(zoneExtentReport))
-              //          .setZoneExtent(zoneExtent.expression.calculate())
-              //          .setZoneLabel(zoneFormulaSections)
-              .build()
+            val result = new AtexCalculationResult(
+              atexResult = Some(entry),
+              latex = ByteString.copyFromUtf8(zoneExtentReport)
+            )
             Left(result)
         }
 
@@ -57,30 +54,30 @@ object AtexCalculator extends Symbols with RequestUtils {
 
   def performCalculation(request: AtexRequest): (Expression, Seq[FormulaSection]) = {
 
-    val performReleaseCalculation = request.getPerformReleaseCalculation
-    val isGasCalculation = request.getIsGasCalculation
-    val hasReleaseRateInKgPerSecond = request.getHasReleaseRateInKgPerSecond
-    val isEvaporationFromPool = request.getIsEvaporationFromPool
+    val performReleaseCalculation = request.performReleaseCalculation
+    val isGasCalculation = request.isGasCalculation
+    val hasReleaseRateInKgPerSecond = request.hasReleaseRateInKgPerSecond
+    val isEvaporationFromPool = request.isEvaporationFromPool
 
 
     val values = request.getReleaseRate
 
-    val Qg = getValue(values.getVolumetricGasFlowRate)
-    val k = getValue(values.getSafetyFactor)
-    val lfl = getValue(values.getLowerFlammableLimit)
-    val We = getValue(values.getEvaporationRate)
-    val M = getValue(values.getMolarMass)
-    val rhoG = getValue(values.getGasDensity)
-    val Cd = getValue(values.getDischargeCoefficient)
-    val S = getValue(request.getBackgroundConcentration.getCrossSectionArea)
-    val deltaP = getValue(values.getPressureDifference)
-    val Ap = getValue(values.getPoolSurfaceArea)
-    val uw = getValue(values.getWindSpeed)
-    val T = getValue(values.getAbsoluteTemperature)
-    val gma = getValue(values.getAdiabaticExpansion)
-    val pa = getValue(values.getAtmosphericPressure)
-    val criticalGasPressure = getValue(values.getCriticalGasPressure)
-    val compressibilityFactor = getValue(values.getCompressibilityFactor)
+    val Qg = getValue(values.volumetricGasFlowRate)
+    val k = getValue(values.safetyFactor)
+    val lfl = getValue(values.lowerFlammableLimit)
+    val We = getValue(values.evaporationRate)
+    val M = getValue(values.molarMass)
+    val rhoG = getValue(values.gasDensity)
+    val Cd = getValue(values.dischargeCoefficient)
+    val S = getValue(request.getBackgroundConcentration.crossSectionArea)
+    val deltaP = getValue(values.pressureDifference)
+    val Ap = getValue(values.poolSurfaceArea)
+    val uw = getValue(values.windSpeed)
+    val T = getValue(values.absoluteTemperature)
+    val gma = getValue(values.adiabaticExpansion)
+    val pa = getValue(values.atmosphericPressure)
+    val criticalGasPressure = getValue(values.criticalGasPressure)
+    val compressibilityFactor = getValue(values.compressibilityFactor)
 
     val calculationSequence = prepareSymbols(performReleaseCalculation,
       isGasCalculation,
@@ -92,8 +89,8 @@ object AtexCalculator extends Symbols with RequestUtils {
 
     val kSymbol = Symbol(k, "k")
     val lflSymbol = Symbol(lfl, "LFL")
-//    val calculatedQq = calculationSequence.last
-//    val qgSymbol = Symbol(Value(calculatedQq.formula.calculate()), "Q_g")
+    //    val calculatedQq = calculationSequence.last
+    //    val qgSymbol = Symbol(Value(calculatedQq.formula.calculate()), "Q_g")
     val WgSymbol = Symbol(We, "W_e")
     val rhoGSymbol = Symbol(rhoG, """\rho_G""")
 
@@ -143,8 +140,8 @@ object AtexCalculator extends Symbols with RequestUtils {
       case (false, _, true, _) =>
         // För gas: Beräkna Qg(ekv B.5)
         // För gas: Beräkna utsläppets karaktär dvs Qg /(k*LFL)
-//        val b5formula = calculateB5(Wg, M, rhoG)
-//        Seq(FormulaContainer(b5formula, Some("Volumetric flow rate")))
+        //        val b5formula = calculateB5(Wg, M, rhoG)
+        //        Seq(FormulaContainer(b5formula, Some("Volumetric flow rate")))
         Nil
 
       case (true, false, _, false) =>

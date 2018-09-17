@@ -16,7 +16,7 @@ class BoverketTest extends WordSpecLike with Matchers with TestFixture {
         case Left(result) =>
           result.size should be(6)
           val pressureLoss = FlowAndPressureSequence.aggregatePressure(result)
-          df.format(pressureLoss) should be ("259.9353")
+          df.format(pressureLoss) should be ("259,9353")
 //          df.format(pressureLoss) should be ("243.5511") // With Boverket reference: 241.18325024548193
 
           println(s"Latex:\n${SootSafeReportGenerator.generateLatex(result)}")
@@ -31,7 +31,7 @@ class BoverketTest extends WordSpecLike with Matchers with TestFixture {
         case Left(result) =>
           result.size should be(6)
           val pressureLoss = FlowAndPressureSequence.aggregatePressure(result)
-          df.format(pressureLoss) should be ("72.9595")
+          df.format(pressureLoss) should be ("72,9595")
 //          df.format(pressureLoss) should be ("68.1943") // With Boverket reference: (67.62744006969751)
 
         case Right(error) =>

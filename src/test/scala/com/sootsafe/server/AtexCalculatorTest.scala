@@ -1,31 +1,31 @@
 package com.sootsafe.server
 
 import com.sootsafe.engine.zone.AtexCalculator
-import com.sootsafe.server.calculator.AtexCalculatorOuterClass.{AtexRequest, ReleaseRateValues}
+import com.sootsafe.server.calculator.AtexCalculator.{AtexRequest, ReleaseRateValues}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpecLike}
 
 class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterEach {
 
-  private var baseRequestValues: ReleaseRateValues.Builder = _
+  private var baseRequestValues: ReleaseRateValues = _
 
   override def beforeEach(): Unit = {
-    baseRequestValues = ReleaseRateValues.newBuilder()
-      .setVolumetricGasFlowRate(.44)
-      .setSafetyFactor(33.4)
-      .setLowerFlammableLimit(.1)
-      .setEvaporationRate(9)
-      .setMolarMass(33.3)
-      .setGasDensity(4.44)
-      .setDischargeCoefficient(7)
-//      .setCrossSectionArea(.7)
-      .setPressureDifference(44)
-      .setPoolSurfaceArea(3)
-      .setWindSpeed(3)
-      .setAbsoluteTemperature(3)
-      .setAdiabaticExpansion(55)
-      .setAtmosphericPressure(33)
-      .setCriticalGasPressure(1000)
-      .setCompressibilityFactor(11)
+    baseRequestValues = ReleaseRateValues(
+      volumetricGasFlowRate = .44,
+      safetyFactor = 33.4,
+      lowerFlammableLimit = .1,
+      evaporationRate = 9,
+      molarMass = 33.3,
+      gasDensity = 4.44,
+      dischargeCoefficient = 7,
+      pressureDifference = 44,
+      poolSurfaceArea = 3,
+      windSpeed = 3,
+      absoluteTemperature = 3,
+      adiabaticExpansion = 55,
+      atmosphericPressure = 33,
+      criticalGasPressure = 1000,
+      compressibilityFactor = 11
+    )
 
 
     //  Qg: Expression,                     .44   volumetricGasFlowRate
@@ -49,43 +49,41 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
   "Calculator" must {
     "handle request" in {
-      val request = AtexRequest
-        .newBuilder()
-        .setReleaseRate(baseRequestValues)
-        .setCasNumber("74-86-2")
-        .build()
-
+      val request = AtexRequest(
+        releaseRate = Some(baseRequestValues),
+        casNumber = "74-86-2"
+      )
 
       AtexCalculator.handleRequest(request) match {
         case Right(errorString) => fail(errorString)
         case Left(result) =>
-          result.getAtexResult.getKey should be(request.getKey)
-          result.getAtexResult.getReleaseCharacter should be(0.6068943194691696)
+          result.getAtexResult.key should be(request.key)
+          result.getAtexResult.releaseCharacter should be(0.6068943194691696)
       }
     }
 
-//    "handle request based on json" in {
-//      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
-//      val request = MessageSerializer.serializer[AtexRequest](FakeMessage.jsonMsg, builder)
-//
-//      AtexCalculator.handleRequest(request) match {
-//        case Right(errorString) => fail(errorString)
-//        case Left(result) =>
-//          result.getAtexResult.getKey should be(request.getKey)
-//          result.getAtexResult.getReleaseCharacter should be(0.1111111111111111)
-//      }
-//    }
+    //    "handle request based on json" in {
+    //      val builder = AtexCalculatorOuterClass.AtexRequest.newBuilder
+    //      val request = MessageSerializer.serializer[AtexRequest](FakeMessage.jsonMsg, builder)
+    //
+    //      AtexCalculator.handleRequest(request) match {
+    //        case Right(errorString) => fail(errorString)
+    //        case Left(result) =>
+    //          result.getAtexResult.getKey should be(request.getKey)
+    //          result.getAtexResult.getReleaseCharacter should be(0.1111111111111111)
+    //      }
+    //    }
 
     "return an expression [!performRelease, !isGas, hasReleaseRate, !isEvaporation]" in {
 
-      val requestForGas = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(false)
-        .setIsGasCalculation(false)
-        .setHasReleaseRateInKgPerSecond(false)
-        .setIsEvaporationFromPool(false)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val requestForGas = AtexRequest(
+        performReleaseCalculation = false,
+        isGasCalculation = false,
+        hasReleaseRateInKgPerSecond = false,
+        isEvaporationFromPool = false,
+        releaseRate = Some(baseRequestValues)
+
+      )
 
       val result = AtexCalculator.performCalculation(requestForGas)._1
 
@@ -95,27 +93,24 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [!performRelease, _, hasReleaseRate, _] (rho is given)" in {
 
-      baseRequestValues.setGasDensity(33.3).setMolarMass(0)
-
-      val requestForGas = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(false)
-        .setIsGasCalculation(true)
-        .setHasReleaseRateInKgPerSecond(true)
-        .setIsEvaporationFromPool(false)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val requestForGas = AtexRequest(
+        performReleaseCalculation = false,
+        isGasCalculation = true,
+        hasReleaseRateInKgPerSecond = true,
+        isEvaporationFromPool = false,
+        releaseRate = Some(baseRequestValues.copy(gasDensity = 33.3, molarMass = 0))
+//        releaseRate = Some(baseRequestValues)
+      )
 
       val resultForGas = AtexCalculator.performCalculation(requestForGas)._1
 
-      val requestForLiquid = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(false)
-        .setIsGasCalculation(false)
-        .setHasReleaseRateInKgPerSecond(true)
-        .setIsEvaporationFromPool(false)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val requestForLiquid = AtexRequest(
+        performReleaseCalculation = false,
+        isGasCalculation = false,
+        hasReleaseRateInKgPerSecond = true,
+        isEvaporationFromPool = false,
+        releaseRate = Some(baseRequestValues.copy(gasDensity = 33.3, molarMass = 0))
+      )
 
       val resultForLiquid = AtexCalculator.performCalculation(requestForLiquid)._1
 
@@ -128,25 +123,24 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [!performRelease, _, hasReleaseRate, _] (molar mass is given)" in {
 
-      val requestForGas = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(false)
-        .setIsGasCalculation(true)
-        .setHasReleaseRateInKgPerSecond(true)
-        .setIsEvaporationFromPool(false)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val requestForGas = AtexRequest(
+        performReleaseCalculation = false,
+        isGasCalculation = true,
+        hasReleaseRateInKgPerSecond = true,
+        isEvaporationFromPool = false,
+        releaseRate = Some(baseRequestValues)
+
+      )
 
       val resultForGas = AtexCalculator.performCalculation(requestForGas)._1
 
-      val requestForLiquid = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(false)
-        .setIsGasCalculation(false)
-        .setHasReleaseRateInKgPerSecond(true)
-        .setIsEvaporationFromPool(false)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val requestForLiquid = AtexRequest(
+        performReleaseCalculation = false,
+        isGasCalculation = false,
+        hasReleaseRateInKgPerSecond = true,
+        isEvaporationFromPool = false,
+        releaseRate = Some(baseRequestValues)
+      )
 
       val resultForLiquid = AtexCalculator.performCalculation(requestForLiquid)._1
 
@@ -159,14 +153,13 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [performRelease, !isGas, _, !pool] (third branch)" in {
 
-      val request = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(true)
-        .setIsGasCalculation(false)
-        .setHasReleaseRateInKgPerSecond(false)
-        .setIsEvaporationFromPool(false)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val request = AtexRequest(
+        performReleaseCalculation = true,
+        isGasCalculation = false,
+        hasReleaseRateInKgPerSecond = false,
+        isEvaporationFromPool = false,
+        releaseRate = Some(baseRequestValues)
+      )
 
       val result = AtexCalculator.performCalculation(request)._1
 
@@ -176,14 +169,13 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [performRelease, !isGas, _, pool] (fourth branch)" in {
 
-      val request = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(true)
-        .setIsGasCalculation(false)
-        .setHasReleaseRateInKgPerSecond(false)
-        .setIsEvaporationFromPool(true)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val request = AtexRequest(
+        performReleaseCalculation = true,
+        isGasCalculation = false,
+        hasReleaseRateInKgPerSecond = false,
+        isEvaporationFromPool = true,
+        releaseRate = Some(baseRequestValues)
+      )
 
       val result = AtexCalculator.performCalculation(request)._1
 
@@ -192,17 +184,13 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
     }
 
     "return an expression [performRelease, _, hasReleaseRate, _] (above critical gas pressure)" in {
-
-      baseRequestValues.setCriticalGasPressure(22)
-
-      val request = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(true)
-        .setIsGasCalculation(true)
-        .setHasReleaseRateInKgPerSecond(true)
-        .setIsEvaporationFromPool(true)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val request = AtexRequest(
+        performReleaseCalculation = true,
+        isGasCalculation = true,
+        hasReleaseRateInKgPerSecond = true,
+        isEvaporationFromPool = true,
+        releaseRate = Some(baseRequestValues.copy(criticalGasPressure = 22))
+      )
 
       val result = AtexCalculator.performCalculation(request)._1
 
@@ -211,14 +199,13 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
     }
 
     "return an expression [performRelease, _, hasReleaseRate, _] (below critical gas pressure)" in {
-      val request = AtexRequest
-        .newBuilder()
-        .setPerformReleaseCalculation(true)
-        .setIsGasCalculation(true)
-        .setHasReleaseRateInKgPerSecond(true)
-        .setIsEvaporationFromPool(true)
-        .setReleaseRate(baseRequestValues)
-        .build()
+      val request = AtexRequest(
+        performReleaseCalculation = true,
+        isGasCalculation = true,
+        hasReleaseRateInKgPerSecond = true,
+        isEvaporationFromPool = true,
+        releaseRate = Some(baseRequestValues)
+      )
 
       val result = AtexCalculator.performCalculation(request)._1
 

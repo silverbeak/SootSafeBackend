@@ -6,7 +6,7 @@ import AtexCalculator.{FormulaContainer, getValue}
 import com.sootsafe.reporting._
 import com.sootsafe.reporting.figures.{FigureC1, FigureD1}
 import com.sootsafe.reporting.tables.{TableC1, TableD1}
-import com.sootsafe.server.calculator.AtexCalculatorOuterClass._
+import com.sootsafe.server.calculator.AtexCalculator._
 
 
 object ZoneCalculator {
@@ -55,12 +55,12 @@ object ZoneCalculator {
 
   private[zone] def calculateZoneExtent(request: AtexRequest, releaseCharacter: Expression): Seq[FormulaSection] = {
 
-    ElementTable.elements.get(request.getCasNumber) match {
+    ElementTable.elements.get(request.casNumber) match {
       case None => ???
       case Some(element) =>
         //val lfl = getValue(request.getReleaseRateValues.getLowerFlammableLimit)
 
-        val backgroundConcentration = if (request.getIsIndoors) Some(determineBackgroundConcentration(request))
+        val backgroundConcentration = if (request.isIndoors) Some(determineBackgroundConcentration(request))
         else None
 
         val backgroundConcentrationSection = backgroundConcentration match {
@@ -79,8 +79,8 @@ object ZoneCalculator {
         }
 
         val ventilationVelocity = determineVentilationVelocity(request, element)
-        val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRate.getLowerFlammableLimit), releaseCharacter, request.getIsIndoors)
-        val zoneSection = ZoneCalculator.determineZone(request.getGradeOfRelease, dilutionLevel._2, request.getVentilationAvailability)
+        val dilutionLevel = determineDilutionLevel(backgroundConcentration, ventilationVelocity._2, Value(request.getReleaseRate.lowerFlammableLimit), releaseCharacter, request.isIndoors)
+        val zoneSection = ZoneCalculator.determineZone(request.gradeOfRelease, dilutionLevel._2, request.ventilationAvailability)
         Seq(backgroundConcentrationSection, ventilationVelocity._1, dilutionLevel._1, zoneSection)
     }
   }
@@ -89,17 +89,17 @@ object ZoneCalculator {
 
     val backgroundConcentrationValues = request.getBackgroundConcentration
 
-    val QgSymbol = Symbol(getValue(request.getReleaseRate.getVolumetricGasFlowRate), "Q_g")
-    val fSymbol = Symbol(getValue(backgroundConcentrationValues.getVentilationEfficiencyFactor), "f")
-    val Q1Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAir), "Q_1")
-    //    val Q2Symbol = Symbol(getValue(backgroundConcentrationValues.getVolumetricFlowAirGas), "Q_2")
-    val QaSymbol = Symbol(getValue(backgroundConcentrationValues.getAirEnteringRoomFlowRate), "Q_A")
-    val CSymbol = Symbol(getValue(backgroundConcentrationValues.getAirChangeFrequency), "C")
-    val roomLSymbol = Symbol(getValue(backgroundConcentrationValues.getRoomDimensions.getDepth), "L")
-    val roomBSymbol = Symbol(getValue(backgroundConcentrationValues.getRoomDimensions.getWidth), "W")
-    val roomHSymbol = Symbol(getValue(backgroundConcentrationValues.getRoomDimensions.getHeight), "H")
+    val QgSymbol = Symbol(getValue(request.getReleaseRate.volumetricGasFlowRate), "Q_g")
+    val fSymbol = Symbol(getValue(backgroundConcentrationValues.ventilationEfficiencyFactor), "f")
+    val Q1Symbol = Symbol(getValue(backgroundConcentrationValues.volumetricFlowAir), "Q_1")
+    //    val Q2Symbol = Symbol(getValue(backgroundConcentrationValues.volumetricFlowAirGas), "Q_2")
+    val QaSymbol = Symbol(getValue(backgroundConcentrationValues.airEnteringRoomFlowRate), "Q_A")
+    val CSymbol = Symbol(getValue(backgroundConcentrationValues.airChangeFrequency), "C")
+    val roomLSymbol = Symbol(getValue(backgroundConcentrationValues.roomDimensions.get.depth), "L")
+    val roomBSymbol = Symbol(getValue(backgroundConcentrationValues.roomDimensions.get.width), "W")
+    val roomHSymbol = Symbol(getValue(backgroundConcentrationValues.roomDimensions.get.height), "H")
     val V0Symbol = Symbol(roomLSymbol.expression * roomHSymbol.expression * roomBSymbol.expression, "V_0")
-    val SSymbol = Symbol(getValue(backgroundConcentrationValues.getCrossSectionArea), "S")
+    val SSymbol = Symbol(getValue(backgroundConcentrationValues.crossSectionArea), "S")
 
     val Q2Symbol = Symbol(CSymbol.expression * V0Symbol.expression, "Q_2")
 
@@ -112,10 +112,10 @@ object ZoneCalculator {
 
   private[zone] def determineVentilationVelocity(request: AtexRequest, element: Element): (FormulaSection, Expression) = {
     val heavierThanAir = element.RDT > 1
-    if (request.getIsIndoors) {
-      val roomLSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.getDepth), "L")
-      val roomHSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.getHeight), "H")
-      val airFlow = Symbol(getValue(request.getBackgroundConcentration.getAirEnteringRoomFlowRate), "Q_A")
+    if (request.isIndoors) {
+      val roomLSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.depth), "L")
+      val roomHSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.height), "H")
+      val airFlow = Symbol(getValue(request.getBackgroundConcentration.airEnteringRoomFlowRate), "Q_A")
 
       val ventilationVelocity = new VentilationVelocityFormula(airFlow, roomHSymbol, roomLSymbol)
 
@@ -128,7 +128,7 @@ object ZoneCalculator {
       (ventilationSection, ventilationVelocity)
     } else {
       // This is all determined from table C.1
-      val (description, ventilationVelocity) = (request.getIsEvaporationFromPool, request.getVentilationVelocityValues.getObstructed, heavierThanAir, request.getVentilationVelocityValues.getElevation) match {
+      val (description, ventilationVelocity) = (request.isEvaporationFromPool, request.getVentilationVelocityValues.obstructed, heavierThanAir, request.getVentilationVelocityValues.elevation) match {
         case (true, Obstruction.Unobstructed, _, _) => ("> 0.25 m/s", Value(0.25))
         case (true, Obstruction.Obstructed, _, _) => ("> 0.1 m/s", Value(0.1))
 
