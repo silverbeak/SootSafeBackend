@@ -1,5 +1,30 @@
 //name := "sootsafe"
 
+enablePlugins(sbtdocker.DockerPlugin, JavaAppPackaging)
+
+dockerfile in docker := {
+  val appDir: File = stage.value
+  val targetDir = "/app"
+
+  new Dockerfile {
+    from("aglover/java8-pier")
+    maintainer("Kristofer Jarl <kristofer.jarl@trollmoj.com")
+    entryPoint(s"$targetDir/bin/${executableScriptName.value}")
+    copy(appDir, targetDir, chown = "daemon:daemon")
+  }
+
+//  FROM aglover/java8-pier
+//  MAINTAINER Kristofer Jarl <kristofer@sootsafe.com>
+//
+//  WORKDIR build
+//
+//  ADD build/distributions/sootsafe-backend.tar /
+//
+//  ENTRYPOINT ["/sootsafe-backend/bin/sootsafe-backend"]
+//  #, "-cp", ".", "-Dconfig.file=/application.conf"]
+
+}
+
 libraryDependencies ++= Seq(
   // https://mvnrepository.com/artifact/org.json4s/json4s-native
   "org.json4s" %% "json4s-native" % "3.6.1",
