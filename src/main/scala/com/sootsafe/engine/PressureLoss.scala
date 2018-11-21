@@ -37,26 +37,38 @@ class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
 
     node match {
       case pipe: Pipe =>
-        val pressureLoss = valueResolver.ductPressureLoss(pipe)
+        val pressureLoss = pipe.ssInfo.pressureloss.getOrElse(
+          valueResolver.ductPressureLoss(pipe)
+        )
         PressureLossEntry(pipe.key, pressureLoss)
 
       case areaIncrement: AreaIncrement =>
-        val pressureLoss = valueResolver.areaIncrementPressureLoss(areaIncrement, originNode)
+        val pressureLoss = areaIncrement.ssInfo.pressureloss.getOrElse(
+          valueResolver.areaIncrementPressureLoss(areaIncrement, originNode)
+        )
         PressureLossEntry(areaIncrement.key, pressureLoss)
 
       case tPipe: TPipe =>
-        val pressureLoss = valueResolver.tPipePressureLoss(tPipe, originNode)
+        val pressureLoss = tPipe.ssInfo.pressureloss.getOrElse(
+          valueResolver.tPipePressureLoss(tPipe, originNode)
+        )
         PressureLossEntry(node.key, pressureLoss)
 
       case bend: Bend =>
-        val pressureLoss = valueResolver.bendPressureLoss(bend)
+        val pressureLoss = bend.ssInfo.pressureloss.getOrElse(
+          valueResolver.bendPressureLoss(bend)
+        )
         PressureLossEntry(node.key, pressureLoss)
 
       case box: Box =>
-        val pressureLoss = box.ssInfo.pressureloss.getOrElse(15d)
+        val pressureLoss = box.ssInfo.pressureloss.getOrElse(
+          box.ssInfo.pressureloss.getOrElse(15d)
+        )
         PressureLossEntry(node.key, pressureLoss)
 
-      case _ => PressureLossEntry(node.key, 0d)
+      case n =>
+        val pressureLoss = n.ssInfo.pressureloss.getOrElse(0d)
+        PressureLossEntry(node.key, pressureLoss)
     }
   }
 }
