@@ -61,9 +61,7 @@ class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
         PressureLossEntry(node.key, pressureLoss)
 
       case box: Box =>
-        val pressureLoss = box.ssInfo.pressureloss.getOrElse(
-          box.ssInfo.pressureloss.getOrElse(15d)
-        )
+        val pressureLoss = box.ssInfo.pressureloss.getOrElse(15d)
         PressureLossEntry(node.key, pressureLoss)
 
       case n =>
