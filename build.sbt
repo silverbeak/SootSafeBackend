@@ -1,4 +1,6 @@
-//name := "sootsafe"
+name := "sootsafe-backend"
+
+val dockerPrefix = "eu.gcr.io/sootsafe-app-test"
 
 enablePlugins(sbtdocker.DockerPlugin, JavaAppPackaging)
 
@@ -7,8 +9,8 @@ dockerfile in docker := {
   val targetDir = "/app"
 
   new Dockerfile {
-    from("aglover/java8-pier")
-    maintainer("Kristofer Jarl <kristofer.jarl@trollmoj.com")
+    from("openjdk:slim")
+    maintainer("Kristofer Jarl <kristofer.jarl@trollmoj.com>")
     entryPoint(s"$targetDir/bin/${executableScriptName.value}")
     copy(appDir, targetDir, chown = "daemon:daemon")
   }
@@ -23,6 +25,10 @@ dockerfile in docker := {
 //  ENTRYPOINT ["/sootsafe-backend/bin/sootsafe-backend"]
 //  #, "-cp", ".", "-Dconfig.file=/application.conf"]
 
+}
+
+imageNames in docker := {
+  ImageName(repository = s"$dockerPrefix/${name.value}", tag = Some(s"0.1.0")) :: Nil
 }
 
 libraryDependencies ++= Seq(
