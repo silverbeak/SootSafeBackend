@@ -32,17 +32,18 @@ object StepCalculation {
     * @param pressureLossTable The pressure loss table for the system
     * @return The resistance (in Pascal) between a given node to the next junction
     */
-  def calculateResistanceFromNodeToNextJunction(startNode: Option[LinkedNode], pressureLossTable: Seq[PressureLossEntry]): Double = startNode match {
+  def calculateResistanceFromNodeToNextJunction(startNode: Option[LinkedNode],
+                                                pressureLossTable: Map[Int, Double]): Double = startNode match {
     case Some(x) =>
       // A "trick" if the startNode is a junction itself
-      calculateResistanceFromNodeToNextJunction(x.parent, pressureLossTable, findPressureEntry(x.nodeModule.key, pressureLossTable))
+      calculateResistanceFromNodeToNextJunction(x.parent, pressureLossTable, pressureLossTable(x.nodeModule.key))
     case None => 0d
   }
 
-  private def calculateResistanceFromNodeToNextJunction(startNode: Option[LinkedNode], pressureLossTable: Seq[PressureLossEntry], aggregator: Double = 0d): Double = {
+  private def calculateResistanceFromNodeToNextJunction(startNode: Option[LinkedNode], pressureLossTable: Map[Int, Double], aggregator: Double = 0d): Double = {
     startNode match {
       case Some(n) if n.nodeModule.isJunction => aggregator
-      case Some(n) => calculateResistanceFromNodeToNextJunction(n.parent, pressureLossTable, aggregator + findPressureEntry(n.nodeModule.key, pressureLossTable))
+      case Some(n) => calculateResistanceFromNodeToNextJunction(n.parent, pressureLossTable, aggregator + pressureLossTable(n.nodeModule.key))
       case None => aggregator
     }
   }
@@ -97,7 +98,7 @@ object StepCalculation {
     * @return The delta pressure (in Pascal) from this node, during a fire
     */
   def calculateAggregatedPressure(startNode: LinkedNode,
-                                  pressureLossTable: Seq[PressureLossEntry],
+                                  pressureLossTable: Map[Int, Double],
                                   fireFlow: Expression,
                                   regularFlow: Expression): Expression = {
     val pressureDifference = calculateResistanceFromNodeToNextJunction(Some(startNode), pressureLossTable)

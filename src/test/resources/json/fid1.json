@@ -1,0 +1,2826 @@
+{
+  "nodes": [
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-389.59375 94.34375000000006",
+      "__gohashid": 3221,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 546,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 550,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "targetCell": {
+          "path": "fields.targetCell",
+          "name": "targetCell",
+          "type": "Boolean",
+          "value": "true"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "20"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "17"
+        }
+      },
+      "type": {
+        "name": "fireCell",
+        "label": "Fire Cell"
+      },
+      "key": 3
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-349.59375 94.34375000000006",
+      "__gohashid": 5581,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 0"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 1"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "125"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "2700"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "17"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "key": 7
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "-289.59375 104.34375000000006",
+      "__gohashid": 7407,
+      "ports": [
+        {
+          "__gohashid": 709,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 713,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 717,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "FD2"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "125"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "34"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": 21
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-229.59375 94.34375000000006",
+      "__gohashid": 9883,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.2"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 1"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "125"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "2700"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "34"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "key": -4
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-189.59375 94.34375000000006",
+      "__gohashid": 12153,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 546,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 550,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0.2"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Aö1"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "34"
+        }
+      },
+      "type": {
+        "name": "areaIncrement",
+        "label": "Area Increment"
+      },
+      "key": -5
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "-149.59375 104.34375000000006",
+      "__gohashid": 13807,
+      "ports": [
+        {
+          "__gohashid": 709,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 713,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 717,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "FD4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "1.5"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "51"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": -6
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-89.59375 94.34375000000006",
+      "__gohashid": 15737,
+      "angle": 90,
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "1.6"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 4"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "4000"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "key": -7
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "-29.59375 104.34375000000006",
+      "__gohashid": 17633,
+      "ports": [
+        {
+          "__gohashid": 709,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 713,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 717,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "FD4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.8"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": -8
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "30.40625 94.34375000000006",
+      "__gohashid": 19724,
+      "angle": 90,
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "3.6"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 4"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "4000"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "key": -9
+    },
+    {
+      "geo": "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
+      "loc": "80.40625 84.34375000000006",
+      "__gohashid": 21847,
+      "angle": 180,
+      "ports": [
+        {
+          "__gohashid": 659,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 663,
+          "spot": "0.25 1 0.25 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "B1-1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.45"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "bend",
+        "label": "Bend"
+      },
+      "key": 13
+    },
+    {
+      "geo": "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
+      "loc": "80.40625 44.34375000000006",
+      "__gohashid": 23854,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 634,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 638,
+          "spot": "0.25 1 0.25 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.45"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "B1-2"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "bend",
+        "label": "Bend"
+      },
+      "key": 12
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "50.40625 34.34375000000006",
+      "__gohashid": 25809,
+      "angle": 90,
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0.3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Aö2"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "areaIncrement",
+        "label": "Area Increment"
+      },
+      "ports": [
+        {
+          "__gohashid": 546,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 550,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "key": -12
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "10.40625 24.343750000000057",
+      "__gohashid": 29681,
+      "angle": 180,
+      "ports": [
+        {
+          "__gohashid": 771,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 775,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 779,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "9"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Punkt 7"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "156"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": 23
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-49.59375 34.34375000000006",
+      "__gohashid": 32653,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "9"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 5"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "6000"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "156"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "key": -14
+    },
+    {
+      "geo": "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
+      "loc": "-99.59375 24.343750000000057",
+      "__gohashid": 35086,
+      "angle": 270,
+      "ports": [
+        {
+          "__gohashid": 684,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 688,
+          "spot": "0.25 1 0.25 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 7"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "4.5"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Big böj"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "156"
+        }
+      },
+      "type": {
+        "name": "bend",
+        "label": "Bend"
+      },
+      "key": 14
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-109.59375 -5.656249999999943",
+      "__gohashid": 37315,
+      "ports": [
+        {
+          "__gohashid": 525,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 529,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Låda"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Låda"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "15"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "1"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "624"
+        }
+      },
+      "type": {
+        "name": "box",
+        "label": "Låda"
+      },
+      "fill": "rgba(128, 0, 128, 0.5)",
+      "key": 1
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-109.59375 -25.656249999999943",
+      "__gohashid": 40499,
+      "ports": [
+        {
+          "__gohashid": 525,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 529,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": ""
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": ""
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "1"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        }
+      },
+      "type": {
+        "name": "outlet",
+        "label": "Outlet"
+      },
+      "fill": "rgba(128, 0, 128, 0.5)",
+      "key": -17
+    }
+  ],
+  "linkDataArray": [
+    {
+      "fid": "U2",
+      "__gohashid": 5681,
+      "from": 7,
+      "to": 3,
+      "tid": "U6"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 7560,
+      "from": 21,
+      "to": 7,
+      "tid": "U6"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 10216,
+      "from": -4,
+      "to": 21,
+      "tid": "U0"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 12307,
+      "from": -5,
+      "to": -4,
+      "tid": "U6"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 14014,
+      "from": -6,
+      "to": -5,
+      "tid": "U6"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 15935,
+      "from": -7,
+      "to": -6,
+      "tid": "U0"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 17880,
+      "from": -8,
+      "to": -7,
+      "tid": "U6"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 19962,
+      "from": -9,
+      "to": -8,
+      "tid": "U0"
+    },
+    {
+      "fid": "U0",
+      "__gohashid": 22110,
+      "from": 13,
+      "to": -9,
+      "tid": "U6"
+    },
+    {
+      "fid": "U0",
+      "__gohashid": 24139,
+      "from": 12,
+      "to": 13,
+      "tid": "U2"
+    },
+    {
+      "fid": "U6",
+      "__gohashid": 26100,
+      "from": -12,
+      "to": 12,
+      "tid": "U2"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 30026,
+      "from": 23,
+      "to": -12,
+      "tid": "U2"
+    },
+    {
+      "fid": "U6",
+      "__gohashid": 32988,
+      "from": -14,
+      "to": 23,
+      "tid": "U0"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 35448,
+      "from": 14,
+      "to": -14,
+      "tid": "U2"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 37683,
+      "from": 1,
+      "to": 14,
+      "tid": "U0"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 40881,
+      "from": -17,
+      "to": 1,
+      "tid": "U6"
+    }
+  ],
+  "nodeDataArray": [
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-389.59375 94.34375000000006",
+      "__gohashid": 3221,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 546,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 550,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "targetCell": {
+          "path": "fields.targetCell",
+          "name": "targetCell",
+          "type": "Boolean",
+          "value": "true"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "20"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "17"
+        }
+      },
+      "type": {
+        "name": "fireCell",
+        "label": "Fire Cell"
+      },
+      "key": 3
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-349.59375 94.34375000000006",
+      "__gohashid": 5581,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 0"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 1"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "125"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "2700"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "17"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "key": 7
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "-289.59375 104.34375000000006",
+      "__gohashid": 7407,
+      "ports": [
+        {
+          "__gohashid": 709,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 713,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 717,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "FD2"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "125"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "34"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": 21
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-229.59375 94.34375000000006",
+      "__gohashid": 9883,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.2"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 1"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "125"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "2700"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "34"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "key": -4
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-189.59375 94.34375000000006",
+      "__gohashid": 12153,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 546,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 550,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0.2"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Aö1"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "34"
+        }
+      },
+      "type": {
+        "name": "areaIncrement",
+        "label": "Area Increment"
+      },
+      "key": -5
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "-149.59375 104.34375000000006",
+      "__gohashid": 13807,
+      "ports": [
+        {
+          "__gohashid": 709,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 713,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 717,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "FD4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "1.5"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "51"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": -6
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-89.59375 94.34375000000006",
+      "__gohashid": 15737,
+      "angle": 90,
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "1.6"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 4"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "4000"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "key": -7
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "-29.59375 104.34375000000006",
+      "__gohashid": 17633,
+      "ports": [
+        {
+          "__gohashid": 709,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 713,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 717,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "FD4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.8"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": -8
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "30.40625 94.34375000000006",
+      "__gohashid": 19724,
+      "angle": 90,
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "3.6"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 4"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "4000"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "key": -9
+    },
+    {
+      "geo": "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
+      "loc": "80.40625 84.34375000000006",
+      "__gohashid": 21847,
+      "angle": 180,
+      "ports": [
+        {
+          "__gohashid": 659,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 663,
+          "spot": "0.25 1 0.25 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "B1-1"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.45"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "bend",
+        "label": "Bend"
+      },
+      "key": 13
+    },
+    {
+      "geo": "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
+      "loc": "80.40625 44.34375000000006",
+      "__gohashid": 23854,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 634,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 638,
+          "spot": "0.25 1 0.25 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "2.45"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "B1-2"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "160"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "bend",
+        "label": "Bend"
+      },
+      "key": 12
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "50.40625 34.34375000000006",
+      "__gohashid": 25809,
+      "angle": 90,
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 3"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0.3"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Aö2"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "68"
+        }
+      },
+      "type": {
+        "name": "areaIncrement",
+        "label": "Area Increment"
+      },
+      "ports": [
+        {
+          "__gohashid": 546,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 550,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "key": -12
+    },
+    {
+      "geo": "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
+      "loc": "10.40625 24.343750000000057",
+      "__gohashid": 29681,
+      "angle": 180,
+      "ports": [
+        {
+          "__gohashid": 771,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 775,
+          "spot": "0 0.25 0.5 0.25",
+          "id": "U4"
+        },
+        {
+          "__gohashid": 779,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "9"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Punkt 7"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "156"
+        }
+      },
+      "type": {
+        "name": "tpipe",
+        "label": "T-Pipe"
+      },
+      "key": 23
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 60 0 60z",
+      "loc": "-49.59375 34.34375000000006",
+      "__gohashid": 32653,
+      "angle": 90,
+      "ports": [
+        {
+          "__gohashid": 588,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 592,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 4"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "9"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Rör 5"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "6000"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "156"
+        }
+      },
+      "type": {
+        "name": "pipe",
+        "label": "Pipe"
+      },
+      "key": -14
+    },
+    {
+      "geo": "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
+      "loc": "-99.59375 24.343750000000057",
+      "__gohashid": 35086,
+      "angle": 270,
+      "ports": [
+        {
+          "__gohashid": 684,
+          "spot": "1 0.25 -0.5 0.25",
+          "id": "U0"
+        },
+        {
+          "__gohashid": 688,
+          "spot": "0.25 1 0.25 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Sträcka 7"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "4.5"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Big böj"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "200"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "156"
+        }
+      },
+      "type": {
+        "name": "bend",
+        "label": "Bend"
+      },
+      "key": 14
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-109.59375 -5.656249999999943",
+      "__gohashid": 37315,
+      "ports": [
+        {
+          "__gohashid": 525,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 529,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": "Låda"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": "Låda"
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "15"
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "1"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        },
+        "capacity": {
+          "path": "fields.capacity",
+          "unit": "l/s",
+          "min": 1,
+          "name": "capacity",
+          "type": "Number",
+          "value": "624"
+        }
+      },
+      "type": {
+        "name": "box",
+        "label": "Låda"
+      },
+      "fill": "rgba(128, 0, 128, 0.5)",
+      "key": 1
+    },
+    {
+      "geo": "F1 M0 0 L20 0 20 20 0 20z",
+      "loc": "-109.59375 -25.656249999999943",
+      "__gohashid": 40499,
+      "ports": [
+        {
+          "__gohashid": 525,
+          "spot": "0.5 0 0 0.5",
+          "id": "U6"
+        },
+        {
+          "__gohashid": 529,
+          "spot": "0.5 1 0 -0.5",
+          "id": "U2"
+        }
+      ],
+      "fields": {
+        "comment": {
+          "path": "fields.comment",
+          "unit": "",
+          "name": "comment",
+          "type": "String",
+          "value": ""
+        },
+        "pressureLoss": {
+          "path": "fields.pressureLoss",
+          "unit": "Pa",
+          "min": 0,
+          "name": "pressureLoss",
+          "type": "Number",
+          "value": "0"
+        },
+        "label": {
+          "path": "fields.label",
+          "unit": "",
+          "name": "label",
+          "type": "String",
+          "value": ""
+        },
+        "dimension": {
+          "children": {
+            "diameter": {
+              "path": "fields.dimension.children.diameter",
+              "unit": "mm",
+              "min": 1,
+              "name": "diameter",
+              "type": "Number",
+              "value": "1"
+            },
+            "length": {
+              "path": "fields.dimension.children.length",
+              "unit": "mm",
+              "min": 1,
+              "name": "length",
+              "type": "Number",
+              "value": "1"
+            }
+          },
+          "name": "dimension",
+          "type": "Object"
+        }
+      },
+      "type": {
+        "name": "outlet",
+        "label": "Outlet"
+      },
+      "fill": "rgba(128, 0, 128, 0.5)",
+      "key": -17
+    }
+  ],
+  "links": [
+    {
+      "fid": "U2",
+      "__gohashid": 5681,
+      "from": 7,
+      "to": 3,
+      "tid": "U6"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 7560,
+      "from": 21,
+      "to": 7,
+      "tid": "U6"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 10216,
+      "from": -4,
+      "to": 21,
+      "tid": "U0"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 12307,
+      "from": -5,
+      "to": -4,
+      "tid": "U6"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 14014,
+      "from": -6,
+      "to": -5,
+      "tid": "U6"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 15935,
+      "from": -7,
+      "to": -6,
+      "tid": "U0"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 17880,
+      "from": -8,
+      "to": -7,
+      "tid": "U6"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 19962,
+      "from": -9,
+      "to": -8,
+      "tid": "U0"
+    },
+    {
+      "fid": "U0",
+      "__gohashid": 22110,
+      "from": 13,
+      "to": -9,
+      "tid": "U6"
+    },
+    {
+      "fid": "U0",
+      "__gohashid": 24139,
+      "from": 12,
+      "to": 13,
+      "tid": "U2"
+    },
+    {
+      "fid": "U6",
+      "__gohashid": 26100,
+      "from": -12,
+      "to": 12,
+      "tid": "U2"
+    },
+    {
+      "fid": "U4",
+      "__gohashid": 30026,
+      "from": 23,
+      "to": -12,
+      "tid": "U2"
+    },
+    {
+      "fid": "U6",
+      "__gohashid": 32988,
+      "from": -14,
+      "to": 23,
+      "tid": "U0"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 35448,
+      "from": 14,
+      "to": -14,
+      "tid": "U2"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 37683,
+      "from": 1,
+      "to": 14,
+      "tid": "U0"
+    },
+    {
+      "fid": "U2",
+      "__gohashid": 40881,
+      "from": -17,
+      "to": 1,
+      "tid": "U6"
+    }
+  ],
+  "sketchId": "d2",
+  "targetFirePressure": 1000,
+  "user": {
+    "apiKey": "AIzaSyAawhYEk0uXxh7Jvt9F9u-5HnAXqqGXN-E",
+    "displayName": "Kristofer Jarl",
+    "appName": "[DEFAULT]",
+    "authDomain": "sootsafe-app-test.firebaseapp.com",
+    "createdAt": "1523645316000",
+    "emailVerified": true,
+    "uid": "6Qu8DKgunXgHr0E06SFnKM7Evpj2",
+    "photoURL": "https://lh3.googleusercontent.com/-Z9JeLal0yhY/AAAAAAAAAAI/AAAAAAAAAsQ/YYJkrSASdPI/photo.jpg",
+    "isAnonymous": false,
+    "lastLoginAt": "1543777873000",
+    "email": "kristofer.jarl@gmail.com"
+  },
+  "projectId": "test22"
+}
