@@ -5,6 +5,13 @@ import com.sootsafe.valuetable.{PressureLossConstants, ValueResolver}
 
 class PressureLoss(valueResolver: ValueResolver) extends PressureLossConstants {
 
+  def calculatePressureLoss2(sourceNode: LinkedNode): Seq[PressureLossEntry] = {
+    new NodeIterator(Option(sourceNode))
+      .map(node => PressureLossEntry(node.nodeModule.key, node.nodeModule.ssInfo.pressureloss.getOrElse(0d)))
+      .toSeq
+  }
+
+  // TODO: Is this only used in tests now? Then we can remove it.
   def calculatePressureLoss(startNode: LinkedNode, finalNode: LinkedNode): Seq[PressureLossEntry] = {
     iterativePressureLoss(startNode.parent, startNode, finalNode, Nil)
   }

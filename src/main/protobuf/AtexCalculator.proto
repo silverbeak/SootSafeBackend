@@ -28,7 +28,7 @@ message ReleaseRateValues {
     double molarMass = 5;                // M
     double gasDensity = 6;               // rho_g
     double dischargeCoefficient = 7;     // C_d
-//    double crossSectionArea = 8;         // S
+    //    double crossSectionArea = 8;         // S
     double pressureDifference = 9;       // p
     double poolSurfaceArea = 10;         // A_p
     double windSpeed = 11;               // u_w

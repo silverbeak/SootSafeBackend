@@ -34,7 +34,7 @@ message Link {
 message Field {
     map<string, Field> children = 1;
     string type = 2;
-    string name = 3;
+    string label = 3;
     string stringValue = 4;
     double numberValue = 5;
     bool boolValue = 6;
@@ -44,6 +44,7 @@ message Field {
     double max = 10;
     string path = 11;
     string unit = 12;
+    string name = 13;
 }
 
 message Type {

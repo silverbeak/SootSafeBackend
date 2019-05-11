@@ -11,14 +11,14 @@ class ModelBuilder(model: Model) {
       case None =>
         Right("Model does not contain outlet")
       case Some(outlet) =>
-        Left(linkNested(outlet, Nil)(Some(LinkedNode((_) => Nil, outlet, None))))
+        Left(linkNested(outlet, Nil)(Some(LinkedNode(_ => Nil, outlet, None))))
     }
   }
 
   private def linkNested(nodeModule: NodeModule, alreadyBoundNodes: Seq[Int])(parentLinkedNode: Option[LinkedNode]): LinkedNode = {
     ModelBuilder.findLinkedNodes(model, nodeModule, alreadyBoundNodes) match {
       case Nil =>
-        LinkedNode((_) => Nil, nodeModule, parentLinkedNode)
+        LinkedNode(_ => Nil, nodeModule, parentLinkedNode)
       case links =>
         val subLinks = links.map(n => linkNested(n, alreadyBoundNodes :+ nodeModule.key)(_))
 

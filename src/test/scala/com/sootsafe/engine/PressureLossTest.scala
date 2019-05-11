@@ -55,7 +55,7 @@ class PressureLossTest extends WordSpecLike with Matchers {
 
   }
 
-  private def aggregatePressureLoss(valueResolver: FakeValueResolver.type, linkedModel: LinkedNode) = {
+  private def aggregatePressureLoss(valueResolver: FakeValueResolver.type, linkedModel: LinkedNode): (Seq[PressureLossEntry], Double) = {
     val fireNode = linkedModel.locateTargetNode().get
     val outletNode = linkedModel.locateOutletNode()
     val firstJunction = fireNode.findNextJunction().thisNode.get

@@ -1,10 +1,13 @@
 package com.sootsafe.engine
 
-import com.sootsafe._
 import com.sootsafe.arithmetic.{Absolute, Expression, Sqrt, Value}
 import com.sootsafe.model.{LinkedNode, PressureLossEntry}
 
 object StepCalculation {
+  def flowAtNextJunction(node: LinkedNode): Expression = {
+    Value(node.findNextJunction().thisNode.get.nodeModule.ssInfo.capacity.get)
+  }
+
 
   /**
     * Looking up the pressure (in Pascal) at a certain point according to the given "table"
@@ -76,9 +79,9 @@ object StepCalculation {
                                         firePressure: Expression,
                                         regularPressure: Expression,
                                         aggregatedIncomingFlow: Expression = Value(0)): Expression = {
-    val flowToNextJunction = calculateFlowFromNodeToNextJunction(Some(startNode))
-    val flowDifference_q = aggregatedIncomingFlow.toValue - flowToNextJunction.toValue
-    Absolute(flowDifference_q) * Sqrt(firePressure.toValue / regularPressure.toValue)
+//    val flowToNextJunction = calculateFlowFromNodeToNextJunction(Some(startNode))
+//    val flowDifference_q = aggregatedIncomingFlow.toValue - flowToNextJunction.toValue
+    Absolute(aggregatedIncomingFlow) * Sqrt(firePressure.toValue / regularPressure.toValue)
 
     //val flowDifference_q = Subtraction(Value(aggregatedIncomingFlow), Value(flowToNextJunction))
     //Multiplication(Absolute(flowDifference_q), Sqrt(Division(Value(firePressure), Value(regularPressure))))

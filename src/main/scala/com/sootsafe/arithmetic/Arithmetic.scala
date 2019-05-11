@@ -65,6 +65,8 @@ trait Expression extends Texifyable {
 
 object Expression {
   val Zero: Expression = Value(0)
+
+  val NaN: Expression = Value(Double.NaN)
 }
 
 case class Empty() extends Expression {

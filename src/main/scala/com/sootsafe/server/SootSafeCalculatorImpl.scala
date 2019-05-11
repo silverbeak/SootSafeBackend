@@ -7,7 +7,7 @@ import com.sootsafe.model.{LinkedNode, Model, ModelBuilder}
 import com.sootsafe.serializers.GRPCSerializer
 import com.sootsafe.server.calculator.SootSafeCalculator.{FirePressureCalculationResult, SootSafeCalculatorGrpc, SootSafeModel}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
-import com.sootsafe.valuetable.RealValueResolver
+import com.sootsafe.valuetable.{RealValueResolver, SuppliedValueResolver}
 
 import scala.concurrent.Future
 
@@ -15,7 +15,7 @@ class SootSafeCalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculator {
 
 
   override def getFirePressure(request: SootSafeModel): Future[FirePressureCalculationResult] = {
-
+    println(s"Received request! FirePressure: ${request.targetFirePressure}")
     val now = new Date().getTime
     val model = extractModelFromRequest(request)
     val initialFirePressure = request.targetFirePressure
@@ -57,7 +57,7 @@ class SootSafeCalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculator {
   }
 
   private def calculateWithEngine(initialFirePressure: Double, linkedNode: LinkedNode, engine: PressureLossEngine) = {
-    engine.calculatePressureLoss(linkedNode, initialFirePressure = initialFirePressure, valueResolver = RealValueResolver) match {
+    engine.calculatePressureLoss(linkedNode, initialFirePressure = initialFirePressure, valueResolver = SuppliedValueResolver) match {
       case Right(errorMessage) =>
         val errorResponse = new ErrorMessage(
           errorCode = 400,
@@ -70,9 +70,8 @@ class SootSafeCalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculator {
         )
 
       case Left(result) =>
-        FirePressureCalculationResult(
-          entries = FlowAndPressureSequence.toEntries(result.seq)
-        )
+        val entries = FlowAndPressureSequence.toEntries(result.seq)
+        FirePressureCalculationResult(entries = entries)
     }
   }
 

@@ -2,7 +2,7 @@ package com.sootsafe.engine
 
 import com.sootsafe.arithmetic.{Expression, Value}
 import com.sootsafe.engine.StepCalculation.calculateResistanceFromNodeToNextJunction
-import com.sootsafe.model.LinkedNode
+import com.sootsafe.model.{Dimension, LinkedNode, Pipe, PressureLossEntry, SootSafeInfo, TPipe}
 import com.sootsafe.valuetable.{FakeValueResolver, ValueResolver}
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -141,6 +141,48 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
       firePressure_delta_p.toValue should be(Value(259.6815378555465))
 //      firePressure_delta_p.toValue should be(Value(243.4302821701289))
+    }
+  }
+
+  "Calculate pressure difference" must {
+
+    val pressureLossTable = Seq(
+      PressureLossEntry(0, 0.0),
+      PressureLossEntry(1, 1.1),
+      PressureLossEntry(2, 2.2),
+      PressureLossEntry(3, 3.3),
+      PressureLossEntry(4, 4.4),
+    )
+
+    // We don't use a child resolver here, so never mind
+    val childResolver = (_: Option[LinkedNode]) => ???
+
+    "return proper value for valid model" in {
+      // Define a few test nodes
+      val firstNode = LinkedNode(childResolver, Pipe(0, SootSafeInfo("One", None, None, None, None, Dimension(None, None))), None)
+      val secondNode = LinkedNode(childResolver, Pipe(1, SootSafeInfo("Two", None, None, None, None, Dimension(None, None))), Some(firstNode))
+      val thirdNode = LinkedNode(childResolver, TPipe(2, SootSafeInfo("Three", None, None, None, None, Dimension(None, None))), Some(secondNode))
+      val fourthNode = LinkedNode(childResolver, Pipe(3, SootSafeInfo("Four", None, None, None, None, Dimension(None, None))), Some(thirdNode))
+      val fifthNode = LinkedNode(childResolver, Pipe(4, SootSafeInfo("Five", None, None, None, None, Dimension(None, None))), Some(fourthNode))
+
+      // The resulting resistance should be 4.4 + 3.3 = 7.7
+      // We start from the fifth node, add the value of the fourth node, and then we hit a junction, ending the calculation
+      val result = StepCalculation.calculateResistanceFromNodeToNextJunction(Some(fifthNode), pressureLossTable)
+      result should be(7.7)
+    }
+
+    "return proper value for valid model, also when given node is a junction" in {
+      // Define a few test nodes
+      val firstNode = LinkedNode(childResolver, Pipe(0, SootSafeInfo("One", None, None, None, None, Dimension(None, None))), None)
+      val secondNode = LinkedNode(childResolver, Pipe(1, SootSafeInfo("Two", None, None, None, None, Dimension(None, None))), Some(firstNode))
+      val thirdNode = LinkedNode(childResolver, TPipe(2, SootSafeInfo("Three", None, None, None, None, Dimension(None, None))), Some(secondNode))
+      val fourthNode = LinkedNode(childResolver, Pipe(3, SootSafeInfo("Four", None, None, None, None, Dimension(None, None))), Some(thirdNode))
+      val fifthNode = LinkedNode(childResolver, TPipe(4, SootSafeInfo("Five", None, None, None, None, Dimension(None, None))), Some(fourthNode))
+
+      // The resulting resistance should be 4.4 + 3.3 = 7.7
+      // We start from the fifth node, add the value of the fourth node, and then we hit a junction, ending the calculation
+      val result = StepCalculation.calculateResistanceFromNodeToNextJunction(Some(fifthNode), pressureLossTable)
+      result should be(7.7)
     }
   }
 }

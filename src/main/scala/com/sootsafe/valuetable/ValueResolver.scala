@@ -95,3 +95,17 @@ object RealValueResolver extends ValueResolver with PressureLossConstants {
 
   override def areaIncrementPressureLoss(areaIncrement: AreaIncrement, originNode: NodeModule): Double = FakeValueResolver.areaIncrementPressureLoss(areaIncrement, originNode)
 }
+
+object SuppliedValueResolver extends ValueResolver {
+  override def ductPressureLoss(pipe: Pipe): Double = getSuppliedValueOrFail(pipe)
+
+  override def bendPressureLoss(bend: Bend): Double = getSuppliedValueOrFail(bend)
+
+  override def areaIncrementPressureLoss(areaIncrement: AreaIncrement, originNode: NodeModule): Double = getSuppliedValueOrFail(areaIncrement)
+
+  override def tPipePressureLoss(tPipe: TPipe, originNode: NodeModule): Double = getSuppliedValueOrFail(tPipe)
+
+  private def getSuppliedValueOrFail(nodeModule: NodeModule): Double = {
+    nodeModule.ssInfo.pressureloss.getOrElse(throw new Exception(s"Could not extract pressure loss value from $nodeModule. Perhaps no value was defined"))
+  }
+}
