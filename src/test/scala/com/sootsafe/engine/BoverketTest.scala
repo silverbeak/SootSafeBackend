@@ -50,11 +50,19 @@ class BoverketTest extends WordSpecLike with Matchers with TestFixture {
           result.size should be(5)
           val pressureLoss = FlowAndPressureSequence.aggregatePressure(result)
           df.format(pressureLoss) should be("241,9042")
+
           df.format(result.head.addedFireFlow.toValue.value) should be ("114,614")
           df.format(result.head.aggregatedFireFlow.toValue.value) should be ("114,614")
+          df.format(result.head.aggregatedRegularFlow.toValue.value) should be ("17")
+
+          // These two seem to be skewed one position. There should be another "114,614" value in between
+          df.format(result(1).aggregatedFireFlow.toValue.value) should be ("132,5869")
+          df.format(result(2).aggregatedFireFlow.toValue.value) should be ("155,099")
 
           df.format(result.last.addedFireFlow.toValue.value) should be ("827,8512")
           df.format(result.last.aggregatedFireFlow.toValue.value) should be ("1129,5904")
+          // Not entirely sure this last one is right. Shouldn't it be "624
+          df.format(result.last.aggregatedRegularFlow.toValue.value) should be ("156")
 
         case Right(error) =>
           fail(s"Expected successful calculation. Got: $error")

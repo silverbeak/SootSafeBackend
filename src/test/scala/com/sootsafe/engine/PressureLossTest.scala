@@ -21,8 +21,8 @@ class PressureLossTest extends WordSpecLike with Matchers {
       new ModelBuilder(model).buildModel() match {
         case Right(message) => fail(s"Expected model. Got error message: $message")
         case Left(linkedModel) =>
-          val pressureLossTable = FlowAndPressureHelper.getRegularPressureLossTable(linkedModel, FakeValueResolver)
-          val pressureLossMap = FlowAndPressureHelper.aggregatedRegularPressureList2(linkedModel, pressureLossTable)
+          val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(linkedModel, FakeValueResolver)
+          val pressureLossMap = FlowAndPressureHelper.generateAggregatedRegularPressureTable(linkedModel)
           //          pressureLoss should be(55.544371375939654)
           //          pressureLoss should be(54.64488178026986)
           pressureLossTable.size should be(13)
@@ -43,8 +43,8 @@ class PressureLossTest extends WordSpecLike with Matchers {
       new ModelBuilder(newModel).buildModel() match {
         case Right(message) => fail(s"Expected model. Got error message: $message")
         case Left(linkedModel) =>
-          val pressureLossTable = FlowAndPressureHelper.getRegularPressureLossTable(linkedModel, FakeValueResolver)
-          val pressureLossMap = FlowAndPressureHelper.aggregatedRegularPressureList2(linkedModel, pressureLossTable)
+          val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(linkedModel, FakeValueResolver)
+          val pressureLossMap = FlowAndPressureHelper.generateAggregatedRegularPressureTable(linkedModel)
 
           // This is where the new value should have changed
           //          pressureLoss should be(87.22437137593965)

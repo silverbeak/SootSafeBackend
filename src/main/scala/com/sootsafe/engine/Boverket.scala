@@ -30,12 +30,10 @@ object Boverket extends PressureLossEngine {
         Right("Model must contain at least one fire cell")
       case Some(fireNode) =>
         val initialRegularPressure = initialRegularPressureOption.getOrElse(fireNode.nodeModule.ssInfo.pressureloss.getOrElse(0d))
-        val pressureLossTable = FlowAndPressureHelper.getRegularPressureLossTable(fireNode, valueResolver)
 
-        val aggregatedRegularResistanceList = FlowAndPressureHelper.aggregatedRegularPressureList2(fireNode, pressureLossTable)
-        val flowTable = FlowAndPressureHelper.generateFlowTable(fireNode)
-
-        var previousFlow: Expression = Value(flowTable(fireNode.nodeModule.key))
+        val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(fireNode, valueResolver)
+        val aggregatedRegularResistanceTable = FlowAndPressureHelper.generateAggregatedRegularPressureTable(fireNode)
+        val regularFlowTable = FlowAndPressureHelper.generateRegularFlowTable(fireNode)
 
 
         ////// First calculation, where there is no pressure difference between fire cell and next junction
@@ -43,10 +41,9 @@ object Boverket extends PressureLossEngine {
         val nextJunction = fireNode.findNextJunction()
         val initial_firePressure_delta_p = Value(initialFirePressure)
 
-        val regularAggregatedResistance = aggregatedRegularResistanceList(nextJunction.previousNode.get.nodeModule.key)
+        val regularAggregatedResistance = aggregatedRegularResistanceTable(nextJunction.previousNode.get.nodeModule.key)
 
-        val regularFlowFromNextJunction_q: Expression = Value(flowTable(nextJunction.thisNode.get.nodeModule.key)) - previousFlow
-        previousFlow += regularFlowFromNextJunction_q.toValue
+        val regularFlowFromNextJunction_q = Value(regularFlowTable(nextJunction.thisNode.get.nodeModule.key))
 
         val addedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(
           fireNode,
@@ -71,7 +68,7 @@ object Boverket extends PressureLossEngine {
           fireNode,
           addedFireFlow_Q,
           firePressure_delta_p,
-          Value(aggregatedRegularResistanceList(fireNode.nodeModule.key)),
+          Value(aggregatedRegularResistanceTable(fireNode.nodeModule.key)),
           regularFlowFromThisJunction_q,
           regularFlowFromNextJunction_q,
           aggregatedFireFlow_Q,
@@ -89,10 +86,9 @@ object Boverket extends PressureLossEngine {
             val nextJunction = junction.findNextJunction()
             val aggregatedFirePressure_delta_p = Value(FlowAndPressureSequence.aggregatePressure(aggregator))
 
-            val regularAggregatedResistance = aggregatedRegularResistanceList(nextJunction.previousNode.get.nodeModule.key)
+            val regularAggregatedResistance = aggregatedRegularResistanceTable(nextJunction.previousNode.get.nodeModule.key)
 
-            val regularFlowFromNextJunction_q: Expression = Value(flowTable(nextJunction.thisNode.get.nodeModule.key)) - previousFlow.toValue
-            previousFlow += regularFlowFromNextJunction_q.toValue
+            val regularFlowFromNextJunction_q = Value(regularFlowTable(nextJunction.thisNode.get.nodeModule.key))
 
             val addedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(
               junction,
@@ -117,7 +113,7 @@ object Boverket extends PressureLossEngine {
               junction,
               addedFireFlow_Q,
               firePressure_delta_p,
-              Value(aggregatedRegularResistanceList(junction.nodeModule.key)),
+              Value(aggregatedRegularResistanceTable(junction.nodeModule.key)),
               regularFlowFromThisJunction_q,
               regularFlowFromNextJunction_q,
               aggregatedFireFlow_Q,
@@ -139,20 +135,13 @@ case class FlowAndPressureEntry(regularFlow: Double,
 
 object FlowAndPressureHelper {
 
-  def getRegularPressureLossTable(linkedModel: LinkedNode, valueResolver: ValueResolver): Map[Int, Double] = {
+  def generateRegularPressureLossTable(linkedModel: LinkedNode, valueResolver: ValueResolver): Map[Int, Double] = {
     new NodeIterator(Option(linkedModel))
       .map(node => node.nodeModule.key -> node.nodeModule.ssInfo.pressureloss.getOrElse(0d))
       .toMap
   }
 
-  def generateFlowTable(fireNode: LinkedNode): Map[Int, Double] = {
-    NodeIterator(fireNode)
-      .map(node => node.nodeModule.key -> node.nodeModule.ssInfo.capacity.getOrElse(0d))
-      .toMap
-  }
-
-  def aggregatedRegularPressureList2(linkedNode: LinkedNode,
-                                     pressureLossTable: Map[Int, Double]): Map[Int, Double] = {
+  def generateAggregatedRegularPressureTable(linkedNode: LinkedNode): Map[Int, Double] = {
     NodeIterator(linkedNode)
       .foldLeft((Map[Int, Double](), 0d)) {
         case (aggregator, node) =>
@@ -160,6 +149,22 @@ object FlowAndPressureHelper {
           (
             aggregator._1 + (node.nodeModule.key -> (aggregator._2 + pressureValue)),
             aggregator._2 + pressureValue
+          )
+      }._1
+  }
+
+  def generateRegularFlowTable(linkedNode: LinkedNode): Map[Int, Double] = {
+    // Not pretty. But we only want to calculate flow for cells, junctions and boxes
+    val allowedNodeTypes = Seq("fireCell", "tpipe", "box")
+
+    NodeIterator(linkedNode)
+      .filter(n => allowedNodeTypes.contains(n.nodeModule.ssInfo.nodeType))
+      .foldLeft((Map[Int, Double](), 0d)) {
+        case (aggregator, node) =>
+          val flowValue = node.nodeModule.ssInfo.capacity.getOrElse(0d)
+          (
+            aggregator._1 + (node.nodeModule.key -> (flowValue - aggregator._2)),
+            flowValue
           )
       }._1
   }
