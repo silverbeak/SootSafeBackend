@@ -53,7 +53,7 @@ object ZoneCalculator {
     )
   }
 
-  private[zone] def calculateZoneExtent(request: AtexRequest, releaseCharacter: Expression): Seq[FormulaSection] = {
+  private[zone] def calculateZoneExtent(request: AtexFields, releaseCharacter: Expression): Seq[FormulaSection] = {
 
     ElementTable.elements.get(request.casNumber) match {
       case None => ???
@@ -85,7 +85,7 @@ object ZoneCalculator {
     }
   }
 
-  private[zone] def determineBackgroundConcentration(request: AtexRequest): Formula = {
+  private[zone] def determineBackgroundConcentration(request: AtexFields): Formula = {
 
     val backgroundConcentrationValues = request.getBackgroundConcentration
 
@@ -110,7 +110,7 @@ object ZoneCalculator {
     }
   }
 
-  private[zone] def determineVentilationVelocity(request: AtexRequest, element: Element): (FormulaSection, Expression) = {
+  private[zone] def determineVentilationVelocity(request: AtexFields, element: Element): (FormulaSection, Expression) = {
     val heavierThanAir = element.RDT > 1
     if (request.isIndoors) {
       val roomLSymbol = Symbol(getValue(request.getBackgroundConcentration.getRoomDimensions.depth), "L")

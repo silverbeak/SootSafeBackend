@@ -3,7 +3,7 @@ package com.sootsafe.engine.zone
 import com.google.protobuf.ByteString
 import com.sootsafe.arithmetic._
 import com.sootsafe.reporting._
-import com.sootsafe.server.calculator.AtexCalculator.{AtexCalculationResult, AtexRequest, AtexResultEntry}
+import com.sootsafe.server.calculator.AtexCalculator.{AtexCalculationResult, AtexFields, AtexRequest, AtexResultEntry}
 
 import scala.util.{Failure, Success, Try}
 
@@ -13,17 +13,18 @@ object AtexCalculator extends Symbols with RequestUtils {
 
   def handleRequest(request: AtexRequest): Either[AtexCalculationResult, String] = {
 
-    Try(performCalculation(request)) match {
+    val atexFields = request.fields.get
+    Try(performCalculation(atexFields)) match {
       case Success(releaseRateExpression) =>
         val entry = new AtexResultEntry(
-          key = request.key,
+          key = atexFields.key,
           releaseCharacter = releaseRateExpression._1.calculate()
 
         )
 
-        val zoneExtent = ZoneCalculator.determinePollutionDistance(request.releaseType, releaseRateExpression._1)
+        val zoneExtent = ZoneCalculator.determinePollutionDistance(atexFields.releaseType, releaseRateExpression._1)
 
-        val zoneFormulaSections = ZoneCalculator.calculateZoneExtent(request, releaseRateExpression._1)
+        val zoneFormulaSections = ZoneCalculator.calculateZoneExtent(atexFields, releaseRateExpression._1)
 
         val releaseRateCalculationSection = CalculationSection(
           Some(Description("Determine the release rate")),
@@ -35,7 +36,7 @@ object AtexCalculator extends Symbols with RequestUtils {
           Seq(zoneExtent) ++ zoneFormulaSections
         )
 
-        val authorName = Option(request.getAtexMetadata.authorName)
+        val authorName = Option(atexFields.getAtexMetadata.authorName)
         Try(AtexReportGenerator.generateLatex(Seq(releaseRateCalculationSection, zoneCalculationSection), authorName)) match {
           case Failure(e) =>
             Right(s"Error while generating Latex report. ${e.getClass.getName}:\n${e.getStackTrace.mkString("\n")}")
@@ -52,7 +53,7 @@ object AtexCalculator extends Symbols with RequestUtils {
     }
   }
 
-  def performCalculation(request: AtexRequest): (Expression, Seq[FormulaSection]) = {
+  def performCalculation(request: AtexFields): (Expression, Seq[FormulaSection]) = {
 
     val performReleaseCalculation = request.performReleaseCalculation
     val isGasCalculation = request.isGasCalculation

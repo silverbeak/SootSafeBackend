@@ -14,14 +14,16 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
     "serialize json" in {
       val result = JsonFormat.fromJsonString[AtexRequest](FakeMessage.jsonMsg)
 
-      result.casNumber should be("74-86-2")
-      result.isEvaporationFromPool should be(true)
-      result.gradeOfRelease should be(GradeOfRelease.Primary)
-      result.releaseType should be(ReleaseType.DiffusiveJet)
-      result.ventilationAvailability should be(VentilationAvailability.Fair)
+      val fields = result.fields.get
 
-      result.getReleaseRate.adiabaticExpansion should be(13)
-      result.getVentilationVelocityValues.obstructed should be(Obstruction.Unobstructed)
+      fields.casNumber should be("74-86-2")
+      fields.isEvaporationFromPool should be(true)
+      fields.gradeOfRelease should be(GradeOfRelease.Primary)
+      fields.releaseType should be(ReleaseType.DiffusiveJet)
+      fields.ventilationAvailability should be(VentilationAvailability.Fair)
+
+      fields.getReleaseRate.adiabaticExpansion should be(13)
+      fields.getVentilationVelocityValues.obstructed should be(Obstruction.Unobstructed)
     }
 
     "serialize map" in {
@@ -34,14 +36,16 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
 
       val result = JsonFormat.fromJsonString[AtexRequest](json)
 
-      result.casNumber should be("74-86-2")
-      result.isEvaporationFromPool should be(true)
-      result.gradeOfRelease should be(GradeOfRelease.Primary)
-      result.releaseType should be(ReleaseType.DiffusiveJet)
-      result.ventilationAvailability should be(VentilationAvailability.Fair)
-      result.releaseRate.get.volumetricGasFlowRate should be(1)
-      result.releaseRate.get.safetyFactor should be(2.3)
-      result.ventilationVelocityValues.get.obstructed should be(Obstruction.Unobstructed)
+      val fields = result.fields.get
+
+      fields.casNumber should be("74-86-2")
+      fields.isEvaporationFromPool should be(true)
+      fields.gradeOfRelease should be(GradeOfRelease.Primary)
+      fields.releaseType should be(ReleaseType.DiffusiveJet)
+      fields.ventilationAvailability should be(VentilationAvailability.Fair)
+      fields.releaseRate.get.volumetricGasFlowRate should be(1)
+      fields.releaseRate.get.safetyFactor should be(2.3)
+      fields.ventilationVelocityValues.get.obstructed should be(Obstruction.Unobstructed)
     }
   }
 }

@@ -65,7 +65,7 @@ message AtexMetadata {
     string authorName = 1;
 }
 
-message AtexRequest {
+message AtexFields {
     int32 key = 1;
     AtexMetadata atexMetadata = 2;
     bool isGasCalculation = 3;
@@ -86,6 +86,24 @@ message AtexRequest {
     VentilationAvailability ventilationAvailability = 13;
 
     string casNumber = 14;
+}
+
+message MetadataField {
+    string name = 1;
+    string path = 2;
+    string type = 3;
+    string value = 4;
+}
+
+message Metadata {
+    repeated string users = 1;
+    MetadataField name = 2;
+    string projectType = 3;
+}
+
+message AtexRequest {
+    AtexFields fields = 1;
+    Metadata metadata = 2;
 }
 
 service AtexCalculator {

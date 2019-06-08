@@ -1,7 +1,7 @@
 package com.sootsafe.server
 
 import com.sootsafe.engine.zone.AtexCalculator
-import com.sootsafe.server.calculator.AtexCalculator.{AtexRequest, ReleaseRateValues}
+import com.sootsafe.server.calculator.AtexCalculator.{AtexFields, AtexRequest, ReleaseRateValues}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpecLike}
 
 class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterEach {
@@ -50,14 +50,16 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
   "Calculator" must {
     "handle request" in {
       val request = AtexRequest(
-        releaseRate = Some(baseRequestValues),
-        casNumber = "74-86-2"
+        Some(AtexFields(
+          releaseRate = Some(baseRequestValues),
+          casNumber = "74-86-2"
+        ))
       )
 
       AtexCalculator.handleRequest(request) match {
         case Right(errorString) => fail(errorString)
         case Left(result) =>
-          result.getAtexResult.key should be(request.key)
+          result.getAtexResult.key should be(request.fields.get.key)
           result.getAtexResult.releaseCharacter should be(0.6068943194691696)
       }
     }
@@ -76,14 +78,14 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [!performRelease, !isGas, hasReleaseRate, !isEvaporation]" in {
 
-      val requestForGas = AtexRequest(
+      val requestForGas = AtexFields(
         performReleaseCalculation = false,
         isGasCalculation = false,
         hasReleaseRateInKgPerSecond = false,
         isEvaporationFromPool = false,
         releaseRate = Some(baseRequestValues)
-
       )
+
 
       val result = AtexCalculator.performCalculation(requestForGas)._1
 
@@ -93,24 +95,25 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [!performRelease, _, hasReleaseRate, _] (rho is given)" in {
 
-      val requestForGas = AtexRequest(
+      val requestForGas = AtexFields(
         performReleaseCalculation = false,
         isGasCalculation = true,
         hasReleaseRateInKgPerSecond = true,
         isEvaporationFromPool = false,
         releaseRate = Some(baseRequestValues.copy(gasDensity = 33.3, molarMass = 0))
-//        releaseRate = Some(baseRequestValues)
+        //        releaseRate = Some(baseRequestValues)
       )
 
       val resultForGas = AtexCalculator.performCalculation(requestForGas)._1
 
-      val requestForLiquid = AtexRequest(
+      val requestForLiquid = AtexFields(
         performReleaseCalculation = false,
         isGasCalculation = false,
         hasReleaseRateInKgPerSecond = true,
         isEvaporationFromPool = false,
         releaseRate = Some(baseRequestValues.copy(gasDensity = 33.3, molarMass = 0))
       )
+
 
       val resultForLiquid = AtexCalculator.performCalculation(requestForLiquid)._1
 
@@ -123,18 +126,17 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [!performRelease, _, hasReleaseRate, _] (molar mass is given)" in {
 
-      val requestForGas = AtexRequest(
+      val requestForGas = AtexFields(
         performReleaseCalculation = false,
         isGasCalculation = true,
         hasReleaseRateInKgPerSecond = true,
         isEvaporationFromPool = false,
         releaseRate = Some(baseRequestValues)
-
       )
 
       val resultForGas = AtexCalculator.performCalculation(requestForGas)._1
 
-      val requestForLiquid = AtexRequest(
+      val requestForLiquid = AtexFields(
         performReleaseCalculation = false,
         isGasCalculation = false,
         hasReleaseRateInKgPerSecond = true,
@@ -153,7 +155,7 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [performRelease, !isGas, _, !pool] (third branch)" in {
 
-      val request = AtexRequest(
+      val request = AtexFields(
         performReleaseCalculation = true,
         isGasCalculation = false,
         hasReleaseRateInKgPerSecond = false,
@@ -169,7 +171,7 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
 
     "return an expression [performRelease, !isGas, _, pool] (fourth branch)" in {
 
-      val request = AtexRequest(
+      val request = AtexFields(
         performReleaseCalculation = true,
         isGasCalculation = false,
         hasReleaseRateInKgPerSecond = false,
@@ -184,7 +186,7 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
     }
 
     "return an expression [performRelease, _, hasReleaseRate, _] (above critical gas pressure)" in {
-      val request = AtexRequest(
+      val request = AtexFields(
         performReleaseCalculation = true,
         isGasCalculation = true,
         hasReleaseRateInKgPerSecond = true,
@@ -199,7 +201,7 @@ class AtexCalculatorTest extends WordSpecLike with Matchers with BeforeAndAfterE
     }
 
     "return an expression [performRelease, _, hasReleaseRate, _] (below critical gas pressure)" in {
-      val request = AtexRequest(
+      val request = AtexFields(
         performReleaseCalculation = true,
         isGasCalculation = true,
         hasReleaseRateInKgPerSecond = true,
