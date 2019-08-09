@@ -9,6 +9,7 @@
     {
       "key": 1,
       "ssInfo": {
+        "pressureloss": 1,
         "nodeType": "outlet"
       },
       "geo": "F1 M0 0 L20 0 20 20 0 20z",
@@ -45,8 +46,9 @@
       ],
       "loc": "-147.3333333333332 -17.999999999999986",
       "ssInfo": {
+        "pressureloss": 0,
         "nodeType": "t-pipe",
-        "capacity": 17,
+        "capacity": 34,
         "dimension": {
           "diameter": 125
         }
@@ -72,6 +74,7 @@
       ],
       "loc": "-147.3333333333332 -17.999999999999986",
       "ssInfo": {
+        "pressureloss": 1.5,
         "nodeType": "t-pipe",
         "capacity": 51,
         "dimension": {
@@ -95,6 +98,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 22.000000000000014",
       "ssInfo": {
+        "pressureloss": 0.2,
         "nodeType": "areaIncrement",
         "capacity": 34,
         "dimension": {
@@ -118,6 +122,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 22.000000000000014",
       "ssInfo": {
+        "pressureloss": 0.3,
         "nodeType": "areaIncrement",
         "capacity": 68,
         "dimension": {
@@ -141,6 +146,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 42.000000000000014",
       "ssInfo": {
+        "pressureloss": 0,
         "nodeType": "pipe",
         "dimension": {
           "diameter": 125,
@@ -165,9 +171,10 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 42.000000000000014",
       "ssInfo": {
+        "pressureloss": 2.2,
         "nodeType": "pipe",
         "dimension": {
-          "diameter": 125,
+          "diameter": 160,
           "length": 2700
         },
         "capacity": 34
@@ -191,6 +198,7 @@
       "ssInfo": {
         "nodeType": "fireCell",
         "targetCell": true,
+        "capacity": 17,
         "pressureloss": 22
       }
     },
@@ -211,6 +219,7 @@
       "loc": "-137.3333333333332 62.000000000000014",
       "ssInfo": {
         "capacity": 624,
+        "pressureloss": 15,
         "nodeType": "box"
       }
     },
@@ -230,6 +239,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 1.6,
         "nodeType": "pipe",
         "capacity": 51,
         "dimension": {
@@ -254,6 +264,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 9,
         "nodeType": "pipe",
         "capacity": 156,
         "dimension": {
@@ -278,6 +289,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 2.8,
         "nodeType": "t-pipe",
         "capacity": 68,
         "dimension": {
@@ -301,6 +313,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 9,
         "nodeType": "t-pipe",
         "capacity": 156,
         "dimension": {
@@ -324,6 +337,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 2.45,
         "nodeType": "bend",
         "capacity": 68,
         "dimension": {
@@ -348,6 +362,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 2.45,
         "nodeType": "bend",
         "capacity": 68,
         "dimension": {
@@ -372,6 +387,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 4.5,
         "nodeType": "bend",
         "capacity": 156,
         "dimension": {
@@ -396,6 +412,7 @@
       "fill": "rgba(128, 0, 128, 0.5)",
       "loc": "-137.3333333333332 -57.999999999999986",
       "ssInfo": {
+        "pressureloss": 3.6,
         "nodeType": "pipe",
         "capacity": 68,
         "dimension": {

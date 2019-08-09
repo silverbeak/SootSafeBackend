@@ -5,7 +5,7 @@ import com.sootsafe.model.{LinkedNode, PressureLossEntry}
 
 object StepCalculation {
   def flowAtNextJunction(node: LinkedNode): Expression = {
-    Value(node.findNextJunction().thisNode.get.nodeModule.ssInfo.capacity.get)
+    Value(node.nodeModule.ssInfo.capacity.get)
   }
 
 
@@ -40,6 +40,7 @@ object StepCalculation {
     case None => 0d
   }
 
+  @scala.annotation.tailrec
   private def calculateResistanceFromNodeToNextJunction(startNode: Option[LinkedNode], pressureLossTable: Map[Int, Double], aggregator: Double = 0d): Double = {
     startNode match {
       case Some(n) if n.nodeModule.isJunction => aggregator
@@ -61,6 +62,7 @@ object StepCalculation {
     case None => Value(0)
   }
 
+  @scala.annotation.tailrec
   private def calculateFlowFromNodeToNextJunction(startNode: Option[LinkedNode], max: Value = Value(0)): Expression = startNode match {
     case Some(x) if x.nodeModule.isJunction => max
     case Some(x) => calculateFlowFromNodeToNextJunction(x.parent, Value(Math.max(max.calculate(), x.nodeModule.ssInfo.capacity.getOrElse(0d))))
@@ -70,7 +72,6 @@ object StepCalculation {
   /**
     * Boverket 1994:13 Appendix B, steg 6
     *
-    * @param startNode              The node to start this calculation from
     * @param firePressure           The pressure (in Pascal) during fire (boverket schablon: 1000 Pa)
     * @param regularPressure        The pressure (in Pascal) during regular circumstances
     * @param aggregatedIncomingFlow The incoming flow (in l/s) to this node
@@ -80,12 +81,12 @@ object StepCalculation {
                                         firePressure: Expression,
                                         regularPressure: Expression,
                                         aggregatedIncomingFlow: Expression = Value(0)): Expression = {
-//    val flowToNextJunction = calculateFlowFromNodeToNextJunction(Some(startNode))
-//    val flowDifference_q = aggregatedIncomingFlow.toValue - flowToNextJunction.toValue
-    Absolute(aggregatedIncomingFlow) * Sqrt(firePressure.toValue / regularPressure.toValue)
+    val flowToNextJunction = calculateFlowFromNodeToNextJunction(Some(startNode))
+    val flowDifference_q = aggregatedIncomingFlow.toValue - flowToNextJunction.toValue
+    Absolute(flowDifference_q) * Sqrt(firePressure.toValue / regularPressure.toValue)
 
-    //val flowDifference_q = Subtraction(Value(aggregatedIncomingFlow), Value(flowToNextJunction))
-    //Multiplication(Absolute(flowDifference_q), Sqrt(Division(Value(firePressure), Value(regularPressure))))
+    //    val flowDifference_q = Subtraction(Value(aggregatedIncomingFlow), Value(flowToNextJunction))
+    //    Multiplication(Absolute(flowDifference_q), Sqrt(Division(Value(firePressure), Value(regularPressure))))
   }
 
   /**

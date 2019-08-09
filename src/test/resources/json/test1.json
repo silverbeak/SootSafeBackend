@@ -1,48 +1,44 @@
 {
-  "key": 1,
-  "isGasCalculation": true,
-  "performReleaseCalculation": false,
-  "hasReleaseRateInKgPerSecond": true,
-  "isEvaporationFromPool": true,
-  "releaseRate": {
-    "volumetricGasFlowRate": 1,
-    "safetyFactor": 2,
-    "lowerFlammableLimit": 3,
-    "evaporationRate": 4,
-    "molarMass": 5,
-    "gasDensity": 6,
-    "dischargeCoefficient": 7,
-    "pressureDifference": 9,
-    "poolSurfaceArea": 10,
-    "windSpeed": 11,
-    "absoluteTemperature": 12,
-    "adiabaticExpansion": 13,
-    "atmosphericPressure": 14,
-    "containerPressure": 15,
-    "criticalGasPressure": 16,
-    "compressibilityFactor": 17
-  },
-
-  "isIndoors": false,
-
-  "backgroundConcentration": {
-    "safetyFactor": 1,
-    "volumetricFlowAir": 2,
-    "volumetricFlowAirGas": 3,
-    "airChangeFrequency": 4,
-    "roomVolume": 5,
-    "crossSectionArea": 6
-  },
-
-  "gradeOfRelease": "Primary",
-  "releaseType": "DiffusiveJet",
-
-  "ventilationVelocityValues": {
-    "elevation": 1,
-    "obstructed": "Unobstructed"
-  },
-
-  "ventilationAvailability": "Fair",
-
-  "casNumber": "74-86-2"
+  "fields": {
+    "key": 1,
+    "isGasCalculation": true,
+    "performReleaseCalculation": false,
+    "hasReleaseRateInKgPerSecond": true,
+    "isEvaporationFromPool": true,
+    "releaseRate": {
+      "volumetricGasFlowRate": 1,
+      "safetyFactor": 2,
+      "lowerFlammableLimit": 3,
+      "evaporationRate": 4,
+      "molarMass": 5,
+      "gasDensity": 6,
+      "dischargeCoefficient": 7,
+      "pressureDifference": 9,
+      "poolSurfaceArea": 10,
+      "windSpeed": 11,
+      "absoluteTemperature": 12,
+      "adiabaticExpansion": 13,
+      "atmosphericPressure": 14,
+      "containerPressure": 15,
+      "criticalGasPressure": 16,
+      "compressibilityFactor": 17
+    },
+    "isIndoors": false,
+    "backgroundConcentration": {
+      "safetyFactor": 1,
+      "volumetricFlowAir": 2,
+      "volumetricFlowAirGas": 3,
+      "airChangeFrequency": 4,
+      "roomVolume": 5,
+      "crossSectionArea": 6
+    },
+    "gradeOfRelease": "Primary",
+    "releaseType": "DiffusiveJet",
+    "ventilationVelocityValues": {
+      "elevation": 1,
+      "obstructed": "Unobstructed"
+    },
+    "ventilationAvailability": "Fair",
+    "casNumber": "74-86-2"
+  }
 }

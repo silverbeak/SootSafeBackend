@@ -13,37 +13,33 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
   "Step Calculation" must {
 
     "properly calculate the resistance from target node to the next junction" in {
-      val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode()
       val firstJunction = fireNode.get.findNextJunction().thisNode.get
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss2(firstJunction)
+      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction, valueResolver)
 
       val secondJunction = firstJunction.findNextJunction().thisNode
 
       val pressure = StepCalculation.calculateResistanceFromNodeToNextJunction(secondJunction, pressureLossTable)
 
-      pressure should be(3.3357317620684928)
+      pressure should be(3.1)
     }
 
     "properly calculate the resistance from first junction to the next" in {
-      val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode().get
       val firstJunction = fireNode.findNextJunction().thisNode.get
 
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss2(firstJunction)
+      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction, valueResolver)
 
       val pressure = StepCalculation.calculateResistanceFromNodeToNextJunction(firstJunction.parent, pressureLossTable)
 
-      pressure should be(2.8264359797675525)
-//      pressure should be(2.400202446689589)
+      pressure should be(2.4000000000000004)
     }
 
     "properly traverse to calculate resistance through a chain" in {
-      val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode().get
       val firstJunction = fireNode.findNextJunction().thisNode
 
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss2(firstJunction.get)
+      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction.get, valueResolver)
 
       var pressure: Double = 0
       var junction: Option[LinkedNode] = firstJunction.get.parent
@@ -52,7 +48,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
         junction = junction.get.findNextJunction().thisNode
       }
 
-      pressure should be(55.544371375939654)
+      pressure should be(56.6)
 //      pressure should be(54.64488178026985)
     }
 
@@ -79,11 +75,10 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "indicate no pressure difference between fire cell and first junction" in {
-      val outletNode = linkedModel.locateOutletNode()
       val fireNode = linkedModel.locateTargetNode()
       val firstJunction = fireNode.get.findNextJunction().thisNode.get
 
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss2(firstJunction)
+      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction, valueResolver)
 
       val result = StepCalculation.calculateAggregatedPressure(fireNode.get, pressureLossTable, Value(114.61397661875115), Value(34))
 
@@ -91,27 +86,23 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "calculate pressure on fire from first junction" in {
-      val outletNode = linkedModel.locateOutletNode().get
       val fireNode = linkedModel.locateTargetNode()
       val firstJunction = fireNode.get.findNextJunction().thisNode
 
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss2(firstJunction.get)
+      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction.get, valueResolver)
 
       val result = StepCalculation.calculateAggregatedPressure(firstJunction.get, pressureLossTable, Value(114.61397661875115), Value(34))
 
-      result.calculate() should be(32.118590679176734)
-//      result.calculate() should be(27.275027803290786)
+      result.calculate() should be(27.27272727272728)
     }
 
     "traverse a model and determine flow during fire" in {
-      val outletNode = linkedModel.locateOutletNode()
-
       val fireNode = linkedModel.locateTargetNode()
 
       val junctionIterator = linkedModel.iterateJunctions()
       val firstJunction = junctionIterator.next()
 
-      val pressureLossTable = new PressureLoss(valueResolver).calculatePressureLoss2(firstJunction)
+      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction, valueResolver)
 
       var firePressure_delta_p: Expression = Value(1000)
       var aggregatedFireFlow_Q: Expression = Expression.Zero

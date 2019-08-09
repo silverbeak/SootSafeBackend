@@ -44,7 +44,7 @@ message Field {
     double max = 10;
     string path = 11;
     string unit = 12;
-    string name = 13;
+    string name = 13; // New, fix in other projects
 }
 
 message Type {

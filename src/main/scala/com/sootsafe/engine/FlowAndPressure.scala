@@ -34,3 +34,8 @@ case class FlowAndPressure(junction: LinkedNode,
                            aggregatedFireFlow: Expression,          // Flöde (brand)
                            pointFirePressure: Expression,           // Tryck (brand)
                            regularPressureDifference: Expression)   // Tryckskillnad (normal)
+
+case class FlowAndPressureEntry(regularFlow: Double,
+                                aggregatedRegularFlow: Double,
+                                regularPressure: Double,
+                                aggregatedRegularPressure: Double)

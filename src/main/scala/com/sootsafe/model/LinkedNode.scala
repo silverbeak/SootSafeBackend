@@ -26,7 +26,7 @@ case class AscendingNodePair(thisNode: Option[LinkedNode], previousNode: Option[
 case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[LinkedNode]) {
 
   def iterateAll(): Iterator[LinkedNode] = {
-    var currentNode: Option[LinkedNode] = Some(this)
+    var currentNode: Option[LinkedNode] = this.locateTargetNode()
     def takeWhileFunc(): Option[LinkedNode] = {
       if (currentNode.isEmpty) {
         None
@@ -40,7 +40,7 @@ case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[
     Iterator.continually(takeWhileFunc()).takeWhile(_.nonEmpty).flatten
   }
 
-  lazy val children = childResolver(Some(this))
+  lazy val children: Seq[LinkedNode] = childResolver(Some(this))
 
   def findNextJunction(): AscendingNodePair = {
     innerFindNextJunction(AscendingNodePair(parent, Some(this)))

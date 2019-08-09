@@ -51,7 +51,8 @@ class MessageSerializerTest extends WordSpecLike with Matchers {
 }
 
 object FakeMessage {
-  val mapMsg = Map(
+  val mapMsg: Map[String, Map[String, Any]] = Map(
+    "fields" -> Map(
     "key" -> 3,
     "isGasCalculation" -> true,
     "performReleaseCalculation" -> false,
@@ -77,6 +78,7 @@ object FakeMessage {
     "ventilationAvailability" -> "Fair",
 
     "casNumber" -> "74-86-2"
+      )
   )
 
   val jsonMsg: String = Source.fromURL(getClass.getResource("/json/test1.json")).mkString

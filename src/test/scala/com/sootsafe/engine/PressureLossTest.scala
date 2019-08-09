@@ -4,7 +4,7 @@ import java.io.InputStream
 
 import com.sootsafe.model._
 import com.sootsafe.serializers.NodeSerializer
-import com.sootsafe.valuetable.FakeValueResolver
+import com.sootsafe.valuetable.{FakeValueResolver, SuppliedValueResolver}
 import org.json4s.native.Serialization.read
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -21,11 +21,11 @@ class PressureLossTest extends WordSpecLike with Matchers {
       new ModelBuilder(model).buildModel() match {
         case Right(message) => fail(s"Expected model. Got error message: $message")
         case Left(linkedModel) =>
-          val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(linkedModel, FakeValueResolver)
-          val pressureLossMap = FlowAndPressureHelper.generateAggregatedRegularPressureTable(linkedModel)
+          val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(linkedModel.locateTargetNode().get, FakeValueResolver)
+          val pressureLossMap = FlowAndPressureHelper.generateAggregatedRegularPressureLossTable(linkedModel)
           //          pressureLoss should be(55.544371375939654)
           //          pressureLoss should be(54.64488178026986)
-          pressureLossTable.size should be(13)
+          pressureLossTable.size should be(17)
       }
 
     }
@@ -43,13 +43,13 @@ class PressureLossTest extends WordSpecLike with Matchers {
       new ModelBuilder(newModel).buildModel() match {
         case Right(message) => fail(s"Expected model. Got error message: $message")
         case Left(linkedModel) =>
-          val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(linkedModel, FakeValueResolver)
-          val pressureLossMap = FlowAndPressureHelper.generateAggregatedRegularPressureTable(linkedModel)
+          val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(linkedModel.locateTargetNode().get, FakeValueResolver)
+          val pressureLossMap = FlowAndPressureHelper.generateAggregatedRegularPressureLossTable(linkedModel)
 
           // This is where the new value should have changed
           //          pressureLoss should be(87.22437137593965)
           // Still the same length of the array, though
-          pressureLossTable.size should be(13)
+          pressureLossTable.size should be(17)
       }
     }
 
