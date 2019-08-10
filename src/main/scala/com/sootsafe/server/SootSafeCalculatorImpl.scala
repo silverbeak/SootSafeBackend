@@ -7,7 +7,7 @@ import com.sootsafe.model.{LinkedNode, Model, ModelBuilder}
 import com.sootsafe.serializers.GRPCSerializer
 import com.sootsafe.server.calculator.SootSafeCalculator.{FirePressureCalculationResult, SootSafeCalculatorGrpc, SootSafeModel}
 import com.sootsafe.server.calculator.SootSafeCommon.ErrorMessage
-import com.sootsafe.valuetable.{RealValueResolver, SuppliedValueResolver}
+import com.sootsafe.valuetable.SuppliedValueResolver
 
 import scala.concurrent.Future
 
@@ -56,7 +56,7 @@ class SootSafeCalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculator {
     }
   }
 
-  private def calculateWithEngine(initialFirePressure: Double, linkedNode: LinkedNode, engine: PressureLossEngine) = {
+  private def calculateWithEngine(initialFirePressure: Double, linkedNode: LinkedNode, engine: PressureLossEngine): FirePressureCalculationResult = {
     engine.calculatePressureLoss(linkedNode, initialFirePressure = initialFirePressure, valueResolver = SuppliedValueResolver) match {
       case Right(errorMessage) =>
         val errorResponse = new ErrorMessage(
@@ -75,7 +75,7 @@ class SootSafeCalculatorImpl extends SootSafeCalculatorGrpc.SootSafeCalculator {
     }
   }
 
-  private def extractModelFromRequest(request: SootSafeModel) = {
+  private def extractModelFromRequest(request: SootSafeModel): Model = {
     val nodes = request.nodes.map(GRPCSerializer.deserialize)
     val links = request.links.map(GRPCSerializer.deserialize)
     Model(nodes.toList, links.toList)

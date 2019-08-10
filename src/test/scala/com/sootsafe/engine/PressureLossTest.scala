@@ -16,7 +16,7 @@ class PressureLossTest extends WordSpecLike with Matchers {
   "PressureLossTest" must {
 
     "calculatePressureLoss" in {
-      val model = readModel("/defaultTestData.json")
+      val model = readModel("/json/defaultTestData.json")
 
       new ModelBuilder(model).buildModel() match {
         case Right(message) => fail(s"Expected model. Got error message: $message")
@@ -31,7 +31,7 @@ class PressureLossTest extends WordSpecLike with Matchers {
     }
 
     "pick supplied pressure loss before calculated one" in {
-      val model = readModel("/defaultTestData.json")
+      val model = readModel("/json/defaultTestData.json")
 
       // Here, we take out a single pipe from the model extracted from json,
       // replace it with one that has a pressureloss value, and make sure that that value is being used

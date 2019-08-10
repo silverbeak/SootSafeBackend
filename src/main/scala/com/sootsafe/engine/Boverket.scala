@@ -9,12 +9,10 @@ object Boverket extends PressureLossEngine {
   /**
     *
     * @param linkedModel                  The linked model to perform the pressure loss calculation for
-    * @param initialRegularPressureOption If set, this will override the initial regular pressure found in the fire cell in the model
     * @param initialFirePressure          The initial fire pressure from the fire cell
     * @return
     */
   def calculatePressureLoss(linkedModel: LinkedNode,
-                            initialRegularPressureOption: Option[Double] = None,
                             initialFirePressure: Double,
                             valueResolver: ValueResolver): Either[Seq[FlowAndPressure], String] = {
 
@@ -22,8 +20,6 @@ object Boverket extends PressureLossEngine {
       case None =>
         Right("Model must contain at least one fire cell")
       case Some(fireNode) =>
-        //        val initialRegularPressure = initialRegularPressureOption.getOrElse(fireNode.nodeModule.ssInfo.pressureloss.getOrElse(0d))
-
         val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(fireNode, valueResolver)
         val aggregatedRegularPressureLossTable = FlowAndPressureHelper.generateAggregatedRegularPressureLossTable(fireNode)
 

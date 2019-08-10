@@ -8,10 +8,17 @@ import org.json4s.{DefaultFormats, Formats}
 import org.json4s.native.Serialization.read
 
 trait TestFixture {
-  lazy val linkedModel: LinkedNode = createLinkedModel("/defaultTestData.json") match {
-    case Left(linkedNode) => linkedNode
-    case Right(message) => throw new Exception(s"Could not extract linked node. Got message: $message")
+
+  private def readAndBuildModel(file: String): LinkedNode = {
+    createLinkedModel(file) match {
+      case Left(linkedNode) => linkedNode
+      case Right(message) => throw new Exception(s"Could not extract linked node. Got message: $message")
+    }
   }
+
+  lazy val linkedModel: LinkedNode = readAndBuildModel("/json/defaultTestData.json")
+
+  lazy val linkedModelHigherOriginalResistance: LinkedNode = readAndBuildModel("/json/defaultTestDataHigherOriginalResistance.json")
 
   implicit val formats: Formats = DefaultFormats + NodeSerializer
 

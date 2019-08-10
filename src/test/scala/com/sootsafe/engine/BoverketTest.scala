@@ -31,11 +31,11 @@ class BoverketTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "calculate proper values from example 2" in {
-      Boverket.calculatePressureLoss(linkedModel, Some(57d), 1000, RealValueResolver) match {
+      Boverket.calculatePressureLoss(linkedModelHigherOriginalResistance, 1000, RealValueResolver) match {
         case Left(result) =>
           result.size should be(6)
           val pressureLoss = FlowAndPressureSequence.aggregatePressure(result)
-          df.format(pressureLoss) should be("72,9595")
+          df.format(pressureLoss) should be("69,1546")
 
         case Right(error) =>
           fail(s"Expected successful calculation. Got: $error")
@@ -44,7 +44,7 @@ class BoverketTest extends WordSpecLike with Matchers with TestFixture {
 
     "calculate proper values from example 3" in {
       val linkedNode = readFile("/json/fid1.json")
-      Boverket.calculatePressureLoss(linkedNode, None, 1000, SuppliedValueResolver) match {
+      Boverket.calculatePressureLoss(linkedNode, 1000, SuppliedValueResolver) match {
         case Left(result) =>
           result.size should be(6)
           val pressureLoss = FlowAndPressureSequence.aggregatePressure(result)
