@@ -12,7 +12,11 @@ case class NodeModuleBase(key: Int, ssInfo: SootSafeInfo) extends NodeModule
 
 case class Bend(key: Int, ssInfo: SootSafeInfo) extends NodeModule
 
-case class Outlet(key: Int, ssInfo: SootSafeInfo) extends NodeModule
+case class Outlet(key: Int, ssInfo: SootSafeInfo) extends NodeModule {
+  // TODO: Still not sure whether this should be a junction or not
+
+  //  override val isJunction: Boolean = true
+}
 
 case class FireCell(key: Int, ssInfo: SootSafeInfo) extends NodeModule
 
