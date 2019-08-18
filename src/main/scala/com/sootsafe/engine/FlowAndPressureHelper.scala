@@ -38,6 +38,30 @@ object FlowAndPressureHelper {
       }._1
   }
 
+  /**
+    * From the given node, calculate the pressure loss between all junctions
+    *
+    * @param targetNode The node to start the calculation (exclusive) from which to start the calculation (this will most likely always be the target fire node)
+    * @return A Map with the node key (as key) and the pressure loss from the previous junction leading up to the node for the node with the given key.
+    */
+  def generateJunctionToJunctionPressureLossTable(targetNode: LinkedNode): Map[Int, Double] = {
+    NodeIterator(targetNode)
+      .foldLeft((Map[Int, Double](), 0d)) {
+        case (aggregator, node) if node.nodeModule.isJunction =>
+          val pressureValue = node.nodeModule.ssInfo.pressureloss.get
+          (
+            aggregator._1 + (node.nodeModule.key -> aggregator._2),
+            pressureValue
+          )
+        case (aggregator, node) =>
+          val pressureValue = node.nodeModule.ssInfo.pressureloss.get
+          (
+            aggregator._1,
+            aggregator._2 + pressureValue
+          )
+      }._1
+  }
+
 
   /**
     * Given a node, for all parent nodes (in direction towards the outlet), calculate the added regular flow.
