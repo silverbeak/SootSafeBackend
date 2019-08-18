@@ -46,6 +46,7 @@ case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[
     innerFindNextJunction(AscendingNodePair(parent, Some(this)))
   }
 
+  @scala.annotation.tailrec
   private def innerFindNextJunction(ascendingNodePair: AscendingNodePair): AscendingNodePair = ascendingNodePair.thisNode match {
     case Some(x) if x.nodeModule.isJunction => ascendingNodePair
     case Some(x) => innerFindNextJunction(AscendingNodePair(x.parent, ascendingNodePair.thisNode))
