@@ -12,7 +12,7 @@ object NodeIterator {
 
 class NodeIterator(var node: Option[LinkedNode]) extends Iterator[LinkedNode] {
 
-  override def hasNext: Boolean = node.isDefined
+  override def hasNext: Boolean = node.get.parent.isDefined
 
   override def next(): LinkedNode = {
     val buffer = node.get

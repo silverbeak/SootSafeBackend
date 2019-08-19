@@ -38,7 +38,7 @@ object Boverket extends PressureLossEngine {
 
             val regularFlowFromNextJunction_q = Value(nextJunction.thisNode.get.nodeModule.ssInfo.capacity.getOrElse(0)) // Value(regularFlowTable(nextJunction.thisNode.get.nodeModule.key))
 
-            val aggregatedRegularFlow = Value(nextJunction.thisNode.get.nodeModule.ssInfo.capacity.getOrElse(0)) // StepCalculation.flowAtNextJunction(junction)
+            val aggregatedRegularFlow = Value(junction.nodeModule.ssInfo.capacity.getOrElse(0))
             val aggregatedFireFlow = aggregator.last.aggregatedFireFlow
 
             val addedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(
@@ -54,7 +54,7 @@ object Boverket extends PressureLossEngine {
               nextJunction.thisNode.get,
               pressureLossTable,
               aggregatedFireFlow + addedFireFlow_Q,
-              aggregatedRegularFlow
+              regularFlowFromNextJunction_q
             )
 
             val aggregatedFireFlow_Q = FlowAndPressureSequence.aggregateFlow(aggregator)
@@ -64,9 +64,9 @@ object Boverket extends PressureLossEngine {
               junction,
               addedFireFlow_Q,
               firePressure_delta_p,
-              Value(aggregatedRegularPressureLossTable(junction.nodeModule.key)),
+              aggregator.last.pointRegularPressure + Value(junctionToJunctionPressureLossTable(junction.nodeModule.key)),
               regularFlowFromThisJunction_q,
-              regularFlowFromNextJunction_q,
+              regularFlowFromNextJunction_q - aggregatedRegularFlow,
               aggregatedFireFlow_Q + addedFireFlow_Q,
               Value(aggregatedFirePressure_delta_p),
               Value(junctionToJunctionPressureLossTable(nextJunction.thisNode.get.nodeModule.key)))
@@ -143,7 +143,7 @@ object Boverket extends PressureLossEngine {
       fireNode,
       addedFireFlow_Q,
       firePressure_delta_p,
-      Value(aggregatedRegularPressureLossTable(fireNode.nodeModule.key)),
+      Expression.Zero,//      Value(aggregatedRegularPressureLossTable(fireNode.nodeModule.key)),
       regularFlowFromThisJunction_q,
       regularFlowFromNextJunction_q,
       aggregatedFireFlow_Q,
