@@ -80,7 +80,7 @@ object StepCalculation {
   def calculateFlowAtPressureDifference(firePressure: Expression,
                                         regularPressure: Expression,
                                         aggregatedIncomingFlow: Expression = Value(0)): Expression = {
-    Absolute(aggregatedIncomingFlow) * Sqrt(Absolute(firePressure.toValue) / regularPressure.toValue)
+    Absolute(aggregatedIncomingFlow) * Sqrt(firePressure.toValue / regularPressure.toValue)
   }
 
   /**

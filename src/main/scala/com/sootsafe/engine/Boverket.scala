@@ -31,29 +31,31 @@ object Boverket extends PressureLossEngine {
         val result = junctionList.foldLeft(Seq(initialFlowAndPressure)) {
           case (aggregator, junction) if junction.findNextJunction().previousNode.isDefined =>
 
-            val nextJunction = junction.findNextJunction()
-            val pointRegularPressure = aggregator.last.pointRegularPressure + Value(junctionToJunctionPressureLossTable(junction.nodeModule.key))
+            val pointRegularPressure = aggregator.last.pointRegularPressure - aggregator.last.regularPressureDifference
+            val pointFirePressure = aggregator.last.pointFirePressure - aggregator.last.firePressureDifference
 
             val regularFlowFromNextJunction_q = Value(junction.nodeModule.ssInfo.capacity.getOrElse(0))
 
-            val aggregatedFireFlow_Q = FlowAndPressureSequence.aggregateFlow(aggregator)
-
-            val pointFirePressure = aggregator.last.pointFirePressure - aggregator.last.firePressureDifference
+            val addedRegularFlow = regularFlowFromNextJunction_q - aggregator.last.aggregatedRegularFlow
 
             val addedFireFlow_Q = StepCalculation.calculateFlowAtPressureDifference(
               pointFirePressure,
               pointRegularPressure,
-              regularFlowFromNextJunction_q - aggregator.last.aggregatedRegularFlow
+              addedRegularFlow
             )
+
+            val aggregatedFireFlow_Q = FlowAndPressureSequence.aggregateFlow(aggregator) + addedFireFlow_Q
 
             val firePressure_delta_p = StepCalculation.calculateAggregatedPressure(
               junction,
               pressureLossTable,
-              aggregatedFireFlow_Q + addedFireFlow_Q,
+              aggregatedFireFlow_Q,
               regularFlowFromNextJunction_q
             )
 
             val regularFlowFromThisJunction_q = StepCalculation.calculateFlowFromNodeToNextJunction(Some(junction))
+
+            val regularPressureDifference = Value(junctionToJunctionPressureLossTable.getOrElse(junction.nodeModule.key, 0))
 
             aggregator :+ FlowAndPressure(
               junction,
@@ -61,10 +63,10 @@ object Boverket extends PressureLossEngine {
               firePressure_delta_p,
               pointRegularPressure,
               regularFlowFromThisJunction_q,
-              regularFlowFromNextJunction_q - aggregator.last.aggregatedRegularFlow,
-              aggregatedFireFlow_Q + addedFireFlow_Q,
+              addedRegularFlow,
+              aggregatedFireFlow_Q,
               pointFirePressure,
-              Value(junctionToJunctionPressureLossTable(nextJunction.thisNode.get.nodeModule.key)))
+              regularPressureDifference)
 
           case (aggregator, _) => aggregator
         }

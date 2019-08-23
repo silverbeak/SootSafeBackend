@@ -45,19 +45,25 @@ object FlowAndPressureHelper {
     * @return A Map with the node key (as key) and the pressure loss from the previous junction leading up to the node for the node with the given key.
     */
   def generateJunctionToJunctionPressureLossTable(targetNode: LinkedNode): Map[Int, Double] = {
+    // A short description of what's going on here:
+    // For each junction, we want to calculate the pressure loss to the next junction.
+    // That means we have to store the key of the current junction, and then iterate to the next one. For each element in between, we aggregate the pressure loss.
+    // Once we find the next junction, we store the aggregated pressure loss value for the previous junction and then start over with the new junction, and so on...
     NodeIterator(targetNode)
-      .foldLeft((Map[Int, Double](), 0d)) {
+      .foldLeft((Map[Int, Double](), 0d, None: Option[Int])) {
         case (aggregator, node) if node.nodeModule.isJunction =>
           val pressureValue = node.nodeModule.ssInfo.pressureloss.get
           (
-            aggregator._1 + (node.nodeModule.key -> aggregator._2),
-            pressureValue
+            aggregator._1 + (aggregator._3.getOrElse(node.nodeModule.key) -> aggregator._2),
+            pressureValue,
+            Some(node.nodeModule.key)
           )
         case (aggregator, node) =>
           val pressureValue = node.nodeModule.ssInfo.pressureloss.get
           (
             aggregator._1,
-            aggregator._2 + pressureValue
+            aggregator._2 + pressureValue,
+            if (aggregator._3.isDefined) aggregator._3 else Some(node.nodeModule.key)
           )
       }._1
   }
