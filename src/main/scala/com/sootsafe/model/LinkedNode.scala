@@ -26,13 +26,13 @@ case class AscendingNodePair(thisNode: Option[LinkedNode], previousNode: Option[
 case class LinkedNode(childResolver: IM, nodeModule: NodeModule, parent: Option[LinkedNode]) {
 
   def iterateAll(): Iterator[LinkedNode] = {
-    var currentNode: Option[LinkedNode] = this.locateTargetNode()
+    var currentNode: Option[LinkedNode] = Option(this)
     def takeWhileFunc(): Option[LinkedNode] = {
       if (currentNode.isEmpty) {
         None
       } else {
-        val res = currentNode.get.parent
-        currentNode = res
+        val res = currentNode
+        currentNode = res.get.parent
         res
       }
     }

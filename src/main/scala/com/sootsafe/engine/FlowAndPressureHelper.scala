@@ -15,7 +15,7 @@ object FlowAndPressureHelper {
     *         (Note, this is not the aggregated value, but the momentary value in the node)
     */
   def generateRegularPressureLossTable(targetNode: LinkedNode, valueResolver: ValueResolver): Map[Int, Double] = {
-    new NodeIterator(Option(targetNode))
+    targetNode.iterateAll()
       .map(node => node.nodeModule.key -> node.nodeModule.ssInfo.pressureloss.getOrElse(0d))
       .toMap
   }
@@ -27,7 +27,7 @@ object FlowAndPressureHelper {
     * @return A Map with the node key (as key) and the aggregated pressure loss as the value.
     */
   def generateAggregatedRegularPressureLossTable(targetNode: LinkedNode): Map[Int, Double] = {
-    NodeIterator(targetNode)
+    targetNode.iterateAll()
       .foldLeft((Map[Int, Double](), 0d)) {
         case (aggregator, node) =>
           val pressureValue = node.nodeModule.ssInfo.pressureloss.get
@@ -49,7 +49,7 @@ object FlowAndPressureHelper {
     // For each junction, we want to calculate the pressure loss to the next junction.
     // That means we have to store the key of the current junction, and then iterate to the next one. For each element in between, we aggregate the pressure loss.
     // Once we find the next junction, we store the aggregated pressure loss value for the previous junction and then start over with the new junction, and so on...
-    NodeIterator(targetNode)
+    targetNode.iterateAll()
       .foldLeft((Map[Int, Double](), 0d, None: Option[Int])) {
         case (aggregator, node) if node.nodeModule.isJunction =>
           val pressureValue = node.nodeModule.ssInfo.pressureloss.get
@@ -81,7 +81,7 @@ object FlowAndPressureHelper {
     // Not pretty. But we only want to calculate flow for cells, junctions and boxes
     val junctionTypes = Seq("fireCell", "tpipe", "box")
 
-    NodeIterator(targetNode)
+    targetNode.iterateAll()
       .foldLeft((Map[Int, Double](), 0d)) {
         case (aggregator, node) if junctionTypes.contains(node.nodeModule.ssInfo.nodeType) =>
           // This is where we end up if the current node is a junction (or a fire cell)

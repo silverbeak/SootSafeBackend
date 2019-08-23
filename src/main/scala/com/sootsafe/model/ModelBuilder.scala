@@ -11,7 +11,7 @@ class ModelBuilder(model: Model) {
       case None =>
         Right("Model does not contain outlet")
       case Some(outlet) =>
-        Left(linkNested(outlet, Nil)(Some(LinkedNode(_ => Nil, outlet, None))))
+        Left(linkNested(outlet, Nil)(None))
     }
   }
 

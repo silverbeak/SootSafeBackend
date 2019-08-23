@@ -60,9 +60,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
     }
 
     "calculate flow at pressure difference" in {
-      val fireNode = linkedModel.locateTargetNode()
-      val fireFlow = StepCalculation.calculateFlowAtPressureDifference(Value(1000), Value(22))
-
+      val fireFlow = StepCalculation.calculateFlowAtPressureDifference(Value(1000), Value(22), Value(17))
       fireFlow.calculate() should be(114.61397661875115)
     }
 
@@ -80,7 +78,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
 
       val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction, valueResolver)
 
-      val result = StepCalculation.calculateAggregatedPressure(fireNode.get, pressureLossTable, Value(114.61397661875115), Value(34))
+      val result = StepCalculation.calculateAggregatedPressure(firstJunction, pressureLossTable, Value(114.61397661875115), Value(34))
 
       result.calculate() should be(0d) // No pressure difference in first junction
     }
@@ -102,7 +100,7 @@ class StepCalculationTest extends WordSpecLike with Matchers with TestFixture {
       val junctionIterator = linkedModel.iterateJunctions()
       val firstJunction = junctionIterator.next()
 
-      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(firstJunction, valueResolver)
+      val pressureLossTable = FlowAndPressureHelper.generateRegularPressureLossTable(fireNode.get, valueResolver)
 
       var firePressure_delta_p: Expression = Value(1000)
       var aggregatedFireFlow_Q: Expression = Expression.Zero

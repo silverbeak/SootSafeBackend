@@ -8,7 +8,7 @@ class LinkedNodeTest extends WordSpecLike with Matchers with TestFixture {
   "LinkedModel" must {
     "be able to generate lazy iterator over junctions" in {
       val iterator = linkedModel.iterateJunctions()
-      iterator.toSeq.size should be(7)
+      iterator.toSeq.size should be(6)
     }
   }
 

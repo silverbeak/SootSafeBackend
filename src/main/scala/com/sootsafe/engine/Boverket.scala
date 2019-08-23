@@ -28,8 +28,10 @@ object Boverket extends PressureLossEngine {
 
         val junctionList = linkedModel.iterateJunctions().toList
 
+        val isOutlet: LinkedNode => Boolean = _.nodeModule.ssInfo.nodeType == "outlet"
+
         val result = junctionList.foldLeft(Seq(initialFlowAndPressure)) {
-          case (aggregator, junction) if junction.findNextJunction().previousNode.isDefined =>
+          case (aggregator, junction) if !isOutlet(junction) =>
 
             val pointRegularPressure = aggregator.last.pointRegularPressure - aggregator.last.regularPressureDifference
             val pointFirePressure = aggregator.last.pointFirePressure - aggregator.last.firePressureDifference
@@ -68,7 +70,20 @@ object Boverket extends PressureLossEngine {
               pointFirePressure,
               regularPressureDifference)
 
-          case (aggregator, _) => aggregator
+          case (aggregator, junction) =>
+            val pointRegularPressure = aggregator.last.pointRegularPressure - aggregator.last.regularPressureDifference
+            val pointFirePressure = aggregator.last.pointFirePressure - aggregator.last.firePressureDifference
+
+            aggregator :+ FlowAndPressure(
+              junction,
+              Expression.NaN,
+              Expression.NaN,
+              pointRegularPressure,
+              Expression.NaN,
+              Expression.NaN,
+              Expression.NaN,
+              pointFirePressure,
+              Expression.NaN)
         }
 
         Left(result)
