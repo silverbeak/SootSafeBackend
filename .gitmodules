@@ -1,0 +1,3 @@
+[submodule "src/main/protobuf/SootSafeProto"]
+	path = src/main/protobuf/SootSafeProto
+	url = GitUser@embermake.synology.me:GitRepos/Proto/SootSafeProto

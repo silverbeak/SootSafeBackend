@@ -15,15 +15,15 @@ dockerfile in docker := {
     copy(appDir, targetDir, chown = "daemon:daemon")
   }
 
-//  FROM aglover/java8-pier
-//  MAINTAINER Kristofer Jarl <kristofer@sootsafe.com>
-//
-//  WORKDIR build
-//
-//  ADD build/distributions/sootsafe-backend.tar /
-//
-//  ENTRYPOINT ["/sootsafe-backend/bin/sootsafe-backend"]
-//  #, "-cp", ".", "-Dconfig.file=/application.conf"]
+  //  FROM aglover/java8-pier
+  //  MAINTAINER Kristofer Jarl <kristofer@sootsafe.com>
+  //
+  //  WORKDIR build
+  //
+  //  ADD build/distributions/sootsafe-backend.tar /
+  //
+  //  ENTRYPOINT ["/sootsafe-backend/bin/sootsafe-backend"]
+  //  #, "-cp", ".", "-Dconfig.file=/application.conf"]
 
 }
 
@@ -80,6 +80,8 @@ libraryDependencies ++= Seq(
   // https://mvnrepository.com/artifact/org.scalacheck/scalacheck
   "org.scalacheck" %% "scalacheck" % "1.14.0" % Test
 )
+
+PB.protoSources in Compile := Seq(sourceDirectory.value / "SootSafeProto" / "src" / "proto" / "sootsafe")
 
 PB.targets in Compile := Seq(
   scalapb.gen() -> (sourceManaged in Compile).value
