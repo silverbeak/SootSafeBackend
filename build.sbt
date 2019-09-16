@@ -81,7 +81,7 @@ libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.14.0" % Test
 )
 
-PB.protoSources in Compile := Seq(sourceDirectory.value / "SootSafeProto" / "src" / "proto" / "sootsafe")
+PB.protoSources in Compile := Seq(sourceDirectory.value / "main" / "protobuf" / "SootSafeProto" / "src" / "proto" / "sootsafe")
 
 PB.targets in Compile := Seq(
   scalapb.gen() -> (sourceManaged in Compile).value
