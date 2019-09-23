@@ -28,7 +28,7 @@ dockerfile in docker := {
 }
 
 imageNames in docker := {
-  ImageName(repository = s"$dockerPrefix/${name.value}", tag = Some(s"0.1.0")) :: Nil
+  ImageName(repository = s"$dockerPrefix/${name.value}", tag = Some(s"latest")) :: Nil
 }
 
 libraryDependencies ++= Seq(
